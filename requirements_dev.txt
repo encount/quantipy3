@@ -1,4 +1,0 @@
-pytest
-pytest-cov
-pytest-xdist # allows the use of multiple cores for testing
--e .

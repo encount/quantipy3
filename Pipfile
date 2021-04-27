@@ -1,0 +1,30 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+
+[packages]
+scipy = ">=1.2.1"
+numpy = "*"
+pandas = ">=1.2.4"
+ftfy = ">=5.5.1"
+xmltodict = "*"
+lxml = "*"
+xlsxwriter = "*"
+pillow = "*"
+prettytable = "*"
+decorator = "*"
+watchdog = "*"
+requests = "*"
+python-pptx = "*"
+
+[requires]
+python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
