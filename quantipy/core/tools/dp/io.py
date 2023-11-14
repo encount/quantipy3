@@ -9,7 +9,6 @@ import re, string
 import sqlite3
 import sys
 import requests as req
-
 from ftfy import fix_text
 
 from collections import OrderedDict
@@ -20,10 +19,12 @@ from itertools import product
 from quantipy.core.tools.dp.dimensions.reader import quantipy_from_dimensions
 from quantipy.core.tools.dp.dimensions.writer import dimensions_from_quantipy
 from quantipy.core.tools.dp.decipher.reader import quantipy_from_decipher
-from quantipy.core.tools.dp.confirmit.reader import quantipy_from_confirmit
+from quantipy.core.tools.dp.forsta.reader import quantipy_from_forsta
+from quantipy.core.tools.dp.forsta.writer import quantipy_to_forsta
 from quantipy.core.tools.dp.spss.reader import parse_sav_file
 from quantipy.core.tools.dp.spss.writer import save_sav
 from quantipy.core.tools.dp.ascribe.reader import quantipy_from_ascribe
+from .forsta.api_requests import get_surveys
 import importlib
 
 def make_like_ascii(text):
@@ -325,52 +326,18 @@ def read_decipher(path_json, path_txt, text_key='main'):
     meta, data = quantipy_from_decipher(path_json, path_txt, text_key)
     return meta, data
 
-def read_confirmit_from_files(path_meta, path_data):
-    meta, data = quantipy_from_confirmit(path_meta, path_data)
+def read_forsta_from_files(self, path_meta, path_data, verbose=True):
+    meta, data = quantipy_from_forsta(self, path_meta, path_data, verbose)
     return meta, data
 
-def read_confirmit_api(projectid, public_url, idp_url, client_id, client_secret):
-    # Source configuration
-    source_projectid = projectid
-    source_public_site_url = public_url
-    source_idp_url = idp_url
-    source_client_id = client_id
-    source_client_secret = client_secret
+def read_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars, data_filter, verbose):
+    json_data, json_meta = get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars, data_filter)
+    meta, data = quantipy_from_forsta(self, json_meta[0], json_data, verbose)
+    return json_meta, json_data, meta, data
 
-    # Get access token
-    response = req.post(source_idp_url + 'identity/connect/token',
-                        data="grant_type=api-user&scope=pub.surveys",
-                        auth=(source_client_id, source_client_secret),
-                        headers={'Content-Type': 'application/x-www-form-urlencoded'})
-    response.raise_for_status()
-    resp_obj = response.json()
-    source_token = resp_obj['access_token']
+def write_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+    return quantipy_to_forsta(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
-    # Get source data records
-    headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
-    url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
-    response = req.get(url, data=None, headers=headers, stream=False)
-    response.raise_for_status()
-
-    # Decode json response - data
-    res = response.content.decode("utf-8")
-    json_lines = res.splitlines()
-    json_data = []
-    for line in json_lines:
-        json_data.append(json.loads(line))
-    # Get survey schema records
-    headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
-    url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/schema'
-    response_schema = req.get(url, data=None, headers=headers, stream=False)
-    response_schema.raise_for_status()
-    # Decode json response - schema
-    res = response_schema.content.decode("utf-8")
-    json_lines = res.splitlines()
-    json_meta = []
-    for line in json_lines:
-        json_meta.append(json.loads(line))
-    meta, data = quantipy_from_confirmit(json_meta[0], json_data)
-    return meta, data
 
 def read_spss(path_sav, **kwargs):
 
@@ -407,7 +374,7 @@ def read_quantipy(path_json, path_csv):
     data = load_csv(path_csv)
 
     for col in list(meta['columns'].keys()):
-        if meta['columns'][col]['type']=='date':
+        if meta['columns'][col]['type']=='date' and col in data.columns:
             data[col] = pd.to_datetime(data[col])
 
     return meta, data

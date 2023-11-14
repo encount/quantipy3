@@ -46,6 +46,17 @@ class TestDataSet(unittest.TestCase):
         dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav')
         self.assertTrue(dataset.meta('q2').shape == (8,3))
 
+    def test_read_spss_readstat(self):
+        dataset_v1 = qp.DataSet('spss')
+        dataset_v1.read_spss('tests/Example Data (A) - with multi choice q2.sav')
+        dataset = qp.DataSet('spss')
+        dataset.read_spss('tests/Example Data (A) - with multi choice q2.sav', engine='readstat')
+        # the label of the set is lost as this engine doesn't support delimited sets
+        dataset.to_delimited_set('q2', dataset_v1.text('q2'), dataset.find('q2_'))
+        self.assertTrue(dataset.meta('q2').shape == (8,3))
+        assert dataset.crosstab('q2').equals(dataset_v1.crosstab('q2'))        
+        assert dataset.crosstab('q2b').equals(dataset_v1.crosstab('q2b'))
+
     def test_fileinfo(self):
         dataset = self._get_dataset()
         meta_def_key =  dataset._meta['lib']['default text']
@@ -852,6 +863,26 @@ class TestDataSet(unittest.TestCase):
         # assert that we only have 1 significanctly higher value
         assert df[('gender', 2)].isna().sum() == 7
         assert df[('gender', 1)].isna().sum() == 6
+
+
+    def test_crosstab_with_base_selection(self):
+        dataset = self._get_dataset()
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='both')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='unweighted')
+        assert "Base" not in result.index.get_level_values(1)
+        assert "Unweighted base" in result.index.get_level_values(1)
+        result = dataset.crosstab(['q2b'], 'gender', w='weight_a', base='weighted')
+        assert "Base" in result.index.get_level_values(1)
+        assert "Unweighted base" not in result.index.get_level_values(1)
+        
         
 
     def test_crosstab2(self):
@@ -863,6 +894,24 @@ class TestDataSet(unittest.TestCase):
                                         painted=True)
         assert result.shape == (13,2)
         assert with_sigdiff.shape == (37,4)
+
+    def test_crosstab_with_lang_key(self):
+        dataset = self._get_dataset()
+        dataset.set_variable_text(name='gender', new_text='Kyn', text_key='is-IS')
+        dataset.set_value_texts(name='gender', renamed_vals={1:'Maður', 2:"Kona"}, text_key='is-IS')
+        dataset.set_variable_text(name='locality', new_text='Búseta', text_key='is-IS')
+        dataset.set_value_texts(name='locality', 
+                                renamed_vals={
+                                    1:"Verslunarkjarni", 
+                                    2:"Þéttbýli",
+                                    3:"Úthverfi",
+                                    4:"Dreifbýli",
+                                    5:"Afskekkt"
+                                    }, 
+                                text_key='is-IS')
+
+        result = dataset.crosstab(x='locality', y='gender', text_key='is-IS')
+        assert result.columns.get_level_values(1).to_list() == ['Maður', 'Kona']
 
     def test_crosstab(self):
         x = 'q14r01c01'

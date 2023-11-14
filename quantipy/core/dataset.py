@@ -10,8 +10,9 @@ from quantipy.core.tools.dp.io import (
     read_decipher as r_decipher,
     read_spss as r_spss,
     read_ascribe as r_ascribe,
-    read_confirmit_from_files as r_confirmit_from_files,
-    read_confirmit_api as r_confirmit_api,
+    read_forsta_from_files as r_forsta_from_files,
+    read_forsta_api as r_forsta_api,
+    write_forsta_api as w_forsta_api,
     write_spss as w_spss,
     write_quantipy as w_quantipy,
     write_dimensions as w_dimensions)
@@ -54,7 +55,7 @@ from collections import OrderedDict, Counter
 import importlib
 
 VALID_TKS = [
-    'en-GB', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'fr-FR', 'ar-AR',
+    'en-GB', 'en-US', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS', 'fr-FR', 'ar-AR',
     'es-ES', 'it-IT', 'pl-PL', 'en']
 
 VAR_SUFFIXES = [
@@ -584,8 +585,8 @@ class DataSet(object):
         self._rename_blacklist_vars()
         return None
 
-    def read_confirmit_from_files(self, path_meta, path_data, reset=True):
-        """Read confirmit data
+    def read_forsta_from_files(self, path_meta, path_data, reset=True, verbose=False):
+        """Read forsta data
 
         Parameters
         ----------
@@ -598,11 +599,13 @@ class DataSet(object):
         -------
         None
         """
-        self._meta, self._data = r_confirmit_from_files(path_meta, path_data)
+        if verbose:
+            self.write_allowed = True
+        self._meta, self._data = r_forsta_from_files(self, path_meta, path_data, verbose)
         self._set_file_info(path_data, path_meta, reset=reset)
 
-    def read_confirmit_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True):
-        """Read confirmit data from confirmit api
+    def read_forsta_api(self, projectid, public_url, idp_url=None, client_id=None, client_secret=None, reset=True, schema_vars=None, data_filter=None, verbose=False):
+        """Read forsta data from forsta api
 
         Parameters
         ----------
@@ -621,9 +624,30 @@ class DataSet(object):
             client_id = os.getenv('CLIENT_ID')
         if not client_secret:
             client_secret = os.getenv('CLIENT_SECRET')
-
-        self._meta, self._data = r_confirmit_api(projectid, public_url, idp_url, client_id, client_secret)
+        self._original_meta, self._original_data, self._meta, self._data = \
+            r_forsta_api(self, projectid, public_url, idp_url, client_id, \
+                            client_secret, schema_vars, data_filter, verbose)
         self._set_file_info('', reset=reset)
+
+    def write_forsta(self, path_meta, path_data, schema_vars=None, verbose=False):
+        """Converts quantipy dataset into forsta format"""
+        try:
+            if self.write_allowed:
+                res_meta_string = json.dumps(self._meta)
+                output_meta_path = path_meta
+                output_data_path = path_data
+                output_meta_file = open(output_meta_path,'w')
+                self._data.to_csv(output_data_path)
+                output_meta_file.write(res_meta_string)
+                output_meta_file.close()
+            else:
+                raise Exception("Must set has_external parameter in read method first")
+        except AttributeError:
+            raise Exception("Must set has_external parameter in read method first")
+
+    def write_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):
+        """Converts quantipy dataset into forsta format and uploads it to the forsta API"""
+        return w_forsta_api(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars)
 
     def read_spss(self, path_sav, **kwargs):
         """
@@ -1853,9 +1877,9 @@ class DataSet(object):
 
     @modify(to_list=['x', 'y', 'ci', 'sig_level'])
     @verify(variables={'x': 'both', 'y': 'both_nested', 'w': 'columns'})
-    def crosstab(self, x, y=[], w=None, f=None, ci='counts', stats=False,
+    def crosstab(self, x, y=[], w=None, f=None, ci='counts', base='auto', stats=False,
                  sig_level=None, rules=False, decimals=1, xtotal=False,
-                 painted=True):
+                 painted=True, text_key=None):
         """
         Return a well formated crosstab. (New version)
         Parameters
@@ -1871,6 +1895,9 @@ class DataSet(object):
             used in DataSet.take().
         ci: str/ list of str {'c%', 'counts'}, default 'counts'
             Defines the output cellitem.
+        base: str/ list of str, ['auto', 'both', 'weighted', 'unweighted']
+            What bases to include in the results. Auto will return unweighted or 
+            weighted base according to whether the results are weighted.
         stats: bool, default False
             Add std stats to the output dataframe (mean, median, stddev,
             quartiles).
@@ -1890,6 +1917,8 @@ class DataSet(object):
             regular frequency of the x column.
         painted: bool, default True
             Add texts from the meta to the index and columns.
+        text_key: string, default None
+            What language text key to use when returning the result.
         """
         def _rounding(x, dec):
             try:
@@ -1903,14 +1932,13 @@ class DataSet(object):
             idx = self.manifest_filter(f)
         else:
             idx = self.take(f)
-        data = self._data.copy().iloc[idx]
+        data = self._data.copy().loc[idx]
         stack = qp.Stack(name='ct', add_data={'ct': (data, self._meta)})
         if xtotal or not y:
             y = ['@'] + self.unroll(y)
         else:
             y = self.unroll(y)
         test_y =  [yk for yk in y if yk != '@']
-        # views = ['cbase', 'rbase']
         views = ['cbase']
         for i in ci:
             if not i in ['counts', 'c%']:
@@ -1921,7 +1949,12 @@ class DataSet(object):
         # they haven't been requested
         if ci == ['c%'] and sig_level:
             views.append('counts')
+        if base == 'unweighted' and w is not None:
+            views.remove('cbase')
         stack.add_link('ct', x=x, y=y, views=views, weights=w)
+        # include unweighted base in stack
+        if w is not None and base in ['both', 'unweighted']:
+            stack.add_link('ct', x=x, y=y, views=['cbase'], weights=None)            
         if stats:
             stats = ['mean', 'median', 'stddev', 'lower_q', 'upper_q']
             options = {
@@ -1965,8 +1998,8 @@ class DataSet(object):
             stats=stats,
             tests=sig_level,
             cell_items=cellitems,
-            bases='both')
-        vm.set_bases('both', False, False, 'both')
+            bases=base)
+        vm.set_bases(base, False, False, base)
         #######################################################################
         # prepare ChainManager
         #######################################################################
@@ -1984,7 +2017,10 @@ class DataSet(object):
             folder     = 'ct')
 
         if painted:
-            cm.paint_all(totalize=True)
+            if text_key is not None:
+                cm.paint_all(totalize=True, text_key=text_key)
+            else:
+                cm.paint_all(totalize=True)
 
         dfs = []
         for chain in cm['ct']:

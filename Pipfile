@@ -7,11 +7,12 @@ verify_ssl = true
 pytest = "*"
 pytest-cov = "*"
 pytest-xdist = "*"
+python-dotenv = "0.21.0"
 
 [packages]
-scipy = ">=1.2.1"
+scipy = ">=1.2.1,<=1.7.3"
 numpy = "*"
-pandas = ">=1.2.4"
+pandas = ">=1.2.4,<2"
 ftfy = ">=5.5.1"
 xmltodict = "*"
 lxml = "*"
@@ -22,9 +23,10 @@ decorator = "*"
 watchdog = "*"
 requests = "*"
 python-pptx = "*"
+pyreadstat = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"
 
 [pipenv]
 allow_prereleases = true

@@ -3,15 +3,17 @@
 import sys
 from setuptools import setup, find_packages
 
-versions = dict(numpy='1.20.2',
-                scipy='1.6.3',
-                pandas='1.2.4',
-                ftfy='6.0.1')
+versions = dict(numpy='1.22.4',
+                scipy='1.7.3',
+                pandas='1.5.3',
+                ftfy='6.1.1',
+                pyreadstat='1.2.4')
 
-precisions = dict(numpy='>=',
-                  scipy='>=',
-                  pandas='>=',
-                  ftfy='>=')
+precisions = dict(numpy='==',
+                  scipy='==',
+                  pandas='==',
+                  ftfy='==',
+                  pyreadstat='==')
 
 libs = ['numpy',
         'scipy',
@@ -25,7 +27,8 @@ libs = ['numpy',
         'decorator',
         'watchdog',
         'requests',
-        'python-pptx']
+        'python-pptx',
+        'pyreadstat']
 
 def version_libs(libs, precisions, versions):
     return [lib + precisions[lib] + versions[lib]
@@ -38,7 +41,7 @@ else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
 setup(name='quantipy3',
-      version='0.2.5',
+      version='0.2.15',
       author='Geir Freysson',
       author_email='geir@datasmoothie.com',
       packages=find_packages(exclude=['tests']),

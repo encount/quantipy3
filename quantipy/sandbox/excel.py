@@ -38,7 +38,8 @@ _SHEET_ATTR = ('str_table',
                'excel2003_style',
                'remove_timezone',
                'constant_memory',
-               'max_url_length')
+               'max_url_length',
+               'use_future_functions')
 
 # Defaults for _Sheet.
 _SHEET_DEFAULTS = dict(alternate_bg             = True,
@@ -714,7 +715,7 @@ class _Sheet(Worksheet):
             else:
                 fact = 1
 
-            dimensions = self.truetype.getsize(label)
+            dimensions = self.truetype.getsize(label.encode("utf-8"))
 
             if (dimensions[1] * units_to_pixels) - padding > height:
                 # text too tall

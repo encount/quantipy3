@@ -28,8 +28,9 @@ tests/Example Data (A).cache
 *.eot
 *.svg
 *.woff
-
+*.env
 *.js
+*-venv/
 
 docs/API/_static/
 docs/API/_templates/
@@ -39,4 +40,5 @@ docs/API/_templates/
 .eggs/
 .cache
 .pytest_cache/*
+.mypy_cache/*
 build
