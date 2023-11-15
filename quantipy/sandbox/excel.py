@@ -1,22 +1,21 @@
 # -* coding: utf-8 -*-
 
-import numpy as np
-import pandas as pd
-import quantipy as qp
 import pickle as cp
 import platform
-
-from PIL import ImageFont
-from .excel_formats import ExcelFormats, _Format
-from .excel_formats_constants import _DEFAULTS, _VIEWS_GROUPS
 from difflib import SequenceMatcher
 from os.path import basename
-from PIL import Image
-from quantipy.core.tools.qp_decorators import lazy_property
 from re import sub as rsub
+
+import numpy as np
+import pandas as pd
+from PIL import Image, ImageFont
 from xlsxwriter import Workbook
-from xlsxwriter.worksheet import Worksheet
 from xlsxwriter.utility import xl_rowcol_to_cell
+from xlsxwriter.worksheet import Worksheet
+
+from quantipy.core.tools.qp_decorators import lazy_property
+from .excel_formats import ExcelFormats, _Format
+from .excel_formats_constants import _DEFAULTS, _VIEWS_GROUPS
 
 try:
     from functools import lru_cache

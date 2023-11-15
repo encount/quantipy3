@@ -1,38 +1,19 @@
 
 # import pdb;
 import unittest
-import os.path
+
 # import json
 import numpy as np
 import pandas as pd
 
-from collections import OrderedDict
-from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.view import View
-from quantipy.core.stack import Stack
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.tools.dp import io
 from quantipy.core.helpers.functions import load_json
+from quantipy.core.stack import Stack
 from quantipy.core.tools.view.logic import (
-    union, _union,
-    intersection, _intersection,
-    difference, _difference,
-    symmetric_difference, _symmetric_difference,
-    has_any, _has_any,
-    has_all, _has_all,
-    not_any, _not_any,
-    not_all, _not_all,
-    has_count, _has_count,
-    not_count, _not_count,
-    is_lt, _is_lt,
-    is_le, _is_le,
-    is_eq, _is_eq,
-    is_ne, _is_ne,
-    is_ge, _is_ge,
-    is_gt, _is_gt,
-    get_logic_key_chunk,
-    get_logic_index
+    has_any, has_count, is_ge
 )
+from quantipy.core.view_generators.view_mapper import ViewMapper
+from quantipy.core.view_generators.view_maps import QuantipyViews
+
 
 class TestViewObject(unittest.TestCase):
 

@@ -1,19 +1,18 @@
 
 import os
-import re
-import pytest
-import collections
 import platform
+import re
 from operator import sub
-from zipfile import ZipFile, BadZipfile, LargeZipFile
-import numpy as np
-import quantipy as qp
-from quantipy.sandbox.sandbox import ChainManager
-from quantipy.sandbox.excel import Excel
-from quantipy.sandbox.excel_formats_constants import _DEFAULT_ATTRIBUTES
-from quantipy.core.view_generators.view_specs import ViewManager
+from zipfile import BadZipfile, LargeZipFile, ZipFile
 
+import numpy as np
+import pytest
+
+import quantipy as qp
 import tests.parameters_excel as p
+from quantipy.core.view_generators.view_specs import ViewManager
+from quantipy.sandbox.excel import Excel
+from quantipy.sandbox.sandbox import ChainManager
 
 # -----------------------------------------------------------------------------
 PATH_DATA  = './tests/'

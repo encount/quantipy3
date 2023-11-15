@@ -1,23 +1,20 @@
-import unittest
 import os.path
+import unittest
+from collections import OrderedDict
+
 import numpy
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
-import tests.test_helper
-import copy
 
-from collections import defaultdict, OrderedDict
-from tests.test_batch import _get_batch
-from quantipy.core.stack import Stack
-from quantipy.core.chain import Chain
-from quantipy.core.link import Link
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.view_generators.view_specs import (net, calc)
-from quantipy.core.view import View
-from quantipy.core.helpers import functions
-from quantipy.core.helpers.functions import load_json
 from quantipy.core.cache import Cache
+from quantipy.core.chain import Chain
+from quantipy.core.helpers.functions import load_json
+from quantipy.core.link import Link
+from quantipy.core.stack import Stack
+from quantipy.core.view import View
+from quantipy.core.view_generators.view_maps import QuantipyViews
+from quantipy.core.view_generators.view_specs import (calc)
+from tests.test_batch import _get_batch
 
 CBASE = "x|f|x:|||cbase"
 COUNTS = "x|f|:|||counts"

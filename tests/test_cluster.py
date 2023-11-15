@@ -1,15 +1,12 @@
-import pdb;
-import unittest
 import os.path
-import io
-import tests.test_helper
+import unittest
+
 import pandas as pd
 
-from quantipy.core.stack import Stack
-from quantipy.core.chain import Chain
 from quantipy.core.cluster import Cluster
-from quantipy.core.view_generators.view_maps import QuantipyViews
 from quantipy.core.helpers.functions import load_json
+from quantipy.core.stack import Stack
+from quantipy.core.view_generators.view_maps import QuantipyViews
 
 CBASE = "x|frequency|x:y|||cbase"
 COUNTS = "x|frequency||||counts"

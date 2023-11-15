@@ -1,10 +1,10 @@
-import unittest
-import os.path
-import quantipy as qp
 import copy
-from quantipy.core.tools.dp.dimensions.dimlabels import (
-    qp_dim_languages,
-    DimLabels)
+import os.path
+import unittest
+
+import quantipy as qp
+from quantipy.core.tools.dp.dimensions.dimlabels import (DimLabels,
+                                                         qp_dim_languages)
 
 
 def _get_dataset():

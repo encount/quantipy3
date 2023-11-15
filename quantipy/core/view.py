@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import quantipy.core.helpers.functions as helpers
-from operator import add, sub, mul, truediv
-import pandas as pd
 import copy
 from collections import OrderedDict
+from operator import add, mul, sub
+
+import pandas as pd
+
 pd.set_option('display.encoding', 'utf-8')
 
 class View(object):

@@ -1,17 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import pandas as pd
-import quantipy as qp
-import numpy  as np
-from quantipy.core.tools.qp_decorators import *
-from quantipy.core.tools.dp.prep import frange
-
-from difflib import SequenceMatcher
 from collections import OrderedDict
-import json
-import copy
+from difflib import SequenceMatcher
 
+import numpy as np
+import pandas as pd
+
+import quantipy as qp
+from quantipy.core.tools.dp.prep import frange
+from quantipy.core.tools.qp_decorators import *
 
 VALID_CONVERT = {'float':
 					['single', 'int', 'float'],

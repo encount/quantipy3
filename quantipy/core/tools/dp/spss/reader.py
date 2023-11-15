@@ -1,11 +1,12 @@
+import os
+
 import numpy as np
 import pandas as pd
-import savReaderWriter as sr
 import pyreadstat
 
-from collections import defaultdict
-from quantipy.core.tools.dp.prep import start_meta, condense_dichotomous_set
-import os
+import savReaderWriter as sr
+from quantipy.core.tools.dp.prep import condense_dichotomous_set, start_meta
+
 
 def parse_sav_file(filename, path=None, name="", ioLocale="en_US.UTF-8", ioUtf8=True, dichot=None,
                    dates_as_strings=False, text_key="en-GB", engine='savReaderWriter'):

@@ -6,36 +6,17 @@
 
 
 from os import path
-import pandas as pd
-from .transformations import(
-  color_setter,
-  clean_axes_labels
-  )
+
 from pptx.chart.data import ChartData
 from pptx.dml.color import RGBColor
-from pptx.enum.chart import(
-    XL_CHART_TYPE,
-    XL_LABEL_POSITION,
-    XL_LEGEND_POSITION,
-    XL_TICK_MARK,
-    XL_TICK_LABEL_POSITION
-    )
-from pptx.util import(
-    Emu,
-    Pt,
-    Cm,
-    Inches
-    )
-from pptx.enum.dml import(
-    MSO_THEME_COLOR,
-    MSO_COLOR_TYPE,
-    MSO_FILL
-    )
-from pptx.enum.text import(
-    PP_ALIGN,
-    MSO_AUTO_SIZE,
-    MSO_ANCHOR
-    )
+from pptx.enum.chart import (XL_CHART_TYPE, XL_LABEL_POSITION,
+                             XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION,
+                             XL_TICK_MARK)
+from pptx.enum.dml import (MSO_FILL, MSO_THEME_COLOR)
+from pptx.enum.text import (MSO_ANCHOR, PP_ALIGN)
+from pptx.util import (Cm, Emu, Pt)
+
+from .transformations import (clean_axes_labels, color_setter)
 
 thisdir = path.split(__file__)[0]
 

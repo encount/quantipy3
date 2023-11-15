@@ -1,11 +1,14 @@
-import unittest
 import os.path
+import unittest
+
 import pandas as pd
+
+from quantipy.core.helpers.functions import load_json
 # import numpy as np
 from quantipy.core.link import Link
 from quantipy.core.stack import Stack
-from quantipy.core.helpers.functions import load_json
 from quantipy.core.view_generators.view_maps import QuantipyViews
+
 
 class TestLinkObject(unittest.TestCase):
 

@@ -1,14 +1,15 @@
 
+import copy
+import itertools
+import re
+
 import numpy as np
 import pandas as pd
-import json
-import copy
-import re
-import itertools
-from quantipy.core.helpers.functions import load_json, get_mapped_meta
+
+from quantipy.core.helpers.functions import load_json
 from quantipy.core.tools.dp.prep import start_meta
 
-    
+
 def manage_decipher_quota_variables(meta, data, quotas):
     """ Uses the collected dichotomous quota variables found in the 
     decipher metadata and combines them into single columns based on

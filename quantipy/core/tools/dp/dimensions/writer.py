@@ -3,20 +3,13 @@ Created on 20 June 2016
 
 @author: AlexBuchhammer
 """
-import numpy as np
-import pandas as pd
-import quantipy as qp
-from quantipy.core.helpers.functions import (
-    is_mapped_meta,
-    get_mapped_meta,
-    get_text
-)
-from quantipy.core.helpers.functions import load_json
-from quantipy.core.tools.dp.dimensions.dimlabels import (
-    qp_dim_languages,
-    DimLabels)
 import os
-import json
+
+import numpy as np
+
+from quantipy.core.helpers.functions import (get_mapped_meta, is_mapped_meta)
+from quantipy.core.tools.dp.dimensions.dimlabels import (DimLabels,
+                                                         qp_dim_languages)
 
 QTYPES = {
     'single': 'mr.Categorical',

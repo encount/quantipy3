@@ -1,13 +1,9 @@
 # encoding: utf-8
 
-from pptx.util import (
-    Emu,
-    Pt,
-    Cm,
-    Inches)
+import re
 
 from . import pptx_defaults as pptx
-import re
+
 
 def update_dict_from_dict(update_dict, from_dict):
     """

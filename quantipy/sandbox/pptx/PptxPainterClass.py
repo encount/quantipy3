@@ -1,29 +1,21 @@
 # encoding: utf-8
 
 import re
-from lxml import etree
-import warnings
 
+from lxml import etree
 # Imports from Python-PPTX
 from pptx import Presentation
 from pptx.chart.data import CategoryChartData
-from pptx.util import (
-    Emu,
-    Pt,
-    Cm,
-    Inches)
+from pptx.util import (Cm, Pt)
 
 try:
     from pptx import table
 except:
     from pptx.shapes import table
 
-from pptx.chart.data import ChartData
-from pptx.enum.chart import XL_CHART_TYPE
 from pptx.dml.color import RGBColor
 
 from .enumerations import (
-    fill_type_dct,
     data_label_pos_dct,
     legend_pos_dct,
     tick_label_pos_dct,

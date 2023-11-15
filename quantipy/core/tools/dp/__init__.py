@@ -1,3 +1,1 @@
-from . import io
-from . import prep
-from . import query
+from . import io, prep, query

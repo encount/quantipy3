@@ -5,12 +5,15 @@
 '''
 
 
+import re
+from math import ceil
+
 import numpy as np
 import pandas as pd
-from math import ceil
-import re
-import operator
+from pandas.util.version import Version
+
 from quantipy.core.helpers import functions as helpers
+from quantipy.version import pandas_version
 
 ''' Simplified access to, and manipulation of, the pandas dataframe.
     Contains various helper functions.
@@ -104,7 +107,7 @@ def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
 
             #df with no fixed categories, then sort.
             df_without_fc = df.loc[~df[df.columns[0]].isin(fixed_categories)]
-            if pd.__version__ == '0.19.2':
+            if pandas_version >= Version('0.19.2'):
                 df_without_fc = df_without_fc.sort_values(by=df.columns[column_position+1], ascending=ascend)
             else:
                 df_without_fc = df_without_fc.sort(columns=df.columns[column_position+1], ascending=ascend)
@@ -130,7 +133,7 @@ def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
             new_df = new_df.set_index(df.columns[0])
 
         else:
-            if pd.__version__ == '0.19.2':
+            if pandas_version >= Version('0.19.2'):
                 new_df = df.sort_values(by=df.columns[column_position], ascending=ascend)
             else:
                 new_df = df.sort(columns=df.columns[column_position], ascending=ascend)

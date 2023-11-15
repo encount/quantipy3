@@ -1,11 +1,14 @@
 
-import numpy as np
-import pandas as pd
-import quantipy as qp
-from quantipy.core.helpers.functions import emulate_meta
-import savReaderWriter as srw
 import copy
 import json
+
+import numpy as np
+import pandas as pd
+
+import quantipy as qp
+import savReaderWriter as srw
+from quantipy.core.helpers.functions import emulate_meta
+
 
 def write_sav(path_sav, data, **kwargs):
     """

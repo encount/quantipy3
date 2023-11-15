@@ -4,24 +4,12 @@
 @author: Majeed.sahebzadha
 '''
 
-from pptx.enum.chart import(
-  XL_CHART_TYPE, 
-  XL_LABEL_POSITION, 
-  XL_LEGEND_POSITION, 
-  XL_TICK_MARK, 
-  XL_TICK_LABEL_POSITION
-  )
-from pptx.enum.dml import(
-  MSO_THEME_COLOR, 
-  MSO_COLOR_TYPE,
-  MSO_FILL
-  )
-from pptx.enum.text import(
-  PP_ALIGN,
-  MSO_AUTO_SIZE, 
-  MSO_ANCHOR
-  )
- 
+from pptx.enum.chart import (XL_CHART_TYPE, XL_LABEL_POSITION,
+                             XL_LEGEND_POSITION, XL_TICK_LABEL_POSITION,
+                             XL_TICK_MARK)
+from pptx.enum.dml import (MSO_FILL, MSO_THEME_COLOR)
+from pptx.enum.text import (MSO_ANCHOR, PP_ALIGN)
+
 #------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 

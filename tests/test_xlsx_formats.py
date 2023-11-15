@@ -1,4 +1,5 @@
 import unittest
+
 from quantipy.core.builds.excel.formats.xlsx_formats import XlsxFormats
 
 

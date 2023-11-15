@@ -1,11 +1,12 @@
-from .chain import Chain
 import pickle
 from collections import OrderedDict
+
 import pandas as pd
-import copy
-from quantipy.core.tools.view.query import get_dataframe
+
 from quantipy.core.helpers.functions import get_text
-import os
+from quantipy.core.tools.view.query import get_dataframe
+from .chain import Chain
+
 
 class Cluster(OrderedDict):
     """

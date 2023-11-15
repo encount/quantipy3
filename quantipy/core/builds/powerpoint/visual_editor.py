@@ -4,48 +4,22 @@
 @author: Majeed.sahebzadha
 '''
 
-
-import numpy as np
-import pandas as pd
-import re
-import time
-import os
-from collections import OrderedDict
 import json
+import os
 import pickle
+from collections import OrderedDict
+from os.path import (
+    basename,
+    dirname
+)
+
 from pptx import Presentation
-from pptx.chart.data import ChartData
+from pptx.util import (
+    Pt
+)
+
 from .add_shapes import *
 from .transformations import *
-from os.path import ( 
-    basename, 
-    dirname,
-    split
-    )
-from pptx.enum.chart import (
-    XL_CHART_TYPE, 
-    XL_LABEL_POSITION, 
-    XL_LEGEND_POSITION, 
-    XL_TICK_MARK, 
-    XL_TICK_LABEL_POSITION
-    )
-from pptx.util import (
-    Emu,
-    Pt,
-    Cm,
-    Inches
-    )
-from pptx.enum.dml import (
-    MSO_THEME_COLOR, 
-    MSO_COLOR_TYPE,
-    MSO_FILL
-    )
-from pptx.enum.text import (
-    PP_ALIGN,
-    MSO_AUTO_SIZE, 
-    MSO_ANCHOR
-    )
-
 
 pd.set_option('display.expand_frame_repr', False)
 

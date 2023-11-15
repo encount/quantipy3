@@ -1,10 +1,11 @@
 # encoding: utf-8
+import importlib
 import re
+import sys
 import warnings
+
 import numpy as np
 import pandas as pd
-import sys
-import importlib
 
 default_stdout = sys.stdout
 default_stderr = sys.stderr

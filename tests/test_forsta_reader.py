@@ -1,10 +1,11 @@
-import quantipy as qp
-import pandas as pd
 import json
-import pytest
 import os
+
+import pandas as pd
+import pytest
 from dotenv import load_dotenv
 
+import quantipy as qp
 
 load_dotenv()
 

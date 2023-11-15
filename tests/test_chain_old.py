@@ -1,15 +1,17 @@
-import unittest
 import os.path
-import tests.test_helper
+import unittest
+
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
+from pandas.util.version import Version
 
-from quantipy.core.stack import Stack
 from quantipy.core.chain import Chain
-from quantipy.core.link import Link
 from quantipy.core.helpers.functions import load_json
+from quantipy.core.link import Link
+from quantipy.core.stack import Stack
 from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.helpers import functions
+from quantipy.version import pandas_version
+
 
 @unittest.skip("Not yet supported in python 3")
 class TestChainObject(unittest.TestCase):
@@ -58,7 +60,7 @@ class TestChainObject(unittest.TestCase):
 
             # Confirm that the chains contain the same views
             sort_order = ['data', 'filter', 'x', 'y', 'view']
-            if pd.__version__ == '0.19.2':
+            if pandas_version >= Version('0.19.2'):
                 actual = chain_described.sort_values(sort_order).values.tolist()
                 expected = loaded_chain_described.sort_values(sort_order).values.tolist()
             else:

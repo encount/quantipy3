@@ -1,5 +1,6 @@
-from quantipy.core.tools.dp.forsta.api_requests import upload_surveys
 import json
+
+from quantipy.core.tools.dp.forsta.api_requests import upload_surveys
 
 
 def quantipy_to_forsta(self, projectid, public_url, idp_url, client_id, client_secret, schema_vars):

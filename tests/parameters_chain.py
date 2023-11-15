@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-import numpy as np
-
-from itertools import zip_longest, product
-from itertools import chain as ichain
+from itertools import chain as ichain, product, zip_longest
 from operator import add
+
+import numpy as np
 
 NAN = np.NaN
 AST = '*'

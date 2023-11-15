@@ -1,26 +1,14 @@
-import pandas as pd
-import numpy as np
-from scipy.stats.stats import _ttest_finish as get_pval
-from itertools import combinations, chain, product
-from collections import defaultdict, OrderedDict
-import quantipy as qp
-import pandas as pd
-import numpy as np
-from operator import add, sub, mul
-from operator import truediv as div
-from quantipy.core.view import View
-from quantipy.core.cache import Cache
-from quantipy.core.tools.view.logic import (
-    has_any, has_all, has_count,
-    not_any, not_all, not_count,
-    is_lt, is_ne, is_gt,
-    is_le, is_eq, is_ge,
-    union, intersection, get_logic_index)
-from quantipy.core.helpers.functions import emulate_meta
-from quantipy.core.tools.dp.prep import recode
-
 import copy
-import time
+from itertools import combinations, product
+
+import numpy as np
+import pandas as pd
+from scipy.stats.stats import _ttest_finish as get_pval
+
+import quantipy as qp
+from quantipy.core.tools.dp.prep import recode
+from quantipy.core.tools.view.logic import (get_logic_index, intersection,
+                                            not_count)
 
 np.seterr(invalid='ignore')
 

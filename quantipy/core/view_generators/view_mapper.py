@@ -1,10 +1,13 @@
-#-*- coding: utf-8 -*-
-import marshal
+# -*- coding: utf-8 -*-
 import copy
-from types import FunctionType
+import marshal
 from collections import OrderedDict
 from itertools import product
+from types import FunctionType
+
+# noinspection PyUnresolvedReferences
 import quantipy as qp
+
 
 class ViewMapper(OrderedDict):
     """
@@ -12,8 +15,9 @@ class ViewMapper(OrderedDict):
     kwargs, handling the coordination and structuring side of the aggregation
     process.
     """
+
     def __init__(self, views=None, template=None):
-        super(ViewMapper, self).__init__() # Initiate the ordered dict
+        super(ViewMapper, self).__init__()  # Initiate the ordered dict
 
         self.known_methods = OrderedDict()
         self.__init_known_methods__()
@@ -37,14 +41,18 @@ class ViewMapper(OrderedDict):
         # Reconstruct the View object after serialization
         for view_name in view_dict:
             kwargs = view_dict[view_name]['kwargs']
-            method_as_bytes = view_dict[view_name]['method'] # method stored as bytes
+            method_as_bytes = view_dict[view_name][
+                'method']  # method stored as bytes
 
             # Set the kwargs into the deserialized view
             self[view_name] = {'kwargs': kwargs}
 
             # Set the method into the deserialized view
-            method_as_string = marshal.loads(method_as_bytes) # Returns method as string
-            self[view_name]['method'] = FunctionType(code=method_as_string, globals=globals(), name=view_name)
+            method_as_string = marshal.loads(
+                method_as_bytes)  # Returns method as string
+            self[view_name]['method'] = FunctionType(code=method_as_string,
+                                                     globals=globals(),
+                                                     name=view_name)
 
     def __reduce__(self):
         class_type = self.__class__
@@ -57,7 +65,9 @@ class ViewMapper(OrderedDict):
                 view = self.pop(view_name)
                 kwargs = view['kwargs']
                 method = view['method']
-                setitem_dict[view_name] = {'method':marshal.dumps(method.__code__), 'kwargs':kwargs}
+                setitem_dict[view_name] = {
+                    'method': marshal.dumps(method.__code__), 'kwargs': kwargs
+                    }
 
         return (class_type, tuple(arguments), setitem_dict, None, None)
 
@@ -80,7 +90,10 @@ class ViewMapper(OrderedDict):
         view_method = eval('qp.QuantipyViews().' + method)
         if iterators is not None:
             template = {'method': view_method,
-                        'kwargs': {'iterators': {k: v for k, v in list(iterators.items())}}}
+                        'kwargs': {'iterators': {k: v for k, v in
+                                                 list(iterators.items())}
+                                   }
+                        }
         else:
             template = {'method': view_method, 'kwargs': {}}
         self.template = template
@@ -117,14 +130,14 @@ class ViewMapper(OrderedDict):
 
         if None in [name, method]:
             raise TypeError(
-                "You must provide a 'name' and 'method' to add_method(), \n"
-                "either directly in the method call or through a ViewMapper template. \n"
-                "You gave: \n"
-                "name: {name} \n"
-                "method: {method} \n".format(
-                    name=name,
-                    method=method
-                )
+                    "You must provide a 'name' and 'method' to add_method(), \n"
+                    "either directly in the method call or through a ViewMapper template. \n"
+                    "You gave: \n"
+                    "name: {name} \n"
+                    "method: {method} \n".format(
+                            name=name,
+                            method=method
+                    )
             )
 
         self[name] = {'method': method, 'kwargs': kwargs}
@@ -151,17 +164,18 @@ class ViewMapper(OrderedDict):
         valid_keys = self_keys.intersection(requested_keys)
         if not valid_keys:
             raise KeyError(
-                "None of the view keys you attempted to extract using 'subset' "
-                "were found in this ViewMapper instance. "
-                "You requested: %s, found: %s" % (views, list(self.keys()))
+                    "None of the view keys you attempted to extract using 'subset' "
+                    "were found in this ViewMapper instance. "
+                    "You requested: %s, found: %s" % (views, list(self.keys()))
             )
         if strict_selection:
             invalid_keys = requested_keys - self_keys
             if invalid_keys:
                 raise KeyError(
-                    "Some of the view keys you attempted to extract using 'subset' "
-                    "were not found in this ViewMapper instance. "
-                    "You requested: %s, found: %s" % (views, list(self.keys()))
+                        "Some of the view keys you attempted to extract using 'subset' "
+                        "were not found in this ViewMapper instance. "
+                        "You requested: %s, found: %s" % (
+                        views, list(self.keys()))
                 )
         subset = self.copy()
         for view in list(subset.keys()):
@@ -195,8 +209,8 @@ class ViewMapper(OrderedDict):
                 if x in meta[pos]:
                     x_type = meta[pos][x]['type']
 
-                if y.replace('@','') in meta[pos]:
-                    y_type = meta[pos][y.replace('@','')]['type']
+                if y.replace('@', '') in meta[pos]:
+                    y_type = meta[pos][y.replace('@', '')]['type']
 
             try:
                 if y_type in ["categorical set", "dichotomous set",
@@ -225,7 +239,7 @@ class ViewMapper(OrderedDict):
                 elif 'float' in dtype:
                     types.append('float')
                 elif 'object' in dtype:
-                    types.append('single') # 'single' uses value_counts
+                    types.append('single')  # 'single' uses value_counts
                 elif 'date' in dtype:
                     types.append('date')
                 elif 'time' in dtype:
@@ -318,8 +332,10 @@ class ViewMapper(OrderedDict):
                     method(link, name, kwargs)
 
     # Private
-    def __print_exception_message__(self,message, link, name):
-        print("Error generating View: '{name}', x: '{x}', y: '{y}'. Error : '{message}'.\n".format(name=name, x=link.x, y=link.y, message=message))
+    def __print_exception_message__(self, message, link, name):
+        print(
+            "Error generating View: '{name}', x: '{x}', y: '{y}'. Error : '{message}'.\n".format(
+                name=name, x=link.x, y=link.y, message=message))
 
     # "proxy" methods. The core class doesn't know any view methods but this method can be extended.
     def __init_custom_methods__(self):

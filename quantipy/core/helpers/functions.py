@@ -1,18 +1,18 @@
-import pandas as pd
-import numpy as np
-import json
-import pickle
-import re
 import copy
 import itertools
+import json
 import math
-import re, string
+import pickle
+import re
+import string
+from collections import OrderedDict
 
-from collections import OrderedDict, defaultdict
-from .constants import DTYPE_MAP
-from .constants import MAPPED_PATTERN
-from itertools import product
+import numpy as np
+import pandas as pd
+
 import quantipy as qp
+from .constants import DTYPE_MAP, MAPPED_PATTERN
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def load_json(path_json, hook=OrderedDict):

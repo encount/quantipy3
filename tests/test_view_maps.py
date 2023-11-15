@@ -1,19 +1,17 @@
 
 # import pdb;
-import unittest
 import os.path
+import unittest
+
 # import json
 import numpy as np
-import pandas as pd
 
-from collections import OrderedDict
-from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.view import View
-from quantipy.core.stack import Stack
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.tools.dp import io
-from quantipy.core.tools.view.query import get_dataframe
 from quantipy.core.helpers.functions import emulate_meta
+from quantipy.core.stack import Stack
+from quantipy.core.tools.dp import io
+from quantipy.core.view_generators.view_mapper import ViewMapper
+from quantipy.core.view_generators.view_maps import QuantipyViews
+
 
 @unittest.skip("Not yet supported in python 3")
 class TestViewObject(unittest.TestCase):
@@ -811,7 +809,7 @@ class TestViewObject(unittest.TestCase):
 
     ''' nps views: Test that verify nps views are calculated correctly '''
     def test_nps_single_on_delimited_no_w(self):
-        from operator import add, sub
+        from operator import sub
         views = QuantipyViews(['counts', 'cbase'])
         x = 'q1'
         y = 'q9'
@@ -1441,7 +1439,7 @@ class TestViewObject(unittest.TestCase):
                          means_result)
 
     def test_props_blocknet_calc_incl_total(self):
-        from operator import add, sub
+        from operator import sub
         views = ['counts']
         x, y = 'q7_1', 'q8'
         self.setup_stack(

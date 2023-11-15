@@ -1,24 +1,13 @@
-import pandas as pd
-import numpy as np
-import json
-import re
-import copy
-import itertools
 import math
-import re, string
+from collections import defaultdict
+from itertools import combinations
 
-from collections import OrderedDict, defaultdict
-from quantipy.core.helpers.constants import DTYPE_MAP
-from quantipy.core.helpers.constants import MAPPED_PATTERN
-from itertools import product, combinations
+import numpy as np
+import pandas as pd
 from scipy.stats.stats import _ttest_finish as get_pval
-from operator import add, sub, mul, truediv
 
-from quantipy.core.view import View
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.helpers import functions
 from quantipy.core.tools.view import struct
-import quantipy.core.tools.dp.prep
+
 
 def describe(data, x, weights=None):
     ''' Replacment of (wrapper around) the df.describe() method that can deal with

@@ -1,9 +1,9 @@
-import pdb;
+import json
 import unittest
-import os.path
+
 import numpy
 import pandas as pd
-import json
+
 from quantipy.core.weights.rim import Rim
 from quantipy.core.weights.weight_engine import WeightEngine
 

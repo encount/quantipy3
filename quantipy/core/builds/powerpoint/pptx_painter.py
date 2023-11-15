@@ -7,50 +7,29 @@
 
 import copy
 import time
+from collections import OrderedDict
+from os import path
+
 import numpy as np
 import pandas as pd
-import quantipy as qp
-from os import path
-from collections import OrderedDict
 from pptx import Presentation
+
+from quantipy.core.builds.powerpoint.add_shapes import (add_net, add_textbox,
+                                                        chart_selector)
+from quantipy.core.builds.powerpoint.transformations import (auto_sort,
+                                                             df_splitter,
+                                                             get_base,
+                                                             partition_view_df,
+                                                             rename_label,
+                                                             round_df_cells,
+                                                             strip_html_tags,
+                                                             validate_cluster_orientations)
+from quantipy.core.builds.powerpoint.visual_editor import (
+    return_slide_layout_by_name)
 from quantipy.core.cluster import Cluster
-from quantipy.core.chain import Chain
-from quantipy.core.helpers.functions import(
+from quantipy.core.helpers.functions import (
     finish_text_key,
     paint_view)
-from quantipy.core.builds.powerpoint.add_shapes import(
-    chart_selector,
-    add_stacked_bar_chart,
-    add_textbox,
-    add_net)
-from quantipy.core.builds.powerpoint.transformations import(
-    is_grid_element,
-    get_base,
-    validate_cluster_orientations,
-    drop_hidden_codes,
-    partition_view_df,
-    strip_html_tags,
-    rename_label,
-    df_splitter,
-    auto_sort,
-    round_df_cells)
-from quantipy.core.builds.powerpoint.visual_editor import(
-    return_slide_layout_by_name)
-from pptx.enum.text import(
-  PP_ALIGN,
-  MSO_AUTO_SIZE,
-  MSO_ANCHOR
-  )
-from pptx.util import(
-    Emu,
-    Pt,
-    Cm,
-    Inches
-    )
-from quantipy.core.builds.powerpoint.add_shapes import (
-    percentage_of_num,
-    get_cht_plot_height,
-    get_upper_cht_plot_gap)
 
 thisdir = path.split(__file__)[0]
 

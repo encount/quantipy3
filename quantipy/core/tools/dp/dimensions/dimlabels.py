@@ -4,11 +4,6 @@
 Created on 21 Nov 2017
 """
 
-import json
-import pandas as pd
-import numpy as np
-import quantipy as qp
-
 qp_dim_languages = {
 	'en-GB': 'ENG',
 	'sv-SE': 'SVE',

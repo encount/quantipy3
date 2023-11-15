@@ -1,6 +1,8 @@
 
-from decorator import decorator
 from inspect import getfullargspec as getargspec
+
+from decorator import decorator
+
 
 # ------------------------------------------------------------------------
 # decorators

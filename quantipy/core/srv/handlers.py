@@ -1,8 +1,8 @@
-import http.server
-import urllib.parse
 import cgi
+import http.server
 
-from .core import shutdown_server, save_string_in_tmp_folder
+from .core import save_string_in_tmp_folder, shutdown_server
+
 
 class WebEditHandler(http.server.SimpleHTTPRequestHandler):
 

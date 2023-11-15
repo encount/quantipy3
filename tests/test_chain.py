@@ -1,17 +1,14 @@
 
-import pytest
 import os
-import time
-import pandas as pd
+
 import numpy as np
-import quantipy as qp
-from itertools import count
-
-from quantipy.sandbox.sandbox import ChainManager
-
+import pandas as pd
+import pytest
 from pandas.util.testing import assert_frame_equal, assert_index_equal
 
+import quantipy as qp
 import tests.parameters_chain as parameters
+from quantipy.sandbox.sandbox import ChainManager
 
 # -----------------------------------------------------------------------------
 PATH_DATA = './tests/'

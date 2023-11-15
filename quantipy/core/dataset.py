@@ -1,58 +1,39 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import numpy as np
-import pandas as pd
-import quantipy as qp
-
-from quantipy.core.tools.dp.io import (
-    read_quantipy as r_quantipy,
-    read_dimensions as r_dimensions,
-    read_decipher as r_decipher,
-    read_spss as r_spss,
-    read_ascribe as r_ascribe,
-    read_forsta_from_files as r_forsta_from_files,
-    read_forsta_api as r_forsta_api,
-    write_forsta_api as w_forsta_api,
-    write_spss as w_spss,
-    write_quantipy as w_quantipy,
-    write_dimensions as w_dimensions)
-
-from quantipy.core.helpers.functions import (
-    filtered_set,
-    emulate_meta)
-
-from quantipy.core.tools.qp_decorators import *
-
-from quantipy.core.tools.view.logic import (
-    has_any, has_all, has_count,
-    not_any, not_all, not_count,
-    is_lt, is_ne, is_gt,
-    is_le, is_eq, is_ge,
-    union, intersection, get_logic_index)
-
-from quantipy.core.tools.dp.prep import (
-    hmerge as _hmerge,
-    vmerge as _vmerge,
-    recode as _recode,
-    frequency as fre,
-    crosstab as ct,
-    frange,
-    index_mapper)
-
-from .cache import Cache
-
-from quantipy.sandbox.sandbox import ChainManager
-
 import copy as org_copy
 import json
-import warnings
-import re
-import time
-import sys
 import os
-from itertools import product, chain
-from collections import OrderedDict, Counter
-import importlib
+import re
+import sys
+import time
+import warnings
+from collections import Counter, OrderedDict
+from itertools import product
+
+import numpy as np
+import pandas as pd
+
+import quantipy as qp
+from quantipy.core.helpers.functions import (emulate_meta, filtered_set)
+from quantipy.core.tools.dp.io import (read_ascribe as r_ascribe,
+                                       read_dimensions as r_dimensions,
+                                       read_forsta_api as r_forsta_api,
+                                       read_forsta_from_files as r_forsta_from_files,
+                                       read_quantipy as r_quantipy,
+                                       read_spss as r_spss,
+                                       write_dimensions as w_dimensions,
+                                       write_forsta_api as w_forsta_api,
+                                       write_quantipy as w_quantipy,
+                                       write_spss as w_spss)
+from quantipy.core.tools.dp.prep import (frange, hmerge as _hmerge,
+                                         index_mapper, recode as _recode,
+                                         vmerge as _vmerge)
+from quantipy.core.tools.qp_decorators import *
+from quantipy.core.tools.view.logic import (get_logic_index, has_all, has_any,
+                                            has_count, intersection, is_ge,
+                                            not_count, union)
+from quantipy.sandbox.sandbox import ChainManager
+from .cache import Cache
 
 VALID_TKS = [
     'en-GB', 'en-US', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS', 'fr-FR', 'ar-AR',

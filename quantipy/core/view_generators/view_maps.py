@@ -1,32 +1,15 @@
 #-*- coding: utf-8 -*-
-from .view_mapper import ViewMapper
-from quantipy.core.view import View
-
-import pandas as pd
-import numpy as np
-import copy
-import traceback
 import warnings
-from collections import defaultdict
-from itertools import combinations
-from operator import add, sub, mul
-from operator import truediv as div
 
-from quantipy.core.tools.view.logic import (
-    has_any, has_all, has_count,
-    not_any, not_all, not_count,
-    is_lt, is_ne, is_gt,
-    is_le, is_eq, is_ge,
-    union, intersection, get_logic_index)
-
-from quantipy.core.helpers import functions as helpers
-import quantipy.core.tools as tools
 import quantipy as qp
-
-from quantipy.core.cache import Cache
+import quantipy.core.tools as tools
 from quantipy.core.quantify.engine import Level
+from quantipy.core.tools.view.logic import (
+    not_count)
+from quantipy.core.view import View
+from .view_mapper import ViewMapper
 
-import time
+
 class QuantipyViews(ViewMapper):
     """
     A collection of extendable MR aggregation and statistic methods.

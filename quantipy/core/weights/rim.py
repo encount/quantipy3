@@ -1,20 +1,9 @@
 
-import pandas as pd
-import numpy as np
-import io
 import re
-import itertools
-import pdb
-import copy
 import warnings
-import time
 
-from quantipy.core.tools.view.logic import (
-    has_any, has_all, has_count,
-    not_any, not_all, not_count,
-    is_lt, is_ne, is_gt,
-    is_le, is_eq, is_ge,
-    union, intersection, get_logic_index)
+import numpy as np
+import pandas as pd
 
 
 class Rim:

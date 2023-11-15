@@ -2,7 +2,8 @@ import json
 import webbrowser
 from collections import OrderedDict
 
-from .core import start_server, copy_html_template, open_tmp_file, cleanup_tmp_folder
+from .core import cleanup_tmp_folder, copy_html_template, open_tmp_file, \
+    start_server
 from .handlers import WebEditHandler
 
 

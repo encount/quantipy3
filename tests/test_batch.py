@@ -1,18 +1,12 @@
-import unittest
 import os.path
-import numpy as np
-import pandas as pd
-import quantipy as qp
-
-from quantipy.core.tools.view.logic import (
-    has_any, has_all, has_count,
-    not_any, not_all, not_count,
-    is_lt, is_ne, is_gt,
-    is_le, is_eq, is_ge,
-    union, intersection)
-
-from quantipy.core.tools.dp.prep import frange
+import unittest
 from collections import OrderedDict
+
+import quantipy as qp
+from quantipy.core.tools.dp.prep import frange
+from quantipy.core.tools.view.logic import (
+	is_ge)
+
 
 def _get_dataset():
 	path = os.path.dirname(os.path.abspath(__file__)) + '/'

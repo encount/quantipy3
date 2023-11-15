@@ -5,27 +5,28 @@ Created on 19 Nov 2014
 @author: alasdaire
 '''
 
+import itertools
+import os
+import pickle
+import re
+from collections import OrderedDict
+from io import BytesIO
+from string import ascii_uppercase
+
 import numpy as np
 import pandas as pd
-import quantipy as qp
-from quantipy.core.cluster import Cluster
-from quantipy.core.chain import Chain
-from quantipy.core.helpers import functions as helpers
-from quantipy.core.tools.dp.io import unicoder
-from quantipy.core.builds.excel.formats.xlsx_formats import XlsxFormats
-import quantipy.core.cluster
+import requests
+from PIL import Image
 from xlsxwriter import Workbook
 from xlsxwriter.utility import xl_rowcol_to_cell
-import os
-from string import ascii_uppercase
-from collections import OrderedDict, Counter
-from warnings import warn
-from PIL import Image
-import requests
-from io import BytesIO
-import pickle
-import itertools
-import re
+
+import quantipy as qp
+import quantipy.core.cluster
+from quantipy.core.builds.excel.formats.xlsx_formats import XlsxFormats
+from quantipy.core.chain import Chain
+from quantipy.core.cluster import Cluster
+from quantipy.core.helpers import functions as helpers
+from quantipy.core.tools.dp.io import unicoder
 
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 TEST_SUFFIX = list(ascii_uppercase)

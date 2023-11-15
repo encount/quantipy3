@@ -1,19 +1,5 @@
 import pandas as pd
-import numpy as np
-import json
-import re
-import copy
-import itertools
-import math
-import re, string
 
-from collections import OrderedDict
-from quantipy.core.helpers.constants import DTYPE_MAP
-from quantipy.core.helpers.constants import MAPPED_PATTERN
-from itertools import product
-from quantipy.core.view import View
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.helpers import functions
 
 def set_view_df_layout(df, x, y, new_names=None, names_to=None, inherit_codes_from=None, codes_to=None):
     '''

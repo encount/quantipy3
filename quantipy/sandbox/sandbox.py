@@ -1,16 +1,15 @@
 #  -*- coding: utf-8 -*-
 
+import pickle
+import string
+
 import numpy as np
 import pandas as pd
-import quantipy as qp
 
+import quantipy as qp
 
 # from matplotlib import pyplot as plt
 # import matplotlib.image as mpimg
-
-import string
-import pickle
-import warnings
 
 
 try:
@@ -23,21 +22,10 @@ from quantipy.core.cache import Cache
 from quantipy.core.view import View
 from quantipy.core.view_generators.view_mapper import ViewMapper
 from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.helpers.functions import emulate_meta
-from quantipy.core.tools.view.logic import (has_any, has_all, has_count,
-                                            not_any, not_all, not_count,
-                                            is_lt, is_ne, is_gt,
-                                            is_le, is_eq, is_ge,
-                                            union, intersection, get_logic_index)
-from quantipy.core.helpers.functions import (paint_dataframe,
-                                             emulate_meta,
-                                             get_text,
-                                             finish_text_key)
+from quantipy.core.tools.view.logic import (intersection, get_logic_index)
+from quantipy.core.helpers.functions import (emulate_meta)
 from quantipy.core.tools.dp.prep import recode
 from quantipy.core.tools.qp_decorators import lazy_property
-
-from operator import add, sub, mul
-from operator import truediv as div
 
 from scipy.stats.stats import _ttest_finish as get_pval
 from scipy.stats import chi2 as chi2dist
@@ -51,10 +39,7 @@ try:
 except:
     pass
 
-import json
 import copy
-import time
-import sys
 import re
 
 

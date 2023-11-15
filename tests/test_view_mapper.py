@@ -1,16 +1,13 @@
-import pdb;
 import unittest
-import os.path
-import numpy as np
-import pandas as pd
-import json
+import unittest
 
-from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.stack import Stack
-from quantipy.core.link import Link
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.helpers import functions
+import pandas as pd
+
 from quantipy.core.helpers.functions import load_json
+from quantipy.core.stack import Stack
+from quantipy.core.view_generators.view_mapper import ViewMapper
+from quantipy.core.view_generators.view_maps import QuantipyViews
+
 
 @unittest.skip("Not yet supported in python 3")
 class TestViewObject(unittest.TestCase):
