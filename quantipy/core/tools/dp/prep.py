@@ -6,15 +6,13 @@ import numpy as np
 import pandas as pd
 
 import quantipy as qp
-from quantipy.core.helpers.functions import (cpickle_copy, emulate_meta,
-                                             get_rules, get_rules_slicer,
-                                             paint_dataframe)
-from quantipy.core.rules import Rules
-from quantipy.core.tools.dp.query import uniquify_list
-from quantipy.core.tools.view.logic import (get_logic_index, has_any,
-                                            intersection)
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
+from .query import uniquify_list
+from ..view.logic import get_logic_index, has_any, intersection
+from ...helpers.functions import cpickle_copy, emulate_meta, get_rules, \
+    get_rules_slicer, paint_dataframe
+from ...rules import Rules
+from ....dependency_versions import __pandas_version_parsed__
+from ....significant_dependency_versions import \
     pd_df_concat_axis_1_supports_ignore_index
 
 

@@ -4,10 +4,10 @@ Excel cell formats
 
 import re
 
-from quantipy.core.tools.qp_decorators import lazy_property
 from .excel_formats_constants import (_ATTRIBUTES,
                                       _DEFAULT_ATTRIBUTES,
                                       _VIEWS_GROUPS)
+from ..core.tools.qp_decorators import lazy_property
 
 try:
     from functools import lru_cache

@@ -5,8 +5,8 @@ import re
 import numpy as np
 import pandas as pd
 
-from quantipy.core.helpers.functions import load_json
-from quantipy.core.tools.dp.prep import start_meta
+from ..prep import start_meta
+from ....helpers.functions import load_json
 
 
 def manage_decipher_quota_variables(meta, data, quotas):

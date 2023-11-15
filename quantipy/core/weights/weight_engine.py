@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-from quantipy.core.dataset import DataSet
+from ..dataset import DataSet
 
 
 class WeightEngine:
@@ -161,7 +161,7 @@ class WeightEngine:
                     raise Exception(("Scheme '%s' not found." % scheme))
         else:
             raise ValueError(('schemes must be of type %s NOT %s ') % (
-            type([]), type(scheme)))
+                type([]), type(scheme)))
 
     def report(self, scheme, group=None):
         report = self.schemes[scheme][self._SCHEME].report(group)

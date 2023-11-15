@@ -6,8 +6,9 @@ import pyreadstat
 from pandas.util.version import Version
 
 import savReaderWriter as sr
-from quantipy.core.tools.dp.prep import condense_dichotomous_set, start_meta
-
+from ..prep import condense_dichotomous_set, start_meta
+from .....dependency_versions import __numpy_version_parsed__
+from .....significant_dependency_versions import np_np_object_deprecated
 
 def parse_sav_file(filename, path=None, name="", ioLocale="en_US.UTF-8",
                    ioUtf8=True, dichot=None,
@@ -51,7 +52,7 @@ dates_as_strings : bool, default=False
 def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True,
                      engine='savReaderWriter'):
     """See parse_sav_file doc."""
-    if Version(np.__version__) >= Version('1.20.0'):
+    if __numpy_version_parsed__ >= np_np_object_deprecated:
         np_object = object
     else:
         np_object = np.object
@@ -72,11 +73,11 @@ def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True,
                     if len(values) > 0:
                         if isinstance(values[0], str):
                             dataframe[column] = dataframe[column].dropna().map(
-                                str.strip)
+                                    str.strip)
                         elif isinstance(values[0], str):
                             # savReaderWriter casts dates to str
                             dataframe[column] = dataframe[column].dropna().map(
-                                str.strip)
+                                    str.strip)
                             # creating DATETIME objects should happen here
             return dataframe
     elif engine == 'readstat':
@@ -141,7 +142,7 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
             # add the variable label to the meta
             meta['columns'][column]['text'] = {
                 text_key: metadata.column_labels[index]
-                }
+            }
         return meta, data
 
     elif engine == 'savReaderWriter':
@@ -213,14 +214,14 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                                 # Float AND Int because savReaderWriter loads them both as float64
                                 meta['columns'][column]['text'] = {
                                     text_key: [column]
-                                    }
+                                }
                                 meta['columns'][column]['type'] = "float"
                                 if (data[column].dropna() % 1).sum() == 0:
                                     if (data[column].dropna() % 1).unique() == [
                                         0]:
                                         try:
                                             data[column] = data[column].astype(
-                                                'int')
+                                                    'int')
                                         except:
                                             pass
                                         meta['columns'][column]['type'] = "int"
@@ -230,7 +231,7 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                                 # Strings
                                 meta['columns'][column]['text'] = {
                                     text_key: [column]
-                                    }
+                                }
                                 meta['columns'][column]['type'] = "string"
 
             if column in metadata.varTypes:
@@ -252,7 +253,7 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
             if column in metadata.varLabels:
                 meta['columns'][column]['text'] = {
                     text_key: metadata.varLabels[column]
-                    }
+                }
 
         for mrset in metadata.multRespDefs:
             # meta['masks'][mrset] = {}

@@ -13,22 +13,13 @@ import numpy as np
 import pandas as pd
 from pptx import Presentation
 
-from quantipy.core.builds.powerpoint.add_shapes import (add_net, add_textbox,
-                                                        chart_selector)
-from quantipy.core.builds.powerpoint.transformations import (auto_sort,
-                                                             df_splitter,
-                                                             get_base,
-                                                             partition_view_df,
-                                                             rename_label,
-                                                             round_df_cells,
-                                                             strip_html_tags,
-                                                             validate_cluster_orientations)
-from quantipy.core.builds.powerpoint.visual_editor import (
-    return_slide_layout_by_name)
-from quantipy.core.cluster import Cluster
-from quantipy.core.helpers.functions import (
-    finish_text_key,
-    paint_view)
+from .add_shapes import add_net, add_textbox, chart_selector
+from .transformations import auto_sort, df_splitter, get_base, \
+    partition_view_df, rename_label, round_df_cells, strip_html_tags, \
+    validate_cluster_orientations
+from .visual_editor import return_slide_layout_by_name
+from ...cluster import Cluster
+from ...helpers.functions import finish_text_key, paint_view
 
 thisdir = path.split(__file__)[0]
 

@@ -6,10 +6,9 @@ from operator import add, mul, sub, truediv as div
 
 import pandas as pd
 
-from quantipy.core.tools.qp_decorators import modify
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
-    pd_df_sort_index_by_deprecated
+from ..tools.qp_decorators import modify
+from ...dependency_versions import __pandas_version_parsed__
+from ...significant_dependency_versions import pd_df_sort_index_by_deprecated
 
 
 class ViewManager(object):

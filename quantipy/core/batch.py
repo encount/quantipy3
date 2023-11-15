@@ -5,13 +5,12 @@ import warnings
 from collections import OrderedDict
 
 import pandas as pd
-from pandas.util.version import Version
 
 import quantipy as qp
-from quantipy.core.tools.qp_decorators import *
-from quantipy.core.tools.view.logic import (
-    get_logic_index)
-from quantipy.dependency_versions import __pandas_version_parsed__
+from .tools.qp_decorators import modify, verify
+from .tools.view.logic import get_logic_index
+from ..dependency_versions import __pandas_version_parsed__
+from ..significant_dependency_versions import pd_df_removed_ix
 
 
 def meta_editor(self, dataset_func):
@@ -97,9 +96,6 @@ def not_implemented(dataset_func):
         raise NotImplementedError(err_msg)
 
     return _unallowed_inherited_method
-
-
-_pandas_ix_removed_version = Version('1.0.0')
 
 
 class Batch(qp.DataSet):
@@ -569,7 +565,7 @@ class Batch(qp.DataSet):
         """
         slicer = self.manifest_filter(self.filter)
 
-        if __pandas_version_parsed__ >= _pandas_ix_removed_version:
+        if __pandas_version_parsed__ >= pd_df_removed_ix:
             data = self._data.copy().loc[slicer, name]
         else:
             data = self._data.copy().ix[slicer, name]
@@ -875,7 +871,7 @@ class Batch(qp.DataSet):
         if dupes:
             raise ValueError(
                     "'{}' included in oe and break_by.".format(
-                        "', '".join(dupes)))
+                            "', '".join(dupes)))
 
         def _add_oe(oe, break_by, title, drop_empty, incl_nan, filter_by,
                     overwrite):

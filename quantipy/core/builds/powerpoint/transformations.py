@@ -10,10 +10,9 @@ from math import ceil
 import numpy as np
 import pandas as pd
 
-from quantipy.core.helpers import functions as helpers
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
-    pd_df_sort_deprecated
+from ...helpers import functions as helpers
+from ....dependency_versions import __pandas_version_parsed__
+from ....significant_dependency_versions import pd_df_sort_deprecated
 
 ''' Simplified access to, and manipulation of, the pandas dataframe.
     Contains various helper functions.

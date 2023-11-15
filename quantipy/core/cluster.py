@@ -3,9 +3,9 @@ from collections import OrderedDict
 
 import pandas as pd
 
-from quantipy.core.helpers.functions import get_text
-from quantipy.core.tools.view.query import get_dataframe
 from .chain import Chain
+from .helpers.functions import get_text
+from .tools.view.query import get_dataframe
 
 
 class Cluster(OrderedDict):

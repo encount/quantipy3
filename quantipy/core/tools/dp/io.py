@@ -8,16 +8,16 @@ import numpy as np
 import pandas as pd
 from ftfy import fix_text
 
-from quantipy.core.helpers.constants import DTYPE_MAP
-from quantipy.core.tools.dp.ascribe.reader import quantipy_from_ascribe
-from quantipy.core.tools.dp.decipher.reader import quantipy_from_decipher
-from quantipy.core.tools.dp.dimensions.reader import quantipy_from_dimensions
-from quantipy.core.tools.dp.dimensions.writer import dimensions_from_quantipy
-from quantipy.core.tools.dp.forsta.reader import quantipy_from_forsta
-from quantipy.core.tools.dp.forsta.writer import quantipy_to_forsta
-from quantipy.core.tools.dp.spss.reader import parse_sav_file
-from quantipy.core.tools.dp.spss.writer import save_sav
+from .ascribe.reader import quantipy_from_ascribe
+from .decipher.reader import quantipy_from_decipher
+from .dimensions.reader import quantipy_from_dimensions
+from .dimensions.writer import dimensions_from_quantipy
 from .forsta.api_requests import get_surveys
+from .forsta.reader import quantipy_from_forsta
+from .forsta.writer import quantipy_to_forsta
+from .spss.reader import parse_sav_file
+from .spss.writer import save_sav
+from ...helpers.constants import DTYPE_MAP
 
 
 def make_like_ascii(text):

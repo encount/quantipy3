@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 
 import quantipy as qp
-from quantipy.core.tools.dp.prep import frange
-from quantipy.core.tools.qp_decorators import *
+from .dp.prep import frange
+from .qp_decorators import
 
 VALID_CONVERT = {'float':
                      ['single', 'int', 'float'],

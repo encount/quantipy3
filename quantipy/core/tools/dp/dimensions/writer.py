@@ -7,9 +7,8 @@ import os
 
 import numpy as np
 
-from quantipy.core.helpers.functions import (get_mapped_meta, is_mapped_meta)
-from quantipy.core.tools.dp.dimensions.dimlabels import (DimLabels,
-                                                         qp_dim_languages)
+from .dimlabels import DimLabels, qp_dim_languages
+from ....helpers.functions import get_mapped_meta, is_mapped_meta
 
 QTYPES = {
     'single': 'mr.Categorical',

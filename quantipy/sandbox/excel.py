@@ -13,9 +13,9 @@ from xlsxwriter import Workbook
 from xlsxwriter.utility import xl_rowcol_to_cell
 from xlsxwriter.worksheet import Worksheet
 
-from quantipy.core.tools.qp_decorators import lazy_property
 from .excel_formats import ExcelFormats, _Format
 from .excel_formats_constants import _DEFAULTS, _VIEWS_GROUPS
+from ..core.tools.qp_decorators import lazy_property
 
 try:
     from functools import lru_cache

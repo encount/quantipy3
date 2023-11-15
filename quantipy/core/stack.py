@@ -14,21 +14,20 @@ import numpy as np
 import pandas as pd
 
 import quantipy as qp
-from quantipy.core.tools.dp.io import unicoder, write_quantipy
-from quantipy.core.tools.dp.prep import frange, frequency, verify_test_results
-from quantipy.core.tools.dp.spss.reader import parse_sav_file
-from quantipy.core.tools.qp_decorators import modify
-from quantipy.core.tools.view.logic import (has_count, intersection, not_any,
-                                            not_count)
-from quantipy.sandbox.sandbox import ChainManager
 from .cache import Cache
 from .chain import Chain
 from .helpers import functions
 from .link import Link
+from .tools.dp.io import unicoder, write_quantipy
+from .tools.dp.prep import frange, frequency, verify_test_results
+from .tools.dp.spss.reader import parse_sav_file
+from .tools.qp_decorators import modify
+from .tools.view.logic import has_count, intersection, not_any, not_count
 from .view import View
 from .view_generators.view_mapper import ViewMapper
 from .view_generators.view_maps import QuantipyViews
 from ..dependency_versions import __pandas_version_parsed__
+from ..sandbox.sandbox import ChainManager
 from ..significant_dependency_versions import pd_df_sort_index_by_deprecated
 
 

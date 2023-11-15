@@ -3,11 +3,10 @@ import warnings
 
 import quantipy as qp
 import quantipy.core.tools as tools
-from quantipy.core.quantify.engine import Level
-from quantipy.core.tools.view.logic import (
-    not_count)
-from quantipy.core.view import View
 from .view_mapper import ViewMapper
+from ..quantify.engine import Level
+from ..tools.view.logic import not_count
+from ..view import View
 
 
 class QuantipyViews(ViewMapper):
@@ -536,7 +535,7 @@ class QuantipyViews(ViewMapper):
                 view_df = test.run()
                 notation = view.notation('t.{}.{}.{}{}'.format(metric, mimic,
                                                                '{:.2f}'.format(
-                                                                   test.level)[
+                                                                       test.level)[
                                                                2:],
                                                                '+@' if test_total else ''),
                                          condition)

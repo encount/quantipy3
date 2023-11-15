@@ -13,21 +13,16 @@ import pandas as pd
 from scipy.stats import chi2 as chi2dist, f as fdist
 
 import quantipy as qp
-import quantipy.dependency_versions
-from quantipy.core.cache import Cache
-from quantipy.core.helpers.functions import (emulate_meta)
-from quantipy.core.rules import Rules
-from quantipy.core.tools.dp.prep import recode
-from quantipy.core.tools.qp_decorators import lazy_property
-from quantipy.core.tools.view.logic import (get_logic_index, intersection)
-from quantipy.core.view import View
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.significant_dependency_versions import \
-    scipy_made__ttest_finish_private
-
-# from matplotlib import pyplot as plt
-# import matplotlib.image as mpimg
+from ..core.cache import Cache
+from ..core.helpers.functions import emulate_meta
+from ..core.rules import Rules
+from ..core.tools.dp.prep import recode
+from ..core.tools.qp_decorators import lazy_property
+from ..core.tools.view.logic import get_logic_index, intersection
+from ..core.view_generators.view_mapper import ViewMapper
+from ..core.view_generators.view_maps import QuantipyViews
+from ..dependency_versions import __scipy_version_parsed__
+from ..significant_dependency_versions import scipy_made__ttest_finish_private
 
 try:
     import seaborn as sns
@@ -40,7 +35,7 @@ try:
 except:
     pass
 
-if quantipy.dependency_versions.__scipy_version_parsed__ >= scipy_made__ttest_finish_private:
+if __scipy_version_parsed__ >= scipy_made__ttest_finish_private:
     from scipy.stats._stats_py import _ttest_finish as get_pval
 else:
     from scipy.stats.stats import _ttest_finish as get_pval
@@ -479,7 +474,7 @@ class ChainManager(object):
         """
         if not isinstance(other_cm, ChainManager):
             raise ValueError(
-                "other_cm must be a quantipy.ChainManager instance.")
+                    "other_cm must be a quantipy.ChainManager instance.")
         if not index == -1:
             before_c = self.__chains[:index + 1]
             after_c = self.__chains[index + 1:]
@@ -1056,16 +1051,16 @@ class ChainManager(object):
                         if axis == 'x':
                             df.rename(index=rename_dict, inplace=True)
                             df.index.names = ['Question', 'Values'] * (
-                                        levels / 2)
+                                    levels / 2)
                         else:
                             df.rename(columns=rename_dict, inplace=True)
                             if sigtested:
                                 df.columns.names = (['Question', 'Values'] * (
-                                            levels / 2) +
+                                        levels / 2) +
                                                     ['Test-IDs'])
                             else:
                                 df.columns.names = ['Question', 'Values'] * (
-                                            levels / 2)
+                                        levels / 2)
             return None
 
         def split_tab(tab):
@@ -1154,8 +1149,8 @@ class ChainManager(object):
                                 invalid = ['-', '*', '**']
                                 df = df.applymap(
                                         lambda x: float(
-                                            x.replace(',', '.').replace('%',
-                                                                        ''))
+                                                x.replace(',', '.').replace('%',
+                                                                            ''))
                                         if isinstance(x,
                                                       str) and not x in invalid
                                         else x
@@ -1419,7 +1414,7 @@ class ChainManager(object):
                             'bases': 'both' if len(weight) == 2 else 'auto',
                             'cell_items': check_cell_items(views),
                             'tests': check_sigtest(views)
-                            }
+                        }
                     cluster_defs.append(cluster_def)
             return cluster_defs
 
@@ -1684,10 +1679,10 @@ class ChainAnnotations(dict):
                     msg = "'{}' is not a valid annotation type!".format(key)
                 elif acat not in VALID_ANNOT_CATS:
                     msg = "'{}' is not a valid annotation category!".format(
-                        acat)
+                            acat)
                 elif apos not in VALID_ANNOT_POS:
                     msg = "'{}' is not a valid annotation position!".format(
-                        apos)
+                            apos)
             else:
                 msg = "'{}' is not a valid annotation type!".format(key)
             raise KeyError(msg)
@@ -1923,7 +1918,7 @@ class Chain(object):
     def __str__(self):
         if self.structure is not None:
             return '%s...\n%s' % (
-            self.__class__.__name__, str(self.structure.head()))
+                self.__class__.__name__, str(self.structure.head()))
 
         str_format = ('%s...'
                       '\nSource:          %s'
@@ -1947,7 +1942,7 @@ class Chain(object):
     def __len__(self):
         """Returns the total number of cells in the Chain.dataframe"""
         return (len(getattr(self, 'index', [])) * len(
-            getattr(self, 'columns', [])))
+                getattr(self, 'columns', [])))
 
     def clone(self):
         """
@@ -2172,7 +2167,7 @@ class Chain(object):
         cd = CELL_DETAILS[lang]
         ci = self.cell_items
         cd_str = '%s (%s)' % (
-        cd['cc'], ', '.join([cd[_] for _ in self._ci_simple]))
+            cd['cc'], ', '.join([cd[_] for _ in self._ci_simple]))
         against_total = False
         if self.sig_test_letters:
             mapped = ''
@@ -2200,7 +2195,7 @@ class Chain(object):
             for key in ('props', 'means'):
                 for level in self.sig_levels.get(key, iter(())):
                     l = '%s%%' % int(
-                        100. - float(level.split('+@')[0].split('.')[1]))
+                            100. - float(level.split('+@')[0].split('.')[1]))
                     if l not in levels:
                         levels.append(l)
                     if '+@' in level:
@@ -2208,14 +2203,14 @@ class Chain(object):
 
             cd_str = cd_str[:-1] + ', ' + cd['str'] + '), '
             cd_str += '%s (%s, (%s): %s' % (
-            cd['stats'], test_types, ', '.join(levels), mapped)
+                cd['stats'], test_types, ', '.join(levels), mapped)
             if self._flag_bases:
                 flags = ([], [])
                 [(flags[0].append(min), flags[1].append(small)) for min, small
                  in self._flag_bases]
                 cd_str += ', %s: %s (**), %s: %s (*)' % (
-                cd['mb'], ', '.join(map(str, flags[0])),
-                cd['sb'], ', '.join(map(str, flags[1])))
+                    cd['mb'], ', '.join(map(str, flags[0])),
+                    cd['sb'], ', '.join(map(str, flags[1])))
             cd_str += ')'
 
         cd_str = [cd_str]
@@ -2738,7 +2733,7 @@ class Chain(object):
         for idx, m in enumerate(idx_view_map):
             if idx_view_map[idx][0] == '':
                 idx_view_map[idx] = (
-                idx_view_map[idx - 1][0], idx_view_map[idx][1])
+                    idx_view_map[idx - 1][0], idx_view_map[idx][1])
         for idx, row in enumerate(description):
             if not 'is_block' in row:
                 idx_view_map[idx] = None
@@ -3073,7 +3068,7 @@ class Chain(object):
                         if not statname in self._custom_texts:
                             self._custom_texts[statname] = []
                         self._custom_texts[statname].append(
-                            link[view]._custom_txt)
+                                link[view]._custom_txt)
 
                     if is_descriptive:
                         text = agg['name']
@@ -3218,8 +3213,8 @@ class Chain(object):
         letter_df.replace('-', np.NaN, inplace=True)
         for signs in [('[', ''), (']', ''), (', ', '.')]:
             letter_df = letter_df.applymap(
-                lambda x: x.replace(signs[0], signs[1])
-                if isinstance(x, str) else x)
+                    lambda x: x.replace(signs[0], signs[1])
+                    if isinstance(x, str) else x)
         return letter_df
 
     @staticmethod
@@ -3259,7 +3254,8 @@ class Chain(object):
                  if v.split('|')[1].startswith('t.')]
         s = [(t[0],
               float(
-                  int(t[1].split('|')[1].split('.')[3].split('+')[0])) / 100.0)
+                      int(t[1].split('|')[1].split('.')[3].split('+')[
+                              0])) / 100.0)
              for t in tests]
         return s
 
@@ -3368,7 +3364,7 @@ class Chain(object):
                 for x in self._x_keys:
                     if 'properties' in self._meta['columns'][x]:
                         bt = self._meta['columns'][x]['properties'].get(
-                            'base_text', None)
+                                'base_text', None)
                         if bt:
                             base_texts[x] = bt
                 if base_texts:
@@ -3501,7 +3497,7 @@ class Chain(object):
 
             if sep:
                 column_mapper[column] = str_format % (
-                column, meta['text'][text_key])
+                    column, meta['text'][text_key])
             else:
                 column_mapper[column] = meta['text'][text_key]
 
@@ -3523,7 +3519,7 @@ class Chain(object):
                                   .apply(pd.Series, 1)
                                   .stack(dropna=False)
                                   .map(
-                            value_mapper.get)  # , na_action='ignore')
+                                value_mapper.get)  # , na_action='ignore')
                                   .unstack())
                         first = series[series.columns[0]]
                         rest = [series[c] for c in series.columns[1:]]
@@ -3646,7 +3642,7 @@ class Chain(object):
                 level_1_text.append(value.replace('#Level: ', ''))
             else:
                 translate = list(
-                    self._transl[list(self._transl.keys())[0]].keys())
+                        self._transl[list(self._transl.keys())[0]].keys())
                 if value in list(
                         self._text_map.keys()) and value not in translate:
                     level_1_text.append(self._text_map[value])
@@ -5323,7 +5319,7 @@ class Quantity(object):
             else:
                 for i in a_i:
                     dummies.append(
-                        pd.get_dummies(self.d()[i]).reindex(columns=a_res))
+                            pd.get_dummies(self.d()[i]).reindex(columns=a_res))
             a_data = pd.concat(dummies, axis=1)
             return a_data.values, a_res, a_i
 
@@ -6227,7 +6223,7 @@ class Multivariate(object):
         for var in x:
             if self.ds._is_array(var):
                 if self.analysis == 'Reduction': raise AttributeError(
-                    wrong_var_sel_1_on_1)
+                        wrong_var_sel_1_on_1)
                 x_a_items = self.ds._get_itemmap(var, non_mapped='items')
                 x_vars += x_a_items
             else:
@@ -6236,7 +6232,7 @@ class Multivariate(object):
             for var in y:
                 if self.ds._is_array(var):
                     if self.analysis == 'Reduction': raise AttributeError(
-                        wrong_var_sel_1_on_1)
+                            wrong_var_sel_1_on_1)
                     y_a_items = self.ds._get_itemmap(var, non_mapped='items')
                     y_vars += y_a_items
                 else:
@@ -6373,7 +6369,7 @@ class Reductions(Multivariate):
                               })
 
         logo = Image.open(
-            'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
+                'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
         newax = fig.add_axes([x0 + 0.005, y0 - 0.25, 0.1, 0.1], anchor='NE',
                              zorder=-1)
         newax.imshow(logo)
@@ -6436,7 +6432,7 @@ class Reductions(Multivariate):
             _dim = range(1, dim + 1)
             chisq_stats = [chisq, 'sig: {}'.format(sig),
                            'dof: {}'.format(
-                               (obs.shape[0] - 1) * (obs.shape[1] - 1))]
+                                   (obs.shape[0] - 1) * (obs.shape[1] - 1))]
             _chisq = ([np.NaN] * (dim - 3)) + chisq_stats
             _sig = ([np.NaN] * (dim - 2)) + [chisq]
             _sv, _ev = sv[:dim, 0], ev[:dim, 0]
@@ -6893,7 +6889,7 @@ class Relations(Multivariate):
                          fontsize=7)
 
         logo = Image.open(
-            'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
+                'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
         newax = fig.add_axes([x0 + 0.005, y0 - 0.15, 0.1, 0.1], anchor='NE',
                              zorder=-1)
         newax.imshow(logo)
@@ -7043,7 +7039,7 @@ class Relations(Multivariate):
                            'edgecolor': 'w', 'pad': 10
                            })
             logo = Image.open(
-                'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
+                    'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
             newax = fig.add_axes([x0 + 0.005, y0 - 0.25, 0.1, 0.1], anchor='NE',
                                  zorder=-1)
             newax.imshow(logo)
@@ -7106,7 +7102,7 @@ class Cache(defaultdict):
             return self[collection].get(key, (None, None))
         elif collection == 'squeezed':
             return self[collection].get(key, (
-            None, None, None, None, None, None, None))
+                None, None, None, None, None, None, None))
         else:
             return self[collection].get(key, None)
 

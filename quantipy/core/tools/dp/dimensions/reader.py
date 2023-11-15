@@ -14,8 +14,8 @@ import pandas as pd
 from lxml import etree
 
 import quantipy as qp
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
+from .....dependency_versions import __pandas_version_parsed__
+from .....significant_dependency_versions import \
     pd_df_convert_objects_deprecated
 
 DAYS_TO_MS = 24 * 60 * 60 * 1000

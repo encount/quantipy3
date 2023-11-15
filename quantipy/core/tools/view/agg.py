@@ -4,12 +4,12 @@ from itertools import combinations
 
 import numpy as np
 import pandas as pd
-from pandas.util.version import Version
-from scipy.version import version as scipy_version
 
-from quantipy.core.tools.view import struct
+from . import struct
+from ....dependency_versions import __scipy_version_parsed__
+from ....significant_dependency_versions import scipy_made__ttest_finish_private
 
-if Version(scipy_version) > Version('1.7.3'):
+if __scipy_version_parsed__ > scipy_made__ttest_finish_private:
     from scipy.stats._stats_py import _ttest_finish as get_pval
 else:
     from scipy.stats.stats import _ttest_finish as get_pval

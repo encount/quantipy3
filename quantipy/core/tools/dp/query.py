@@ -3,9 +3,8 @@ import re
 import pandas as pd
 
 import quantipy as qp
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
-    pd_df_sort_index_by_deprecated
+from ....dependency_versions import __pandas_version_parsed__
+from ....significant_dependency_versions import pd_df_sort_index_by_deprecated
 
 
 def get_views(qp_structure):

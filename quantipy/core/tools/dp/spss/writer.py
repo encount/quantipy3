@@ -6,7 +6,7 @@ import pandas as pd
 
 import quantipy as qp
 import savReaderWriter as srw
-from quantipy.core.helpers.functions import emulate_meta
+from ....helpers.functions import emulate_meta
 
 
 def write_sav(path_sav, data, **kwargs):

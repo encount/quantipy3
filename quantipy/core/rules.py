@@ -6,9 +6,8 @@ from collections import OrderedDict
 import numpy as np
 
 import quantipy as qp
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
-    pd_df_sort_index_by_deprecated
+from ..dependency_versions import __pandas_version_parsed__
+from ..significant_dependency_versions import pd_df_sort_index_by_deprecated
 
 
 class Rules(object):

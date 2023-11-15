@@ -3,7 +3,7 @@ import warnings
 import pandas as pd
 import xmltodict
 
-from quantipy.core.tools.dp.prep import condense_dichotomous_set, start_meta
+from ..prep import condense_dichotomous_set, start_meta
 
 
 def quantipy_from_ascribe(path_xml, path_txt, text_key='main'):

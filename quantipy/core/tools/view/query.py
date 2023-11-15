@@ -2,15 +2,10 @@ import numpy as np
 import pandas as pd
 
 import quantipy as qp
-from quantipy.core.helpers.functions import (
-    get_rules,
-    paint_dataframe,
-    rule_viable_axes
-)
-from quantipy.core.rules import Rules
-from quantipy.dependency_versions import __pandas_version_parsed__
-from quantipy.significant_dependency_versions import \
-    pd_df_sort_index_by_deprecated
+from ...helpers.functions import get_rules, paint_dataframe, rule_viable_axes
+from ...rules import Rules
+from ....dependency_versions import __pandas_version_parsed__
+from ....significant_dependency_versions import pd_df_sort_index_by_deprecated
 
 
 def set_fullname(pos, method_name, relation, rel_to, weights, view_name):

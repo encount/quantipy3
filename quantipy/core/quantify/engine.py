@@ -3,15 +3,14 @@ from itertools import combinations, product
 
 import numpy as np
 import pandas as pd
-from pandas.util.version import Version
-from scipy.version import version as scipy_version
 
 import quantipy as qp
-from quantipy.core.tools.dp.prep import recode
-from quantipy.core.tools.view.logic import (get_logic_index, intersection,
-                                            not_count)
+from ..tools.dp.prep import recode
+from ..tools.view.logic import get_logic_index, intersection, not_count
+from ...dependency_versions import __scipy_version_parsed__
+from ...significant_dependency_versions import scipy_made__ttest_finish_private
 
-if Version(scipy_version) > Version('1.7.3'):
+if __scipy_version_parsed__ > scipy_made__ttest_finish_private:
     from scipy.stats._stats_py import _ttest_finish as get_pval
 else:
     from scipy.stats.stats import _ttest_finish as get_pval

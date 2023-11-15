@@ -22,11 +22,11 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 
 import quantipy as qp
 import quantipy.core.cluster
-from quantipy.core.builds.excel.formats.xlsx_formats import XlsxFormats
-from quantipy.core.chain import Chain
-from quantipy.core.cluster import Cluster
-from quantipy.core.helpers import functions as helpers
-from quantipy.core.tools.dp.io import unicoder
+from .formats.xlsx_formats import XlsxFormats
+from ...chain import Chain
+from ...cluster import Cluster
+from ...helpers import functions as helpers
+from ...tools.dp.io import unicoder
 
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 TEST_SUFFIX = list(ascii_uppercase)
@@ -126,7 +126,7 @@ def paint_box(worksheet, frames, format_dict, rows, cols, metas, formats_spec,
             ceil = (i // frames[idxf].shape[1]) == 0
             #             floor = (i // frames[idxf].shape[1])==frames[0].shape[0]-1
             floor = (i // frames[idxf].shape[1]) == (
-                        frames[0].shape[0] * len(frames)) - 1
+                    frames[0].shape[0] * len(frames)) - 1
 
         box_coord = [coord[0] - coords[0][0], coord[1] - coords[0][1]]
 
@@ -653,7 +653,7 @@ def write_category_labels(worksheet,
                     set_row_height(worksheet=worksheet,
                                    row_start=row + (idx * group_size),
                                    row_stop=row + (idx * group_size) + (
-                                               group_size - 1),
+                                           group_size - 1),
                                    row_height=row_height)
                 else:
                     set_row_height(worksheet=worksheet,
@@ -664,7 +664,7 @@ def write_category_labels(worksheet,
                 set_row_height(worksheet=worksheet,
                                row_start=row + (idx * group_size) + 1,
                                row_stop=row + (idx * group_size) + (
-                                           group_size - 1),
+                                       group_size - 1),
                                row_height=row_height)
             if isinstance(lab, float):
                 worksheet.write_number(row + (idx * group_size), col,
@@ -1449,7 +1449,7 @@ def ExcelPainter(path_excel,
                     for level in df.columns.levels[0]:
                         worksheet.merge_range(4, 2 + lcol,
                                               4, 2 + lcol + len(
-                                df.loc[:, level].columns) - 1,
+                                    df.loc[:, level].columns) - 1,
                                               level, formats['y'])
                         for idx in df.loc[:, level].columns:
                             worksheet.write(5, 2 + lcol, idx, formats['y'])
@@ -1758,8 +1758,8 @@ def ExcelPainter(path_excel,
                         for xk in x_keys:
                             if meta['columns'].get(xk, {}).get('parent'):
                                 as_mask = \
-                                list(meta['columns'][xk]['parent'].keys())[
-                                    0].split('@')[-1]
+                                    list(meta['columns'][xk]['parent'].keys())[
+                                        0].split('@')[-1]
                                 if as_mask not in list(mask_label.keys()):
                                     mask_text = meta['masks'][as_mask]['text']
                                     question_label = mask_text[
@@ -1862,7 +1862,7 @@ def ExcelPainter(path_excel,
                                 conditions_2 = [
                                     view.meta()['agg']['is_block'],
                                     not view.meta()['agg']['name'].startswith(
-                                        'NPS')]
+                                            'NPS')]
                                 if all(conditions_1):
                                     axes = ['x', 'y']
                                     if chain.is_banked: axes.remove('x')
@@ -1879,7 +1879,7 @@ def ExcelPainter(path_excel,
                                             'is_block']
                                         block_ref = view.describe_block()
                                         idx_order = get_ordered_index(
-                                            view.dataframe.index)
+                                                view.dataframe.index)
                                         block_ref_formats = [
                                             block_formats[block_ref[idxo]]
                                             for idxo in idx_order]
@@ -1890,7 +1890,7 @@ def ExcelPainter(path_excel,
                                         if brf_all_net:
                                             block_ref_formats = [
                                                                     'x_right_nets'] * len(
-                                                block_ref_formats)
+                                                    block_ref_formats)
                                     df = helpers.paint_view(
                                             meta=meta,
                                             view=view,
@@ -1924,14 +1924,14 @@ def ExcelPainter(path_excel,
                                     for i, code in enumerate(y_values):
                                         worksheet.write(
                                                 row_index_origin + (
-                                                            nest_levels * 2) - 1,
+                                                        nest_levels * 2) - 1,
                                                 current_position['test'] + i,
                                                 testcol_maps[
                                                     view.meta()['y']['name']][
                                                     str(code)],
                                                 formats['tests'])
                                     current_position['test'] += \
-                                    view.meta()['shape'][1]
+                                        view.meta()['shape'][1]
                                     testcol_labels.remove(
                                             view.meta()['y']['name'])
 
@@ -2069,8 +2069,9 @@ def ExcelPainter(path_excel,
                             if position == first_row:
                                 # write column label(s) - multi-column y subaxis
                                 total_text = \
-                                helpers.translate(['@'], text_key_chosen['y'])[
-                                    0]
+                                    helpers.translate(['@'],
+                                                      text_key_chosen['y'])[
+                                        0]
 
                                 worksheet.set_column(
                                         df_cols[idx][0],
@@ -2080,15 +2081,15 @@ def ExcelPainter(path_excel,
                                         row_index_origin - 3,
                                         df_cols[idx][0],
                                         row_index_origin + (
-                                                    nest_levels * 2) + bool(
-                                            testcol_maps) + len_chain_annotations - 2,
+                                                nest_levels * 2) + bool(
+                                                testcol_maps) + len_chain_annotations - 2,
                                         df_cols[idx][1],
                                         total_text,
                                         formats['y'])
                             if bool(testcol_maps):
                                 worksheet.write(
                                         row_index_origin + (
-                                                    nest_levels * 2) - 1,
+                                                nest_levels * 2) - 1,
                                         1,
                                         '',
                                         formats['tests'])
@@ -2119,7 +2120,7 @@ def ExcelPainter(path_excel,
                                                     grouped_views[sheet_name]
                                                     for v in g[1:]]
                                 unique_sizes = list(
-                                    set(vks) - set(non_zero_indexed))
+                                        set(vks) - set(non_zero_indexed))
                                 valid_sizes = [
                                     view_sizes[0][i] for i in
                                     [vks.index(v) for v in unique_sizes]]
@@ -2152,7 +2153,7 @@ def ExcelPainter(path_excel,
                                         position -= 1
                             if position == first_row:
                                 labels = helpers.get_unique_level_values(
-                                    df.columns)
+                                        df.columns)
                                 labels[1] = helpers.translate(labels[1],
                                                               text_key_chosen[
                                                                   'y'])
@@ -2193,7 +2194,7 @@ def ExcelPainter(path_excel,
                                                 '')
                                         if mask_label_format:
                                             existing_format = workbook.add_format(
-                                                mask_label_format)
+                                                    mask_label_format)
                                 write_question_label(
                                         worksheet,
                                         question_label,
@@ -2280,7 +2281,7 @@ def ExcelPainter(path_excel,
                                                     {'fr-FR': text.split(' ')[
                                                         0].capitalize(),
                                                      'de-DE': text[text.find(
-                                                         ' ') + 1:].title()
+                                                             ' ') + 1:].title()
                                                      }.get(
                                                             default_text,
                                                             text.split(' ')[
@@ -2295,7 +2296,7 @@ def ExcelPainter(path_excel,
                                                 'fr-FR': text.split(' ')[
                                                     0].capitalize(),
                                                 'de-DE': text[text.find(
-                                                    ' ') + 1:].title()
+                                                        ' ') + 1:].title()
                                             }.get(
                                                     default_text,
                                                     text.split(' ')[
@@ -2357,7 +2358,7 @@ def ExcelPainter(path_excel,
                                                             if vmetas[0]['agg'][
                                                                 'grp_text_map']:
                                                                 idx_order = df.index.get_level_values(
-                                                                    1).tolist()
+                                                                        1).tolist()
                                                                 if all(vmetas[
                                                                            0][
                                                                            'agg'][
@@ -2409,12 +2410,12 @@ def ExcelPainter(path_excel,
                                                                for axis in
                                                                ['x', 'y']):
                                                             labels = df.index.get_level_values(
-                                                                1)
+                                                                    1)
                                                         else:
                                                             if vmetas[0]['agg'][
                                                                 'grp_text_map']:
                                                                 idx_order = df.index.get_level_values(
-                                                                    1).tolist()
+                                                                        1).tolist()
                                                                 if all(vmetas[
                                                                            0][
                                                                            'agg'][
@@ -2437,13 +2438,13 @@ def ExcelPainter(path_excel,
                                                                         idx_order]
                                                                 else:
                                                                     labels = df.index.get_level_values(
-                                                                        1)
+                                                                            1)
                                                             else:
                                                                 labels = df.index.get_level_values(
-                                                                    1)
+                                                                        1)
                                                 else:
                                                     labels = df.index.get_level_values(
-                                                        1)
+                                                            1)
                                             if all([label not in labels_written
                                                     for label in labels]):
                                                 write_category_labels(
@@ -2479,7 +2480,7 @@ def ExcelPainter(path_excel,
                                                     if vmetas[0]['agg'][
                                                         'grp_text_map']:
                                                         idx_order = df.index.get_level_values(
-                                                            1).tolist()
+                                                                1).tolist()
                                                         if all(vmetas[0]['agg'][
                                                                    'grp_text_map'][
                                                                    idxo] for
@@ -2516,12 +2517,12 @@ def ExcelPainter(path_excel,
                                                            'is_array'] for axis
                                                        in ['x', 'y']):
                                                     labels = df.index.get_level_values(
-                                                        1)
+                                                            1)
                                                 else:
                                                     if vmetas[0]['agg'][
                                                         'grp_text_map']:
                                                         idx_order = df.index.get_level_values(
-                                                            1).tolist()
+                                                                1).tolist()
                                                         if all(vmetas[0]['agg'][
                                                                    'grp_text_map'][
                                                                    idxo] for
@@ -2539,13 +2540,13 @@ def ExcelPainter(path_excel,
                                                                       idx_order]
                                                         else:
                                                             labels = df.index.get_level_values(
-                                                                1)
+                                                                    1)
                                                     else:
                                                         labels = df.index.get_level_values(
-                                                            1)
+                                                                1)
                                         else:
                                             labels = df.index.get_level_values(
-                                                1)
+                                                    1)
                                         write_category_labels(
                                                 worksheet=worksheet,
                                                 labels=labels,
@@ -2579,7 +2580,7 @@ def ExcelPainter(path_excel,
                                                     idxdf > 0 and not freq_view):
                                                 freq_view = True
                                                 labels = df.index.get_level_values(
-                                                    1)
+                                                        1)
                                             else:
                                                 continue
                                         write_category_labels(
@@ -2689,7 +2690,7 @@ def ExcelPainter(path_excel,
             # freeze panes
             worksheet.freeze_panes(
                     row_index_origin + (nest_levels * 2) + bool(
-                        testcol_maps) - 1,
+                            testcol_maps) - 1,
                     col_index_origin + 1)
 
     # download image
