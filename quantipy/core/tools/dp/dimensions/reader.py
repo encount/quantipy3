@@ -15,7 +15,9 @@ from lxml import etree
 from pandas.util.version import Version
 
 import quantipy as qp
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_df_convert_objects_deprecated
 
 DAYS_TO_MS = 24 * 60 * 60 * 1000
 DDF_TYPES_MAP = {
@@ -161,10 +163,7 @@ def quantipy_clean(ddf):
             # table id and sort the index
             ddf[n_tab].columns = p_cols + ['LevelId_' + n_tab] + np_cols
             ddf[n_tab].set_index([p_cols[-1]], drop=False, inplace=True)
-            # if pandas_version >= Version('0.19.2'):
             ddf[n_tab].sort_index()
-            # else:
-            # ddf[n_tab].sort()
 
             # Generate Dimensions type to Quantipy type reference
             # dataframe
@@ -188,7 +187,7 @@ def quantipy_clean(ddf):
                             np.int64, np.float64
                         ]:
                             str_col = ddf[n_tab][column].str.strip(";")
-                            if pandas_version >= Version('0.19.2'):
+                            if __pandas_version_parsed__ >= pd_df_convert_objects_deprecated:
                                 num_col = pd.to_numeric(str_col,
                                                         errors='coerce')
                             else:

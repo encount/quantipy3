@@ -9,7 +9,9 @@ from quantipy.core.helpers.functions import (
     rule_viable_axes
 )
 from quantipy.core.rules import Rules
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_df_sort_index_by_deprecated
 
 
 def set_fullname(pos, method_name, relation, rel_to, weights, view_name):
@@ -325,7 +327,7 @@ def sortx(df, sort_on='@', within=True, between=True, ascending=False,
             sort_col = (name_y, sort_on)
         elif (name_y, str(sort_on)) in df.columns:
             sort_col = (name_y, str(sort_on))
-        if pandas_version >= Version('0.19.2'):
+        if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
             df_sorted = df.loc[s_sort].sort_values(sort_col, 0, ascending)
         else:
             df_sorted = df.loc[s_sort].sort_index(0, sort_col, ascending)

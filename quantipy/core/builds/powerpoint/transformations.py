@@ -10,10 +10,11 @@ from math import ceil
 
 import numpy as np
 import pandas as pd
-from pandas.util.version import Version
 
 from quantipy.core.helpers import functions as helpers
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_df_sort_deprecated
 
 ''' Simplified access to, and manipulation of, the pandas dataframe.
     Contains various helper functions.
@@ -63,6 +64,7 @@ def remove_percentage_sign(old_df):
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+# TODO: Remove dead code:
 def drop_null_rows(old_df, axis_type=1):
     '''
     drop rows with all columns having value 0
@@ -74,6 +76,7 @@ def drop_null_rows(old_df, axis_type=1):
 
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
     '''
@@ -100,6 +103,7 @@ def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
             raise Exception('Expected Flat DF, got multiindex DF')
 
         # ensure fixed_categories is not empty
+
         if fixed_categories:
 
             #reindex df because it might contain duplicates
@@ -107,7 +111,7 @@ def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
 
             #df with no fixed categories, then sort.
             df_without_fc = df.loc[~df[df.columns[0]].isin(fixed_categories)]
-            if pandas_version >= Version('0.19.2'):
+            if __pandas_version_parsed__ >= pd_df_sort_deprecated:
                 df_without_fc = df_without_fc.sort_values(by=df.columns[column_position+1], ascending=ascend)
             else:
                 df_without_fc = df_without_fc.sort(columns=df.columns[column_position+1], ascending=ascend)
@@ -133,7 +137,7 @@ def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
             new_df = new_df.set_index(df.columns[0])
 
         else:
-            if pandas_version >= Version('0.19.2'):
+            if __pandas_version_parsed__ >= pd_df_sort_deprecated:
                 new_df = df.sort_values(by=df.columns[column_position], ascending=ascend)
             else:
                 new_df = df.sort(columns=df.columns[column_position], ascending=ascend)

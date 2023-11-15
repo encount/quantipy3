@@ -1,10 +1,11 @@
 import re
 
 import pandas as pd
-from pandas.util.version import Version
 
 import quantipy as qp
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_df_sort_index_by_deprecated
 
 
 def get_views(qp_structure):
@@ -89,9 +90,6 @@ def get_tests_slicer(s, reverse=False):
     return tests_slicer
 
 
-_pandas_sort_index_changed_version = Version('0.19.2')
-
-
 def shake(l):
     """
     De-dupe and reorder view keys in l for request_views.
@@ -101,7 +99,7 @@ def shake(l):
     df = pd.DataFrame(s.str.split('|').tolist())
     df.insert(0, 'view', s)
 
-    if pandas_version >= _pandas_sort_index_changed_version:
+    if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
         df.sort_values(by=[2, 1], inplace=True)
     else:
         df.sort_index(by=[2, 1], inplace=True)

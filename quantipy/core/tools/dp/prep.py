@@ -14,7 +14,9 @@ from quantipy.core.rules import Rules
 from quantipy.core.tools.dp.query import uniquify_list
 from quantipy.core.tools.view.logic import (get_logic_index, has_any,
                                             intersection)
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_df_concat_axis_1_supports_ignore_index
 
 
 def recode_into(data, col_from, col_to, assignment, multi=False):
@@ -839,7 +841,8 @@ def join_delimited_set_series(ds1, ds2, append=True):
         The joined result of ds1 and ds2.
     """
     # import pdb; pdb.set_trace()
-    if pandas_version >= Version('0.19.2'):
+
+    if __pandas_version_parsed__ >= pd_df_concat_axis_1_supports_ignore_index:
         df = pd.concat([ds1, ds2], axis=1, ignore_index=True)
     else:
         df = pd.concat([ds1, ds2], axis=1)

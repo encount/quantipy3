@@ -4,7 +4,7 @@ import pandas as pd
 from pandas.core.index import Index
 from pandas.util.version import Version
 
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
 
 __op_symbol__ = {lt: '<', le: '<=', eq: '', ne: '!=', ge: '>=', gt: '>'}
 
@@ -1106,10 +1106,7 @@ def _symmetric_difference(idxs):
     """
     idx = idxs[0]
     for idx_part in idxs[1:]:
-        if pandas_version >= Version('0.19.2'):
-            idx = idx.symmetric_difference(idx_part)
-        else:
-            idx = idx.symmetric_difference(idx_part)
+        idx = idx.symmetric_difference(idx_part)
     return idx
 
 

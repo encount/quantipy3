@@ -29,7 +29,8 @@ from .link import Link
 from .view import View
 from .view_generators.view_mapper import ViewMapper
 from .view_generators.view_maps import QuantipyViews
-from ..version import pandas_version
+from ..dependency_versions import __pandas_version_parsed__
+from ..significant_dependency_versions import pd_df_sort_index_by_deprecated
 
 
 class Stack(defaultdict):
@@ -1696,7 +1697,7 @@ class Stack(defaultdict):
                 if (v in net_groups['codes'] or
                     v in list(net_groups.keys())) and not v in fix_codes]
         if between:
-            if pandas_version >= Version('0.19.2'):
+            if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
                 temp_df = df.loc[sort].sort_values(sort_col, 0,
                                                    ascending=ascending)
             else:
@@ -1718,7 +1719,7 @@ class Stack(defaultdict):
                 fixed_net_name = g[0]
                 sort = [(name, v) for v in g[1:]]
                 if within:
-                    if pandas_version >= Version('0.19.2'):
+                    if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
                         temp_df = df.loc[sort].sort_values(sort_col, 0,
                                                            ascending=ascending)
                     else:

@@ -11,7 +11,7 @@ import quantipy as qp
 from quantipy.core.tools.qp_decorators import *
 from quantipy.core.tools.view.logic import (
     get_logic_index)
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
 
 
 def meta_editor(self, dataset_func):
@@ -569,7 +569,7 @@ class Batch(qp.DataSet):
         """
         slicer = self.manifest_filter(self.filter)
 
-        if pandas_version >= _pandas_ix_removed_version:
+        if __pandas_version_parsed__ >= _pandas_ix_removed_version:
             data = self._data.copy().loc[slicer, name]
         else:
             data = self._data.copy().ix[slicer, name]

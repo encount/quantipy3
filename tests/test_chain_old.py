@@ -10,7 +10,8 @@ from quantipy.core.helpers.functions import load_json
 from quantipy.core.link import Link
 from quantipy.core.stack import Stack
 from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import pd_df_sort_deprecated
 
 
 @unittest.skip("Not yet supported in python 3")
@@ -60,7 +61,7 @@ class TestChainObject(unittest.TestCase):
 
             # Confirm that the chains contain the same views
             sort_order = ['data', 'filter', 'x', 'y', 'view']
-            if pandas_version >= Version('0.19.2'):
+            if __pandas_version_parsed__ >= pd_df_sort_deprecated:
                 actual = chain_described.sort_values(sort_order).values.tolist()
                 expected = loaded_chain_described.sort_values(sort_order).values.tolist()
             else:

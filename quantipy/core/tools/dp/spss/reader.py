@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import pyreadstat
+from pandas.util.version import Version
 
 import savReaderWriter as sr
 from quantipy.core.tools.dp.prep import condense_dichotomous_set, start_meta
@@ -43,7 +44,12 @@ dates_as_strings : bool, default=False
 
 def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True, engine='savReaderWriter'):
 
-    """ see parse_sav_file doc """
+    """See parse_sav_file doc."""
+    if Version(np.__version__) >= Version('1.20.0'):
+        np_object = object
+    else:
+        np_object = np.object
+
     if engine == 'savReaderWriter':
         with sr.SavReader(sav_file, returnHeader=True, ioLocale=ioLocale, ioUtf8=ioUtf8) as reader:
             thedata = [x for x in reader]
@@ -51,7 +57,8 @@ def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True, engine='savR
             dataframe = pd.DataFrame.from_records(thedata[1:], coerce_float=False)
             dataframe.columns = header
             for column in header:
-                if isinstance(dataframe[column].dtype, np.object):
+
+                if isinstance(dataframe[column].dtype, np_object):
                     # Replace None with NaN because SRW returns None if casting dates fails (dates are of type np.object))
                     values = dataframe[column].dropna().values
                     if len(values) > 0:

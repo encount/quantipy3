@@ -8,7 +8,9 @@ import pandas as pd
 from pandas.util.version import Version
 
 from quantipy.core.tools.qp_decorators import modify
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_df_sort_index_by_deprecated
 
 
 class ViewManager(object):
@@ -928,7 +930,7 @@ class ViewManager(object):
         s = pd.Series(self._uniquify_list(l))
         df = pd.DataFrame(s.str.split('|').tolist())
         df.insert(0, 'view', s)
-        if pandas_version >= Version('0.19.2'):
+        if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
             df.sort_values(by=[2, 1], inplace=True)
         else:
             df.sort_index(by=[2, 1], inplace=True)

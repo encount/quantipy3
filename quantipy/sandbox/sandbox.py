@@ -1,16 +1,34 @@
 #  -*- coding: utf-8 -*-
 
+import copy
+import gzip
 import pickle
+import re
 import string
+from collections import Counter, OrderedDict, defaultdict
+from itertools import chain, combinations, product
 
 import numpy as np
 import pandas as pd
+from scipy.stats import chi2 as chi2dist, f as fdist
+
 
 import quantipy as qp
+import quantipy.dependency_versions
+from quantipy.core.cache import Cache
+from quantipy.core.helpers.functions import (emulate_meta)
+from quantipy.core.rules import Rules
+from quantipy.core.tools.dp.prep import recode
+from quantipy.core.tools.qp_decorators import lazy_property
+from quantipy.core.tools.view.logic import (get_logic_index, intersection)
+from quantipy.core.view import View
+from quantipy.core.view_generators.view_mapper import ViewMapper
+from quantipy.core.view_generators.view_maps import QuantipyViews
+from quantipy.significant_dependency_versions import \
+    scipy_made__ttest_finish_private
 
 # from matplotlib import pyplot as plt
 # import matplotlib.image as mpimg
-
 
 try:
     import seaborn as sns
@@ -18,32 +36,16 @@ try:
 except:
     pass
 
-from quantipy.core.cache import Cache
-from quantipy.core.view import View
-from quantipy.core.view_generators.view_mapper import ViewMapper
-from quantipy.core.view_generators.view_maps import QuantipyViews
-from quantipy.core.tools.view.logic import (intersection, get_logic_index)
-from quantipy.core.helpers.functions import (emulate_meta)
-from quantipy.core.tools.dp.prep import recode
-from quantipy.core.tools.qp_decorators import lazy_property
-
-from scipy.stats.stats import _ttest_finish as get_pval
-from scipy.stats import chi2 as chi2dist
-from scipy.stats import f as fdist
-from itertools import combinations, chain, product
-from collections import defaultdict, OrderedDict, Counter
-import gzip
-
 try:
     import dill
 except:
     pass
 
-import copy
-import re
+if quantipy.dependency_versions.__scipy_version_parsed__ >= scipy_made__ttest_finish_private:
+    from scipy.stats._stats_py import _ttest_finish as get_pval
+else:
+    from scipy.stats.stats import _ttest_finish as get_pval
 
-
-from quantipy.core.rules import Rules
 
 _TOTAL = '@'
 _AXES = ['x', 'y']

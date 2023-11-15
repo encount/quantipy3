@@ -13,14 +13,10 @@ __index_symbol__ = {
     Index.difference: '~',
 }
 
-from quantipy.version import pandas_version
+from quantipy.dependency_versions import __pandas_version_parsed__
 
-if pandas_version >= Version('0.19.2'):
-    __index_symbol__[Index.symmetric_difference] = '^'
-    pd_symmetric_difference = Index.symmetric_difference
-else:
-    __index_symbol__[Index.symmetric_difference] = '^'
-    pd_symmetric_difference = Index.symmetric_difference
+__index_symbol__[Index.symmetric_difference] = '^'
+pd_symmetric_difference = Index.symmetric_difference
 
 from quantipy.core.helpers.functions import load_json
 from quantipy.core.tools.view.logic import (
@@ -920,16 +916,10 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[0])
         idx2, vkey2 = get_logic_index(q2, test_logic[2])
         idx, vkey = get_logic_index(q2, test_logic)
-        if pandas_version >= Version('0.19.2'):
-            self.assertCountEqual(
-                    idx,
-                    idx1.symmetric_difference(idx2)
-            )
-        else:
-            self.assertCountEqual(
-                    idx,
-                    idx1.symmetric_difference(idx2)
-            )
+        self.assertCountEqual(
+                idx,
+                idx1.symmetric_difference(idx2)
+        )
 
         self.assertEqual(
                 vkey,
@@ -1103,16 +1093,10 @@ class TestStackObject(unittest.TestCase):
         idx1, vkey1 = get_logic_index(q2, test_logic[1][0])
         idx2, vkey2 = get_logic_index(q2, test_logic[1][1])
         idx3, vkey3 = get_logic_index(q2, test_logic[1][2])
-        if pandas_version >= Version('0.19.2'):
-            self.assertCountEqual(
-                    idx,
-                    idx1.symmetric_difference(idx2).symmetric_difference(idx3)
-            )
-        else:
-            self.assertCountEqual(
-                    idx,
-                    idx1.symmetric_difference(idx2).symmetric_difference(idx3)
-            )
+        self.assertCountEqual(
+                idx,
+                idx1.symmetric_difference(idx2).symmetric_difference(idx3)
+        )
         self.assertEqual(
                 vkey,
                 'x[({1&2}^{3,4}^{3})]:y'

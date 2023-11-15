@@ -3,12 +3,19 @@ from itertools import combinations, product
 
 import numpy as np
 import pandas as pd
-from scipy.stats.stats import _ttest_finish as get_pval
+from pandas.util.version import Version
+from scipy.version import version as scipy_version
 
 import quantipy as qp
 from quantipy.core.tools.dp.prep import recode
 from quantipy.core.tools.view.logic import (get_logic_index, intersection,
                                             not_count)
+
+if Version(scipy_version) > Version('1.7.3'):
+    from scipy.stats._stats_py import _ttest_finish as get_pval
+else:
+    from scipy.stats.stats import _ttest_finish as get_pval
+
 
 np.seterr(invalid='ignore')
 
