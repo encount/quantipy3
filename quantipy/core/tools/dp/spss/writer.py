@@ -1,4 +1,3 @@
-
 import copy
 import json
 
@@ -121,7 +120,7 @@ def get_savwriter_float_format(series):
         The format string describing the given float series.
     """
 
-    if series.dropna().shape[0]==0:
+    if series.dropna().shape[0] == 0:
         # If there's no data in the series it's impossible to predict
         # what sort of data may be expected later on, so a generic
         # interpretation of three whole numbers and two decimals is
@@ -129,19 +128,19 @@ def get_savwriter_float_format(series):
         fmt = 'F5.2'
     else:
         df = split_series(
-            series.dropna(),
-            sep='.',
-            columns=['int', 'dec']
+                series.dropna(),
+                sep='.',
+                columns=['int', 'dec']
         )
         w_int = len(str(df['int'].max()))
         w_dec = len(str(df['dec'].max()))
-        if df['dec'].max()!='0':
-            fmt = 'F%s.%s' %(
+        if df['dec'].max() != '0':
+            fmt = 'F%s.%s' % (
                 w_int + w_dec,
                 w_dec
             )
         else:
-            fmt = 'F%s' %(
+            fmt = 'F%s' % (
                 w_int
             )
     return fmt
@@ -172,23 +171,23 @@ def get_value_text(values, value, text_key):
     """
 
     for val in values:
-        if val['value']==value:
+        if val['value'] == value:
             try:
                 text = val['text'][text_key]
                 return text
             except KeyError:
                 print((
-                    "The text key '%s' was not found in the text object: %s" % (
-                        text_key,
-                        json.dumps(val)
-                    )
+                        "The text key '%s' was not found in the text object: %s" % (
+                    text_key,
+                    json.dumps(val)
+                )
                 ))
     raise ValueError(
             "The value '%s' was not found in the values object: %s" % (
                 value,
                 json.dumps(values)
             )
-        )
+    )
 
 
 def list_known_columns(meta, from_set):
@@ -216,14 +215,14 @@ def list_known_columns(meta, from_set):
     """
 
     column_names = []
-    for col in meta['sets'][from_set ]['items']:
+    for col in meta['sets'][from_set]['items']:
         pointer, name = col.split('@')
-        if pointer=='columns':
+        if pointer == 'columns':
             if name in meta['columns'] and not name in column_names:
                 column_names.append(name)
-        elif pointer=='masks':
+        elif pointer == 'masks':
             for item in meta['masks'][name]['items']:
-                name =  item['source'].split('@')[1]
+                name = item['source'].split('@')[1]
                 if name in meta['columns'] and not name in column_names:
                     column_names.append(name)
     return column_names
@@ -266,9 +265,11 @@ def stringify_dates(dates):
 
     return series
 
+
 def fix_label(label):
     label = label.replace('\n', '')
     return label
+
 
 def save_sav(path_sav, meta, data, index=False, text_key=None,
              mrset_tag_style='__', drop_delimited=True, from_set=None,
@@ -322,7 +323,7 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
         from_set = 'data file'
     if from_set not in meta['sets']:
         raise KeyError(
-            "The set '{}' was not found in meta.".format(from_set)
+                "The set '{}' was not found in meta.".format(from_set)
         )
 
     # There is an issue converting numpy dates to SAV so dates
@@ -336,12 +337,12 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
 
         # This code can be used to instead simply remove all
         # dates from the dataset before conversion
-#         del meta['columns'][date_col]
-#         mapper = 'columns@{}'.format(date_col)
-#         try:
-#             meta['sets'][from_set]['items'].remove(mapper)
-#         except:
-#             pass
+    #         del meta['columns'][date_col]
+    #         mapper = 'columns@{}'.format(date_col)
+    #         try:
+    #             meta['sets'][from_set]['items'].remove(mapper)
+    #         except:
+    #             pass
 
     for key, val in meta['columns'].items():
         if val['type'] == 'string':
@@ -368,10 +369,10 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
             if col != '@1':
                 if verbose:
                     print((
-                        "Data column '{}' not included in"
-                        " the '{}' set, it will be excluded"
-                        " from the SAV file."
-                    ).format(col, from_set))
+                              "Data column '{}' not included in"
+                              " the '{}' set, it will be excluded"
+                              " from the SAV file."
+                          ).format(col, from_set))
             data.drop(columns=col, axis=1, inplace=True)
 
     # Remove columns from meta not found in data
@@ -379,9 +380,9 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
         if col not in data.columns:
             if verbose:
                 print((
-                    'Meta column "%s" not found in data, it will '
-                    'be excluded from the SAV file.'
-                ) % (col))
+                          'Meta column "%s" not found in data, it will '
+                          'be excluded from the SAV file.'
+                      ) % (col))
             if col in meta['columns']:
                 del meta['columns'][col]
 
@@ -400,7 +401,7 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
             if char in ['[', ']', '{', '}', '.']:
                 new_name = '%s_%s' % (
                     new_name[:i],
-                    new_name[i+1:]
+                    new_name[i + 1:]
                 )
         new_names.append(new_name)
         column_mapper[varName] = new_name
@@ -408,7 +409,7 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
         if new_name not in meta['columns']:
             meta['columns'][new_name] = meta['columns'].pop(old_name)
             idx = varNames.index(old_name)
-            varNames = varNames[:idx] + [new_name] + varNames[idx+1:]
+            varNames = varNames[:idx] + [new_name] + varNames[idx + 1:]
     data.columns = pd.Series(data.columns).map(column_mapper)
 
     # Create the multRespDefs definition for the savWriter
@@ -444,7 +445,7 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
         dichot.sort_index(axis=1, inplace=True)
         dsNames = ['%s%s%s' % (ds_name, mrset_tag_style, val) for val in values]
         ds_index = varNames.index(ds_name)
-        varNames[ds_index+1:ds_index+1] = dsNames
+        varNames[ds_index + 1:ds_index + 1] = dsNames
         varNames.pop(ds_index)
 
         cols = [
@@ -458,7 +459,7 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
         # Insert the columns from the dichotomous dataframe after the
         # position of the delimited set.
         for i, col in enumerate(dichot.columns, start=1):
-            data.insert(ds_name_idx+i, col, dichot[col])
+            data.insert(ds_name_idx + i, col, dichot[col])
         # Add the column metadata for each dichotomous column
         for dichName in dsNames:
             meta['columns'][dichName] = {
@@ -469,9 +470,10 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
                 ],
                 'text': {
                     text_key: get_value_text(
-                        emulate_meta(meta, meta['columns'][ds_name]['values']),
-                        int(dichName.split('_')[-1]),
-                        text_key)
+                            emulate_meta(meta,
+                                         meta['columns'][ds_name]['values']),
+                            int(dichName.split('_')[-1]),
+                            text_key)
                 }
             }
 
@@ -513,9 +515,9 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
     # Create the varTypes definition for the savWriter
     varTypes = {
         v:
-        0
-        if meta['columns'][v]['type'] in ['single', 'int', 'float']
-        else 1000
+            0
+            if meta['columns'][v]['type'] in ['single', 'int', 'float']
+            else 1000
         for v in varNames
     }
 
@@ -557,12 +559,12 @@ def save_sav(path_sav, meta, data, index=False, text_key=None,
     data = data[varNames]
 
     write_sav(
-        path_sav,
-        data,
-        varNames=varNames,
-        varTypes=varTypes,
-        formats=formats,
-        varLabels=varLabels,
-        valueLabels=valueLabels,
-        multRespDefs=multRespDefs
+            path_sav,
+            data,
+            varNames=varNames,
+            varTypes=varTypes,
+            formats=formats,
+            varLabels=varLabels,
+            valueLabels=valueLabels,
+            multRespDefs=multRespDefs
     )

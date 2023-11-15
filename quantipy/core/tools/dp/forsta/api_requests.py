@@ -3,7 +3,8 @@ import json
 import requests as req
 
 
-def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema_vars=None, data_filter=None):
+def get_surveys(projectid, public_url, idp_url, client_id, client_secret,
+                schema_vars=None, data_filter=None):
     # Source configuration
     source_projectid = projectid
     source_public_site_url = public_url
@@ -24,17 +25,22 @@ def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema
         response = req.post(source_idp_url + 'identity/connect/token',
                             data="grant_type=api-user&scope=pub.surveys",
                             auth=(source_client_id, source_client_secret),
-                            headers={'Content-Type': 'application/x-www-form-urlencoded'})
+                            headers={
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                                })
         response.raise_for_status()
         resp_obj = response.json()
         return resp_obj['access_token']
 
-
     def get_survey_data(source_token, source_public_site_url, source_projectid):
         # Get source data records
-        headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/x-ndjson", "Content-Type": "application/json"}
+        headers = {'Authorization': 'Bearer ' + source_token,
+                   "Accept": "application/x-ndjson",
+                   "Content-Type": "application/json"
+                   }
         url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
-        response = req.get(url, params=data_params, headers=headers, stream=False)
+        response = req.get(url, params=data_params, headers=headers,
+                           stream=False)
         response.raise_for_status()
 
         # Decode json response - data
@@ -45,12 +51,15 @@ def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema
             json_data.append(json.loads(line))
         return json_data
 
-
     def get_survey_meta(source_token, source_public_site_url, source_projectid):
         # Get survey schema records
-        headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
+        headers = {'Authorization': 'Bearer ' + source_token,
+                   "Accept": "application/json",
+                   "Content-Type": "application/json"
+                   }
         url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/schema'
-        response_schema = req.get(url, params=meta_params, headers=headers, stream=False)
+        response_schema = req.get(url, params=meta_params, headers=headers,
+                                  stream=False)
         response_schema.raise_for_status()
         # Decode json response - schema
         res = response_schema.content.decode("utf-8")
@@ -60,10 +69,12 @@ def get_surveys(projectid, public_url, idp_url, client_id, client_secret, schema
             json_meta.append(json.loads(line))
         return json_meta
 
-
-    source_token = get_token(source_idp_url, source_client_id, source_client_secret)
-    json_data = get_survey_data(source_token, source_public_site_url, source_projectid)
-    json_meta = get_survey_meta(source_token, source_public_site_url, source_projectid)
+    source_token = get_token(source_idp_url, source_client_id,
+                             source_client_secret)
+    json_data = get_survey_data(source_token, source_public_site_url,
+                                source_projectid)
+    json_meta = get_survey_meta(source_token, source_public_site_url,
+                                source_projectid)
 
     return json_data, json_meta
 
@@ -102,13 +113,17 @@ def upload_surveys(api_data, json_data, json_meta, data_vars):
     response = req.post(source_idp_url + 'identity/connect/token',
                         data="grant_type=api-user&scope=pub.surveys",
                         auth=(source_client_id, source_client_secret),
-                        headers={'Content-Type': 'application/x-www-form-urlencoded'})
+                        headers={
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                            })
     response.raise_for_status()
     resp_obj = response.json()
     source_token = resp_obj['access_token']
 
     # Upload source data records
-    headers = {'Authorization': 'Bearer ' + source_token, "Accept": "application/json", "Content-Type": "application/json"}
+    headers = {'Authorization': 'Bearer ' + source_token,
+               "Accept": "application/json", "Content-Type": "application/json"
+               }
     url = source_public_site_url + 'v1/surveys/' + source_projectid + '/responses/data'
     response = req.patch(url, data=json.dumps(data), headers=headers)
     response.raise_for_status()

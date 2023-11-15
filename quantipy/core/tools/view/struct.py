@@ -1,7 +1,8 @@
 import pandas as pd
 
 
-def set_view_df_layout(df, x, y, new_names=None, names_to=None, inherit_codes_from=None, codes_to=None):
+def set_view_df_layout(df, x, y, new_names=None, names_to=None,
+                       inherit_codes_from=None, codes_to=None):
     '''
     Main function to rebuild the Quantipy view dataframe structure after 
     calculations have been processed inside a view method. This functions is
@@ -46,10 +47,11 @@ def set_view_df_layout(df, x, y, new_names=None, names_to=None, inherit_codes_fr
         set_names_to_values(df, new_names, names_to)
     if not inherit_codes_from is None:
         df = inherit_axis_codes(df, inherit_codes_from, codes_to)
-    
-    layouted_df = set_qp_multiindex(df, x, y)    
-    
+
+    layouted_df = set_qp_multiindex(df, x, y)
+
     return layouted_df
+
 
 def deep_drop(df, targets, axes=[0, 1]):
     '''
@@ -87,6 +89,7 @@ def deep_drop(df, targets, axes=[0, 1]):
 
     return df
 
+
 def inherit_axis_codes(df, from_source, to='y'):
     '''
     Renames a dataframe's index or column codes to match the ones
@@ -111,15 +114,21 @@ def inherit_axis_codes(df, from_source, to='y'):
     '''
     codes = _partition_view_df(from_source, axes_only=True)
     if to == 'x':
-        df.rename(index={code[0]: code[1] for code in enumerate(codes[0])}, inplace=True)
-        df.rename(columns={code[0]: code[1] for code in enumerate(codes[1])}, inplace=True)
+        df.rename(index={code[0]: code[1] for code in enumerate(codes[0])},
+                  inplace=True)
+        df.rename(columns={code[0]: code[1] for code in enumerate(codes[1])},
+                  inplace=True)
     elif to == 'y':
-        df.rename(columns={code[0]: code[1] for code in enumerate(codes[1])}, inplace=True)
+        df.rename(columns={code[0]: code[1] for code in enumerate(codes[1])},
+                  inplace=True)
     elif to == 'both':
-        df.rename(index={code[0]: code[1] for code in enumerate(codes[0])}, inplace=True)
-        df.rename(columns={code[0]: code[1] for code in enumerate(codes[1])}, inplace=True)
+        df.rename(index={code[0]: code[1] for code in enumerate(codes[0])},
+                  inplace=True)
+        df.rename(columns={code[0]: code[1] for code in enumerate(codes[1])},
+                  inplace=True)
 
     return df
+
 
 def set_names_to_values(df, names, axis='x'):
     '''
@@ -146,12 +155,16 @@ def set_names_to_values(df, names, axis='x'):
         names = [names]
     if axis == 'x':
         for name in enumerate(names):
-            df.rename(index={df.index.get_level_values(-1)[name[0]]: name[1]}, inplace=True)
+            df.rename(index={df.index.get_level_values(-1)[name[0]]: name[1]},
+                      inplace=True)
         return df.index
     else:
         for name in enumerate(names):
-            df.rename(columns={df.columns.get_level_values(-1)[name[0]]: name[1]}, inplace=True)
+            df.rename(
+                columns={df.columns.get_level_values(-1)[name[0]]: name[1]},
+                inplace=True)
         return df.columns
+
 
 def set_qp_multiindex(df, x, y):
     '''
@@ -173,11 +186,14 @@ def set_qp_multiindex(df, x, y):
     axis_labels = ['Question', 'Values']
     df.index = pd.MultiIndex.from_product([[x], df.index], names=axis_labels)
     if y is None:
-        df.columns = pd.MultiIndex.from_product([[x], df.columns], names=axis_labels)
+        df.columns = pd.MultiIndex.from_product([[x], df.columns],
+                                                names=axis_labels)
     elif y == '@':
-        df.columns = pd.MultiIndex.from_product([[x], df.columns], names=axis_labels)
+        df.columns = pd.MultiIndex.from_product([[x], df.columns],
+                                                names=axis_labels)
     else:
-        df.columns = pd.MultiIndex.from_product([[y], df.columns], names=axis_labels)
+        df.columns = pd.MultiIndex.from_product([[y], df.columns],
+                                                names=axis_labels)
 
     return df
 
@@ -215,11 +231,10 @@ def _partition_view_df(view, values=False, data_only=False, axes_only=False):
     index = df.index
     columns = df.columns
     data = df if not values else df.values
-    
+
     if data_only:
         return data
     elif axes_only:
         return index.tolist(), columns.tolist()
     else:
         return data, index.tolist(), columns.tolist()
-

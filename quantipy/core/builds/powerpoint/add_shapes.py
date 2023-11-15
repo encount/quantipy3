@@ -4,7 +4,6 @@
 @author: Majeed.sahebzadha
 '''
 
-
 from os import path
 
 from pptx.chart.data import ChartData
@@ -23,8 +22,8 @@ thisdir = path.split(__file__)[0]
 """  Simplified access to, and manipulation of python-pptx shapes/objects/properties.
 """
 
-#------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 fill_type_dct = {'background': MSO_FILL.BACKGROUND,
                  'gradient': MSO_FILL.GRADIENT,
@@ -32,7 +31,8 @@ fill_type_dct = {'background': MSO_FILL.BACKGROUND,
                  'patterned': MSO_FILL.PATTERNED,
                  'picture': MSO_FILL.PICTURE,
                  'solid': MSO_FILL.SOLID,
-                 'textured': MSO_FILL.TEXTURED}
+                 'textured': MSO_FILL.TEXTURED
+                 }
 
 data_label_pos_dct = {'outside_end': XL_LABEL_POSITION.OUTSIDE_END,
                       'above': XL_LABEL_POSITION.ABOVE,
@@ -44,32 +44,34 @@ data_label_pos_dct = {'outside_end': XL_LABEL_POSITION.OUTSIDE_END,
                       'left': XL_LABEL_POSITION.LEFT,
                       'mixed': XL_LABEL_POSITION.MIXED,
                       'outside_end': XL_LABEL_POSITION.OUTSIDE_END,
-                      'right': XL_LABEL_POSITION.RIGHT}
+                      'right': XL_LABEL_POSITION.RIGHT
+                      }
 
 legend_pos_dct = {'bottom': XL_LEGEND_POSITION.BOTTOM,
                   'corner': XL_LEGEND_POSITION.CORNER,
                   'custom': XL_LEGEND_POSITION.CUSTOM,
                   'left': XL_LEGEND_POSITION.LEFT,
                   'right': XL_LEGEND_POSITION.RIGHT,
-                  'top': XL_LEGEND_POSITION.TOP}
-
+                  'top': XL_LEGEND_POSITION.TOP
+                  }
 
 tick_label_pos_dct = {'high': XL_TICK_LABEL_POSITION.HIGH,
                       'low': XL_TICK_LABEL_POSITION.LOW,
                       'next_to_axis': XL_TICK_LABEL_POSITION.NEXT_TO_AXIS,
-                      'none': XL_TICK_LABEL_POSITION.NONE}
-
+                      'none': XL_TICK_LABEL_POSITION.NONE
+                      }
 
 tick_mark_pos_dct = {'cross': XL_TICK_MARK.CROSS,
                      'inside': XL_TICK_MARK.INSIDE,
                      'none': XL_TICK_MARK.NONE,
-                     'outside': XL_TICK_MARK.OUTSIDE}
+                     'outside': XL_TICK_MARK.OUTSIDE
+                     }
 
 vertical_alignment_pos_dct = {'top': MSO_ANCHOR.TOP,
                               'middle': MSO_ANCHOR.MIDDLE,
                               'bottom': MSO_ANCHOR.BOTTOM,
-                              'mixed': MSO_ANCHOR.MIXED}
-
+                              'mixed': MSO_ANCHOR.MIXED
+                              }
 
 paragraph_alignment_pos_dct = {'center': PP_ALIGN.CENTER,
                                'distribute': PP_ALIGN.DISTRIBUTE,
@@ -78,8 +80,8 @@ paragraph_alignment_pos_dct = {'center': PP_ALIGN.CENTER,
                                'left': PP_ALIGN.LEFT,
                                'right': PP_ALIGN.RIGHT,
                                'thai_distribute': PP_ALIGN.THAI_DISTRIBUTE,
-                               'mixed': PP_ALIGN.MIXED}
-
+                               'mixed': PP_ALIGN.MIXED
+                               }
 
 theme_color_index_dct = {'not_theme_color': MSO_THEME_COLOR.NOT_THEME_COLOR,
                          'accent_1': MSO_THEME_COLOR.ACCENT_1,
@@ -98,10 +100,12 @@ theme_color_index_dct = {'not_theme_color': MSO_THEME_COLOR.NOT_THEME_COLOR,
                          'light_2': MSO_THEME_COLOR.LIGHT_2,
                          'text_1': MSO_THEME_COLOR.TEXT_1,
                          'text_2': MSO_THEME_COLOR.TEXT_2,
-                         'mixed': MSO_THEME_COLOR.MIXED}
+                         'mixed': MSO_THEME_COLOR.MIXED
+                         }
 
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def percentage_of_num(percent, whole):
     """returns percent of a number. e.g. what is 5% of 20
@@ -109,8 +113,10 @@ def percentage_of_num(percent, whole):
 
     return (percent * whole) / 100.0
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def get_cht_plot_height(chart_height, percent=10.52395879982087):
     """calculates a given chart's plot height by the charts height
@@ -121,8 +127,10 @@ def get_cht_plot_height(chart_height, percent=10.52395879982087):
 
     return int(plot_height)
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def get_upper_cht_plot_gap(chart_height, percent=3.5078369905956115):
     """calculates the gap between the top of the plot area and top of chart areas
@@ -132,35 +140,37 @@ def get_upper_cht_plot_gap(chart_height, percent=3.5078369905956115):
 
     return int(upper_cht_plot_gap)
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+
 def add_textbox(
-              slide,
-              text,
-              left=Cm(0.79), top=Cm(2.79), width=Cm(23.84), height=Cm(1.3),
-              font_name="Calibri",
-              font_size=12,
-              font_bold=True,
-              font_italic=False,
-              font_color=(89,89,89),
-              font_color_brightness=0,
-              font_color_theme=None,
-              word_wrap=True,
-              auto_size=None,
-              fit_text=True,
-              font_file=None,
-              margin_left=0.25,
-              margin_right=0.25,
-              margin_top=0.13,
-              margin_bottom=0.13,
-              vertical_alignment='top',
-              horizontal_alignment='left',
-              textbox_fill_solid=False,
-              textbox_color=(100,0,0),
-              textbox_color_brightness=0,
-              ):
-    #-------------------------------------------------------------------------
+        slide,
+        text,
+        left=Cm(0.79), top=Cm(2.79), width=Cm(23.84), height=Cm(1.3),
+        font_name="Calibri",
+        font_size=12,
+        font_bold=True,
+        font_italic=False,
+        font_color=(89, 89, 89),
+        font_color_brightness=0,
+        font_color_theme=None,
+        word_wrap=True,
+        auto_size=None,
+        fit_text=True,
+        font_file=None,
+        margin_left=0.25,
+        margin_right=0.25,
+        margin_top=0.13,
+        margin_bottom=0.13,
+        vertical_alignment='top',
+        horizontal_alignment='left',
+        textbox_fill_solid=False,
+        textbox_color=(100, 0, 0),
+        textbox_color_brightness=0,
+):
+    # -------------------------------------------------------------------------
 
     """Adds textbox and sets it's properties to a given slide.
 
@@ -217,7 +227,8 @@ def add_textbox(
     paragraph = textframe.paragraphs[0]
     paragraph.font.color.rgb = RGBColor(*font_color)
     if font_color_theme is not None:
-        paragraph.font.color.theme_color = theme_color_index_dct[font_color_theme]
+        paragraph.font.color.theme_color = theme_color_index_dct[
+            font_color_theme]
     paragraph.font.color.brightness = font_color_brightness
     paragraph.alignment = paragraph_alignment_pos_dct[horizontal_alignment]
 
@@ -225,10 +236,12 @@ def add_textbox(
     if fit_text == True:
         if font_name == "Calibri":
             calibriz = path.join(thisdir, 'fonts\calibriz.ttf')
-            textframe.fit_text(font_family=font_name, max_size=font_size, bold=font_bold,
+            textframe.fit_text(font_family=font_name, max_size=font_size,
+                               bold=font_bold,
                                italic=font_italic, font_file=calibriz)
         else:
-            textframe.fit_text(font_family=font_name, max_size=font_size, bold=font_bold,
+            textframe.fit_text(font_family=font_name, max_size=font_size,
+                               bold=font_bold,
                                italic=font_italic)
     else:
         paragraph.font.name = font_name
@@ -245,42 +258,44 @@ def add_textbox(
         txfill.fore_color.rgb = RGBColor(*textbox_color)
         txfill.fore_color.brightness = textbox_color_brightness
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_pie_chart(
-                slide,
-                dataframe,
-                left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
-                chart_style=2,
+        slide,
+        dataframe,
+        left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
+        chart_style=2,
 
-                #Legend properties
-                has_legend=True,
-                legend_position='bottom',
-                legend_in_layout=False,
-                legend_horz_offset=0,
-                legend_font_name="Calibri",
-                legend_font_size=10,
-                legend_font_bold=False,
-                legend_font_italic=False,
-                legend_font_color=(89,89,89),
-                legend_font_brightness=0,
+        # Legend properties
+        has_legend=True,
+        legend_position='bottom',
+        legend_in_layout=False,
+        legend_horz_offset=0,
+        legend_font_name="Calibri",
+        legend_font_size=10,
+        legend_font_bold=False,
+        legend_font_italic=False,
+        legend_font_color=(89, 89, 89),
+        legend_font_brightness=0,
 
-                #Datalabel properties
-                plot_has_data_labels=True,
-                data_labels_position='outside_end',
-                data_labels_num_format='0%',
-                data_labels_num_format_is_linked=False,
-                data_labels_font_name="Calibri",
-                data_labels_font_size=9,
-                data_labels_font_bold=False,
-                data_labels_font_italic=False,
-                data_labels_font_color=(0,0,0),
+        # Datalabel properties
+        plot_has_data_labels=True,
+        data_labels_position='outside_end',
+        data_labels_num_format='0%',
+        data_labels_num_format_is_linked=False,
+        data_labels_font_name="Calibri",
+        data_labels_font_size=9,
+        data_labels_font_bold=False,
+        data_labels_font_italic=False,
+        data_labels_font_color=(0, 0, 0),
 
-                #Excel table
-                excel_num_format='0.00%'
-                ):
-    #-------------------------------------------------------------------------
+        # Excel table
+        excel_num_format='0.00%'
+):
+    # -------------------------------------------------------------------------
     """Adds single series pie chart to a given slide and set it's properties.
 
     The only required arguments are 'slide' and 'dataframe' content.
@@ -362,7 +377,7 @@ def add_pie_chart(
     ________________________________________________________________________________________________________
 
     """
-    #strips html code
+    # strips html code
     dataframe = clean_axes_labels(dataframe)
 
     # Adding chart data
@@ -370,16 +385,17 @@ def add_pie_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.ix[:, i].values),
+                              excel_num_format)
 
     # Adding chart
     x, y, cx, cy = left, top, width, height
     graphic_frame = slide.shapes.add_chart(
-        XL_CHART_TYPE.PIE, x, y, cx, cy, chart_data
+            XL_CHART_TYPE.PIE, x, y, cx, cy, chart_data
     )
     chart = graphic_frame.chart
 
-    #---------------- adjust chart properties -------------------------------
+    # ---------------- adjust chart properties -------------------------------
 
     chart.chart_style = chart_style
 
@@ -391,7 +407,7 @@ def add_pie_chart(
         legend.font.size = Pt(legend_font_size)
         legend.font.bold = legend_font_bold
         legend.font.italic = legend_font_italic
-        legend.font.color.rgb  = RGBColor(*legend_font_color)
+        legend.font.color.rgb = RGBColor(*legend_font_color)
         legend.font.color.brightness = legend_font_brightness
         legend.position = legend_pos_dct[legend_position]
         legend.include_in_layout = legend_in_layout
@@ -413,87 +429,89 @@ def add_pie_chart(
             data_labels.number_format = data_labels_num_format
         data_labels.number_format_is_linked = data_labels_num_format_is_linked
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_bar_chart(
-                slide,
-                dataframe,
-                left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
-                chart_style=2,
+        slide,
+        dataframe,
+        left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
+        chart_style=2,
 
-                #Legend properties
-                has_legend=True,
-                legend_position='right',
-                legend_in_layout=False,
-                legend_horz_offset = 0.1583,
-                legend_font_name="Calibri",
-                legend_font_size=10,
-                legend_font_bold=False,
-                legend_font_italic=False,
-                legend_font_color=(89,89,89),
-                legend_font_brightness=0,
+        # Legend properties
+        has_legend=True,
+        legend_position='right',
+        legend_in_layout=False,
+        legend_horz_offset=0.1583,
+        legend_font_name="Calibri",
+        legend_font_size=10,
+        legend_font_bold=False,
+        legend_font_italic=False,
+        legend_font_color=(89, 89, 89),
+        legend_font_brightness=0,
 
-                #Category axis properties
-                caxis_visible=True,
-                caxis_tick_label_position='low',
-                caxis_tick_labels_offset=730,
-                caxis_has_major_gridlines=False,
-                caxis_has_minor_gridlines=False,
-                caxis_major_tick_mark='outside',
-                caxis_minor_tick_mark='none',
-                caxis_tick_labels_font_name="Calibri",
-                caxis_tick_labels_font_size=10,
-                caxis_tick_labels_font_bold=False,
-                caxis_tick_labels_font_italic=False,
-                caxis_tick_labels_font_color=(89,89,89),
+        # Category axis properties
+        caxis_visible=True,
+        caxis_tick_label_position='low',
+        caxis_tick_labels_offset=730,
+        caxis_has_major_gridlines=False,
+        caxis_has_minor_gridlines=False,
+        caxis_major_tick_mark='outside',
+        caxis_minor_tick_mark='none',
+        caxis_tick_labels_font_name="Calibri",
+        caxis_tick_labels_font_size=10,
+        caxis_tick_labels_font_bold=False,
+        caxis_tick_labels_font_italic=False,
+        caxis_tick_labels_font_color=(89, 89, 89),
 
-                #Value axis properties
-                vaxis_visible=True,
-                vaxis_tick_label_position='low',
-                vaxis_has_major_gridlines=True,
-                vaxis_has_minor_gridlines=False,
-                vaxis_major_tick_mark='outside',
-                vaxis_minor_tick_mark='none',
-                vaxis_max_scale=1,
-                vaxis_min_scale=0,
-                vaxis_major_unit=0.1,
-                vaxis_minor_unit=None,
-                vaxis_tick_labels_num_format='0%',
-                vaxis_tick_labels_num_format_is_linked=False,
-                vaxis_tick_labels_font_name="Calibri",
-                vaxis_tick_labels_font_bold=True,
-                vaxis_tick_labels_font_size=10,
-                vaxis_tick_labels_font_italic=False,
-                vaxis_tick_labels_font_color=(89,89,89),
+        # Value axis properties
+        vaxis_visible=True,
+        vaxis_tick_label_position='low',
+        vaxis_has_major_gridlines=True,
+        vaxis_has_minor_gridlines=False,
+        vaxis_major_tick_mark='outside',
+        vaxis_minor_tick_mark='none',
+        vaxis_max_scale=1,
+        vaxis_min_scale=0,
+        vaxis_major_unit=0.1,
+        vaxis_minor_unit=None,
+        vaxis_tick_labels_num_format='0%',
+        vaxis_tick_labels_num_format_is_linked=False,
+        vaxis_tick_labels_font_name="Calibri",
+        vaxis_tick_labels_font_bold=True,
+        vaxis_tick_labels_font_size=10,
+        vaxis_tick_labels_font_italic=False,
+        vaxis_tick_labels_font_color=(89, 89, 89),
 
-                #Datalabel properties
-                plot_has_data_labels=True,
-                data_labels_position='outside_end',
-                data_labels_num_format='0%',
-                data_labels_num_format_is_linked=False,
-                data_labels_font_name="Calibri",
-                data_labels_font_size=9,
-                data_labels_font_bold=False,
-                data_labels_font_italic=False,
-                data_labels_font_color=(0,0,0),
+        # Datalabel properties
+        plot_has_data_labels=True,
+        data_labels_position='outside_end',
+        data_labels_num_format='0%',
+        data_labels_num_format_is_linked=False,
+        data_labels_font_name="Calibri",
+        data_labels_font_size=9,
+        data_labels_font_bold=False,
+        data_labels_font_italic=False,
+        data_labels_font_color=(0, 0, 0),
 
-                #Plot properties
-                plot_vary_by_cat=False,
-                series_color_order='reverse',
-                invert_series_color_if_negative=False,
-                plot_gap_width=150,
-                plot_overlap=-10,
-                series_line_color=None,
-                series_line_width=None,
+        # Plot properties
+        plot_vary_by_cat=False,
+        series_color_order='reverse',
+        invert_series_color_if_negative=False,
+        plot_gap_width=150,
+        plot_overlap=-10,
+        series_line_color=None,
+        series_line_width=None,
 
-                #Excel table
-                excel_num_format='0.00%',
-                
-                #Color for separator
-                separator_color=(255,255,255)
-                ):
-    #-------------------------------------------------------------------------
+        # Excel table
+        excel_num_format='0.00%',
+
+        # Color for separator
+        separator_color=(255, 255, 255)
+):
+    # -------------------------------------------------------------------------
     """Adds single or multi series bar chart to a given slide and set it's properties.
 
     The only required arguments are slide and dataframe content.
@@ -586,14 +604,15 @@ def add_bar_chart(
     ________________________________________________________________________________________________________
     """
 
-    #strips html code
+    # strips html code
     dataframe = clean_axes_labels(dataframe)
 
-    #if category labels are split from the chart shape then determine the width of the textboxes and the chart shape.
-    #textboxes in this case will take up 40% of the overall width of the chart shape. From this we can calculate the
-    #width of the chart shape
+    # if category labels are split from the chart shape then determine the width of the textboxes and the chart shape.
+    # textboxes in this case will take up 40% of the overall width of the chart shape. From this we can calculate the
+    # width of the chart shape
 
-    if (caxis_visible == False) or (caxis_visible == True and str(tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
+    if (caxis_visible == False) or (caxis_visible == True and str(
+            tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
         catwidth = percentage_of_num(40, width)
         width = width - catwidth
         left = left + catwidth
@@ -607,12 +626,13 @@ def add_bar_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.ix[:, i].values),
+                              excel_num_format)
 
     # add chart
     x, y, cx, cy = left, top, width, height
     graphic_frame = slide.shapes.add_chart(
-        XL_CHART_TYPE.BAR_CLUSTERED, x, y, cx, cy, chart_data
+            XL_CHART_TYPE.BAR_CLUSTERED, x, y, cx, cy, chart_data
     )
     chart = graphic_frame.chart
 
@@ -632,7 +652,7 @@ def add_bar_chart(
         legend.font.size = Pt(legend_font_size)
         legend.font.bold = legend_font_bold
         legend.font.italic = legend_font_italic
-        legend.font.color.rgb  = RGBColor(*legend_font_color)
+        legend.font.color.rgb = RGBColor(*legend_font_color)
         legend.font.color.brightness = legend_font_brightness
 
     # set category axis (vertical) properties
@@ -641,7 +661,8 @@ def add_bar_chart(
     category_axis.has_minor_gridlines = caxis_has_minor_gridlines
     category_axis.major_tick_mark = tick_mark_pos_dct[caxis_major_tick_mark]
     category_axis.minor_tick_mark = tick_mark_pos_dct[caxis_minor_tick_mark]
-    category_axis.tick_label_position = tick_label_pos_dct[caxis_tick_label_position]
+    category_axis.tick_label_position = tick_label_pos_dct[
+        caxis_tick_label_position]
 
     category_axis.visible = caxis_visible
     if caxis_visible:
@@ -651,7 +672,8 @@ def add_bar_chart(
         caxis_tick_labels.font.size = Pt(caxis_tick_labels_font_size)
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
-        caxis_tick_labels.font.color.rgb = RGBColor(*caxis_tick_labels_font_color)
+        caxis_tick_labels.font.color.rgb = RGBColor(
+            *caxis_tick_labels_font_color)
 
     # set value axis (horizontal) properties
     value_axis = chart.value_axis
@@ -663,7 +685,8 @@ def add_bar_chart(
     value_axis.minor_unit = vaxis_minor_unit
     value_axis.major_tick_mark = tick_mark_pos_dct[vaxis_major_tick_mark]
     value_axis.minor_tick_mark = tick_mark_pos_dct[vaxis_minor_tick_mark]
-    value_axis.tick_label_position = tick_label_pos_dct[vaxis_tick_label_position]
+    value_axis.tick_label_position = tick_label_pos_dct[
+        vaxis_tick_label_position]
 
     value_axis.visible = vaxis_visible
     if vaxis_visible:
@@ -672,7 +695,8 @@ def add_bar_chart(
         vaxis_tick_labels.font.size = Pt(vaxis_tick_labels_font_size)
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.name = vaxis_tick_labels_font_name
-        vaxis_tick_labels.font.color.rgb = RGBColor(*vaxis_tick_labels_font_color)
+        vaxis_tick_labels.font.color.rgb = RGBColor(
+            *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -710,7 +734,6 @@ def add_bar_chart(
         # Add fill to the separator
         bar = chart.series[0].points
         for x in pos_net_separator:
-
             point = bar[x]
             fill = point.format.fill
             fill.solid()
@@ -726,9 +749,10 @@ def add_bar_chart(
 
         for v, value in enumerate(values):
             point = chart.series[s].points[v]
-            #point.format.line.color.rgb = RGBColor(0,0,0)
+            # point.format.line.color.rgb = RGBColor(0,0,0)
             frame = point.data_label.text_frame
-            frame.text = '' if value == 1.01 else str(int(round(float(value) * 100))) + "%"
+            frame.text = '' if value == 1.01 else str(
+                int(round(float(value) * 100))) + "%"
             run = frame.paragraphs[0].runs
             for point_label in run:
                 point_label.font.size = Pt(data_labels_font_size)
@@ -737,34 +761,36 @@ def add_bar_chart(
                 point_label.font.italic = data_labels_font_italic
                 point_label.font.color.rgb = RGBColor(*data_labels_font_color)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
+
     if series_color_order and len(dataframe.columns) > 1:
-        ser_colors_list = color_setter(len(dataframe.columns), series_color_order)
+        ser_colors_list = color_setter(len(dataframe.columns),
+                                       series_color_order)
 
     for i, ser in enumerate(dataframe.columns):
         ser = plot.series[i]
         ser.invert_if_negative = invert_series_color_if_negative
 
         if series_line_color is not None and series_line_width is not None:
-          ser.line.color.rgb = RGBColor(*series_line_color)
-          ser.line.width = Pt(series_line_width)
+            ser.line.color.rgb = RGBColor(*series_line_color)
+            ser.line.width = Pt(series_line_width)
 
         elif series_line_color is not None and series_line_width is None:
-          ser.line.color.rgb = RGBColor(*series_line_color)
+            ser.line.color.rgb = RGBColor(*series_line_color)
 
         if series_color_order and len(dataframe.columns) > 1:
-          try:
-            fill = ser.fill
-          except:
-            fill = ser.format.fill
-          fill.solid()
-          color_code = ser_colors_list[i]
-          fill.fore_color.rgb = RGBColor(*color_code)
+            try:
+                fill = ser.fill
+            except:
+                fill = ser.format.fill
+            fill.solid()
+            color_code = ser_colors_list[i]
+            fill.fore_color.rgb = RGBColor(*color_code)
 
     # generate overlay axis labels
-    if (caxis_visible == False) or (caxis_visible == True and str(tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
+    if (caxis_visible == False) or (caxis_visible == True and str(
+            tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
         cht_plot_height = get_cht_plot_height(height)
-        heightPerLabel = cht_plot_height/len(dataframe.index)
+        heightPerLabel = cht_plot_height / len(dataframe.index)
         rightofchart = left + width
         txtbx_width = width / 5
         firstposition = top + get_upper_cht_plot_gap(height)
@@ -772,13 +798,13 @@ def add_bar_chart(
         cat_labels = dataframe.T.columns
 
         for i, label in enumerate(cat_labels):
-
             top = 0
             pointRelPos = len(cat_labels) - (i + 1)
             top = firstposition + pointRelPos * heightPerLabel
 
             add_textbox(slide,
-                        left=142875, top=top, width=rightofchart - width, height=heightPerLabel,
+                        left=142875, top=top, width=rightofchart - width,
+                        height=heightPerLabel,
                         text=label,
                         font_name=caxis_tick_labels_font_name,
                         font_size=caxis_tick_labels_font_size,
@@ -789,85 +815,87 @@ def add_bar_chart(
                         horizontal_alignment='right',
                         vertical_alignment='middle')
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_column_chart(
-                    slide,
-                    dataframe,
-                    left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
-                    chart_style=2,
+        slide,
+        dataframe,
+        left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
+        chart_style=2,
 
-                    #Legend properties
-                    has_legend=True,
-                    legend_position='bottom',
-                    legend_in_layout=False,
-                    legend_horz_offset=0,
-                    legend_font_name="Calibri",
-                    legend_font_size=10,
-                    legend_font_bold=False,
-                    legend_font_italic=False,
-                    legend_font_color=(89,89,89),
-                    legend_font_brightness=0,
+        # Legend properties
+        has_legend=True,
+        legend_position='bottom',
+        legend_in_layout=False,
+        legend_horz_offset=0,
+        legend_font_name="Calibri",
+        legend_font_size=10,
+        legend_font_bold=False,
+        legend_font_italic=False,
+        legend_font_color=(89, 89, 89),
+        legend_font_brightness=0,
 
-                    #Category axis properties
-                    caxis_visible=True,
-                    caxis_tick_label_position='next_to_axis',
-                    caxis_tick_labels_offset=100,
-                    caxis_has_major_gridlines=False,
-                    caxis_has_minor_gridlines=False,
-                    caxis_major_tick_mark='outside',
-                    caxis_minor_tick_mark='none',
-                    caxis_tick_labels_font_name="Calibri",
-                    caxis_tick_labels_font_size=10,
-                    caxis_tick_labels_font_bold=False,
-                    caxis_tick_labels_font_italic=False,
-                    caxis_tick_labels_font_color=(89,89,89),
+        # Category axis properties
+        caxis_visible=True,
+        caxis_tick_label_position='next_to_axis',
+        caxis_tick_labels_offset=100,
+        caxis_has_major_gridlines=False,
+        caxis_has_minor_gridlines=False,
+        caxis_major_tick_mark='outside',
+        caxis_minor_tick_mark='none',
+        caxis_tick_labels_font_name="Calibri",
+        caxis_tick_labels_font_size=10,
+        caxis_tick_labels_font_bold=False,
+        caxis_tick_labels_font_italic=False,
+        caxis_tick_labels_font_color=(89, 89, 89),
 
-                    #Value axis properties
-                    vaxis_visible=True,
-                    vaxis_tick_label_position='low',
-                    vaxis_has_major_gridlines=True,
-                    vaxis_has_minor_gridlines=False,
-                    vaxis_major_tick_mark='outside',
-                    vaxis_minor_tick_mark='none',
-                    vaxis_max_scale=1.0,
-                    vaxis_min_scale=0.0,
-                    vaxis_major_unit=0.1,
-                    vaxis_minor_unit=None,
-                    vaxis_tick_labels_num_format='0%',
-                    vaxis_tick_labels_num_format_is_linked=False,
-                    vaxis_tick_labels_font_name="Calibri",
-                    vaxis_tick_labels_font_size=10,
-                    vaxis_tick_labels_font_bold=True,
-                    vaxis_tick_labels_font_italic=False,
-                    vaxis_tick_labels_font_color=(89,89,89),
+        # Value axis properties
+        vaxis_visible=True,
+        vaxis_tick_label_position='low',
+        vaxis_has_major_gridlines=True,
+        vaxis_has_minor_gridlines=False,
+        vaxis_major_tick_mark='outside',
+        vaxis_minor_tick_mark='none',
+        vaxis_max_scale=1.0,
+        vaxis_min_scale=0.0,
+        vaxis_major_unit=0.1,
+        vaxis_minor_unit=None,
+        vaxis_tick_labels_num_format='0%',
+        vaxis_tick_labels_num_format_is_linked=False,
+        vaxis_tick_labels_font_name="Calibri",
+        vaxis_tick_labels_font_size=10,
+        vaxis_tick_labels_font_bold=True,
+        vaxis_tick_labels_font_italic=False,
+        vaxis_tick_labels_font_color=(89, 89, 89),
 
-                    #Datalabel properties
-                    plot_has_data_labels=True,
-                    data_labels_position='outside_end',
-                    data_labels_num_format='0%',
-                    data_labels_num_format_is_linked=False,
-                    data_labels_font_name="Calibri",
-                    data_labels_font_size=9,
-                    data_labels_font_bold=False,
-                    data_labels_font_italic=False,
-                    data_labels_font_color=(0,0,0),
+        # Datalabel properties
+        plot_has_data_labels=True,
+        data_labels_position='outside_end',
+        data_labels_num_format='0%',
+        data_labels_num_format_is_linked=False,
+        data_labels_font_name="Calibri",
+        data_labels_font_size=9,
+        data_labels_font_bold=False,
+        data_labels_font_italic=False,
+        data_labels_font_color=(0, 0, 0),
 
-                    #Plot properties
-                    plot_vary_by_cat=False,
-                    invert_series_color_if_negative=False,
-                    plot_gap_width=150,
-                    plot_overlap=-10,
-                    series_line_color=None,
-                    series_line_width=None,
+        # Plot properties
+        plot_vary_by_cat=False,
+        invert_series_color_if_negative=False,
+        plot_gap_width=150,
+        plot_overlap=-10,
+        series_line_color=None,
+        series_line_width=None,
 
-                    #Excel table
-                    excel_num_format='0.00%'
-                    ):
-    #-------------------------------------------------------------------------
+        # Excel table
+        excel_num_format='0.00%'
+):
+    # -------------------------------------------------------------------------
 
-    #strips html code
+    # strips html code
     dataframe = clean_axes_labels(dataframe)
 
     # add chart data
@@ -880,7 +908,7 @@ def add_column_chart(
     # add chart
     x, y, cx, cy = left, top, width, height
     graphic_frame = slide.shapes.add_chart(
-        XL_CHART_TYPE.COLUMN_CLUSTERED, x, y, cx, cy, chart_data
+            XL_CHART_TYPE.COLUMN_CLUSTERED, x, y, cx, cy, chart_data
     )
     chart = graphic_frame.chart
 
@@ -900,7 +928,7 @@ def add_column_chart(
         legend.font.size = Pt(legend_font_size)
         legend.font.bold = legend_font_bold
         legend.font.italic = legend_font_italic
-        legend.font.color.rgb  = RGBColor(*legend_font_color)
+        legend.font.color.rgb = RGBColor(*legend_font_color)
         legend.font.color.brightness = legend_font_brightness
 
     # set category axis (horizontal) properties
@@ -909,7 +937,8 @@ def add_column_chart(
     category_axis.has_minor_gridlines = caxis_has_minor_gridlines
     category_axis.major_tick_mark = tick_mark_pos_dct[caxis_major_tick_mark]
     category_axis.minor_tick_mark = tick_mark_pos_dct[caxis_minor_tick_mark]
-    category_axis.tick_label_position = tick_label_pos_dct[caxis_tick_label_position]
+    category_axis.tick_label_position = tick_label_pos_dct[
+        caxis_tick_label_position]
 
     category_axis.visible = caxis_visible
     if caxis_visible:
@@ -919,7 +948,8 @@ def add_column_chart(
         caxis_tick_labels.font.size = Pt(caxis_tick_labels_font_size)
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
-        caxis_tick_labels.font.color.rgb = RGBColor(*caxis_tick_labels_font_color)
+        caxis_tick_labels.font.color.rgb = RGBColor(
+            *caxis_tick_labels_font_color)
 
     # set value axis (vertical) properties
     value_axis = chart.value_axis
@@ -931,7 +961,8 @@ def add_column_chart(
     value_axis.minimum_scale = vaxis_min_scale
     value_axis.major_unit = vaxis_major_unit
     value_axis.minor_unit = vaxis_minor_unit
-    value_axis.tick_label_position = tick_label_pos_dct[vaxis_tick_label_position]
+    value_axis.tick_label_position = tick_label_pos_dct[
+        vaxis_tick_label_position]
 
     value_axis.visible = vaxis_visible
     if vaxis_visible:
@@ -940,7 +971,8 @@ def add_column_chart(
         vaxis_tick_labels.font.size = Pt(vaxis_tick_labels_font_size)
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.name = vaxis_tick_labels_font_name
-        vaxis_tick_labels.font.color.rgb = RGBColor(*vaxis_tick_labels_font_color)
+        vaxis_tick_labels.font.color.rgb = RGBColor(
+            *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -960,7 +992,7 @@ def add_column_chart(
         data_labels.font.italic = data_labels_font_italic
         data_labels.font.name = data_labels_font_name
         data_labels.font.color.rgb = RGBColor(*data_labels_font_color)
-        if data_labels_num_format  is not None:
+        if data_labels_num_format is not None:
             data_labels.number_format = data_labels_num_format
         data_labels.number_format_is_linked = data_labels_num_format_is_linked
 
@@ -969,90 +1001,92 @@ def add_column_chart(
         ser.invert_if_negative = invert_series_color_if_negative
 
         if series_line_color is not None and series_line_width is not None:
-          ser.line.color.rgb = RGBColor(*series_line_color)
-          ser.line.width = Pt(series_line_width)
+            ser.line.color.rgb = RGBColor(*series_line_color)
+            ser.line.width = Pt(series_line_width)
 
         elif series_line_color is not None and series_line_width is None:
-          ser.line.color.rgb = RGBColor(*series_line_color)
+            ser.line.color.rgb = RGBColor(*series_line_color)
+
 
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_line_chart(
-                slide,
-                dataframe,
-                left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
-                chart_style=2,
+        slide,
+        dataframe,
+        left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
+        chart_style=2,
 
-                #Legend properties
-                has_legend=True,
-                legend_position='bottom',
-                legend_in_layout=False,
-                legend_horz_offset=0,
-                legend_font_name="Calibri",
-                legend_font_size=10,
-                legend_font_bold=False,
-                legend_font_italic=False,
-                legend_font_color=(89,89,89),
-                legend_font_brightness=0,
+        # Legend properties
+        has_legend=True,
+        legend_position='bottom',
+        legend_in_layout=False,
+        legend_horz_offset=0,
+        legend_font_name="Calibri",
+        legend_font_size=10,
+        legend_font_bold=False,
+        legend_font_italic=False,
+        legend_font_color=(89, 89, 89),
+        legend_font_brightness=0,
 
-                #Category axis properties
-                caxis_visible=True,
-                caxis_tick_label_position='low',
-                caxis_tick_labels_offset=100,
-                caxis_has_major_gridlines=False,
-                caxis_has_minor_gridlines=False,
-                caxis_major_tick_mark='outside',
-                caxis_minor_tick_mark='none',
-                caxis_tick_labels_font_name="Calibri",
-                caxis_tick_labels_font_size=10,
-                caxis_tick_labels_font_italic=False,
-                caxis_tick_labels_font_bold=False,
-                caxis_tick_labels_font_color=(89,89,89),
+        # Category axis properties
+        caxis_visible=True,
+        caxis_tick_label_position='low',
+        caxis_tick_labels_offset=100,
+        caxis_has_major_gridlines=False,
+        caxis_has_minor_gridlines=False,
+        caxis_major_tick_mark='outside',
+        caxis_minor_tick_mark='none',
+        caxis_tick_labels_font_name="Calibri",
+        caxis_tick_labels_font_size=10,
+        caxis_tick_labels_font_italic=False,
+        caxis_tick_labels_font_bold=False,
+        caxis_tick_labels_font_color=(89, 89, 89),
 
-                #Value axis properties
-                vaxis_visible=True,
-                vaxis_tick_label_position='low',
-                vaxis_has_major_gridlines=True,
-                vaxis_has_minor_gridlines=False,
-                vaxis_major_tick_mark='outside',
-                vaxis_minor_tick_mark='none',
-                vaxis_max_scale=1.0,
-                vaxis_min_scale=0.0,
-                vaxis_major_unit=0.1,
-                vaxis_minor_unit=None,
-                vaxis_tick_labels_num_format='0%',
-                vaxis_tick_labels_num_format_is_linked=False,
-                vaxis_tick_labels_font_name="Calibri",
-                vaxis_tick_labels_font_bold=True,
-                vaxis_tick_labels_font_size=10,
-                vaxis_tick_labels_font_italic=False,
-                vaxis_tick_labels_font_color=(89,89,89),
+        # Value axis properties
+        vaxis_visible=True,
+        vaxis_tick_label_position='low',
+        vaxis_has_major_gridlines=True,
+        vaxis_has_minor_gridlines=False,
+        vaxis_major_tick_mark='outside',
+        vaxis_minor_tick_mark='none',
+        vaxis_max_scale=1.0,
+        vaxis_min_scale=0.0,
+        vaxis_major_unit=0.1,
+        vaxis_minor_unit=None,
+        vaxis_tick_labels_num_format='0%',
+        vaxis_tick_labels_num_format_is_linked=False,
+        vaxis_tick_labels_font_name="Calibri",
+        vaxis_tick_labels_font_bold=True,
+        vaxis_tick_labels_font_size=10,
+        vaxis_tick_labels_font_italic=False,
+        vaxis_tick_labels_font_color=(89, 89, 89),
 
-                #Data label properties
-                plot_has_data_labels=True,
-                data_labels_position='above',
-                data_labels_num_format='0%',
-                data_labels_num_format_is_linked=False,
-                data_labels_font_name="Calibri",
-                data_labels_font_size=9,
-                data_labels_font_bold=False,
-                data_labels_font_italic=False,
-                data_labels_font_color=(0,0,0),
+        # Data label properties
+        plot_has_data_labels=True,
+        data_labels_position='above',
+        data_labels_num_format='0%',
+        data_labels_num_format_is_linked=False,
+        data_labels_font_name="Calibri",
+        data_labels_font_size=9,
+        data_labels_font_bold=False,
+        data_labels_font_italic=False,
+        data_labels_font_color=(0, 0, 0),
 
-                #Plot properties
-                plot_vary_by_cat=False,
-                invert_series_color_if_negative=False,
-                plot_gap_width=150,
-                plot_overlap=-10,
-                smooth_line=False,
+        # Plot properties
+        plot_vary_by_cat=False,
+        invert_series_color_if_negative=False,
+        plot_gap_width=150,
+        plot_overlap=-10,
+        smooth_line=False,
 
-                #Excel table
-                excel_num_format='0.00%'
-                    ):
-    #-------------------------------------------------------------------------
+        # Excel table
+        excel_num_format='0.00%'
+):
+    # -------------------------------------------------------------------------
 
-    #strips html code
+    # strips html code
     dataframe = clean_axes_labels(dataframe)
 
     # Adding chart data
@@ -1060,21 +1094,22 @@ def add_line_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.ix[:, i].values),
+                              excel_num_format)
 
     # Adding chart
     x, y, cx, cy = left, top, width, height
     graphic_frame = slide.shapes.add_chart(
-        XL_CHART_TYPE.LINE, x, y, cx, cy, chart_data
+            XL_CHART_TYPE.LINE, x, y, cx, cy, chart_data
     )
     chart = graphic_frame.chart
 
     # ---------------- adjust chart properties ----------------
 
-    #chart style
+    # chart style
     chart.chart_style = chart_style
 
-    #set legend properties
+    # set legend properties
     chart.has_legend = has_legend
     if has_legend:
         legend = chart.legend
@@ -1085,16 +1120,17 @@ def add_line_chart(
         legend.font.size = Pt(legend_font_size)
         legend.font.bold = legend_font_bold
         legend.font.italic = legend_font_italic
-        legend.font.color.rgb  = RGBColor(*legend_font_color)
+        legend.font.color.rgb = RGBColor(*legend_font_color)
         legend.font.color.brightness = legend_font_brightness
 
-    #set category axis (horizontal) properties
+    # set category axis (horizontal) properties
     category_axis = chart.category_axis
     category_axis.has_major_gridlines = caxis_has_major_gridlines
     category_axis.has_minor_gridlines = caxis_has_minor_gridlines
     category_axis.major_tick_mark = tick_mark_pos_dct[caxis_major_tick_mark]
     category_axis.minor_tick_mark = tick_mark_pos_dct[caxis_minor_tick_mark]
-    category_axis.tick_label_position = tick_label_pos_dct[caxis_tick_label_position]
+    category_axis.tick_label_position = tick_label_pos_dct[
+        caxis_tick_label_position]
 
     category_axis.visible = caxis_visible
     if caxis_visible:
@@ -1104,7 +1140,8 @@ def add_line_chart(
         caxis_tick_labels.font.size = Pt(caxis_tick_labels_font_size)
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
-        caxis_tick_labels.font.color.rgb = RGBColor(*caxis_tick_labels_font_color)
+        caxis_tick_labels.font.color.rgb = RGBColor(
+            *caxis_tick_labels_font_color)
 
     # set value axis (vertical) properties
     value_axis = chart.value_axis
@@ -1116,7 +1153,8 @@ def add_line_chart(
     value_axis.minimum_scale = vaxis_min_scale
     value_axis.major_unit = vaxis_major_unit
     value_axis.minor_unit = vaxis_minor_unit
-    value_axis.tick_label_position = tick_label_pos_dct[vaxis_tick_label_position]
+    value_axis.tick_label_position = tick_label_pos_dct[
+        vaxis_tick_label_position]
 
     value_axis.visible = vaxis_visible
     if vaxis_visible:
@@ -1125,7 +1163,8 @@ def add_line_chart(
         vaxis_tick_labels.font.size = Pt(vaxis_tick_labels_font_size)
         vaxis_tick_labels.font.bold = vaxis_tick_labels_font_bold
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
-        vaxis_tick_labels.font.color.rgb = RGBColor(*vaxis_tick_labels_font_color)
+        vaxis_tick_labels.font.color.rgb = RGBColor(
+            *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -1145,7 +1184,7 @@ def add_line_chart(
         data_labels.font.italic = data_labels_font_italic
         data_labels.font.name = data_labels_font_name
         data_labels.font.color.rgb = RGBColor(*data_labels_font_color)
-        if data_labels_num_format  is not None:
+        if data_labels_num_format is not None:
             data_labels.number_format = data_labels_num_format
         data_labels.number_format_is_linked = data_labels_num_format_is_linked
 
@@ -1154,91 +1193,94 @@ def add_line_chart(
         ser.invert_if_negative = invert_series_color_if_negative
         ser.smooth = smooth_line
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_stacked_bar_chart(
-                        slide,
-                        dataframe,
-                        left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
-                        chart_style=2,
+        slide,
+        dataframe,
+        left=Cm(0.79), top=Cm(4.1), width=Cm(23.84), height=Cm(11.5),
+        chart_style=2,
 
-                        #Legend properties
-                        has_legend=True,
-                        legend_position='right',
-                        legend_in_layout=False,
-                        legend_horz_offset=0,
-                        legend_font_name="Calibri",
-                        legend_font_size=10,
-                        legend_font_bold=False,
-                        legend_font_italic=False,
-                        legend_font_color=(89,89,89),
-                        legend_font_brightness=0,
+        # Legend properties
+        has_legend=True,
+        legend_position='right',
+        legend_in_layout=False,
+        legend_horz_offset=0,
+        legend_font_name="Calibri",
+        legend_font_size=10,
+        legend_font_bold=False,
+        legend_font_italic=False,
+        legend_font_color=(89, 89, 89),
+        legend_font_brightness=0,
 
-                        #Category axis properties
-                        caxis_visible=True,
-                        caxis_tick_label_position='low',
-                        caxis_tick_labels_offset =730,
-                        caxis_has_major_gridlines=False,
-                        caxis_has_minor_gridlines=False,
-                        caxis_major_tick_mark='outside',
-                        caxis_minor_tick_mark='none',
-                        caxis_tick_labels_font_name = "Calibri",
-                        caxis_tick_labels_font_size=10,
-                        caxis_tick_labels_font_bold=False,
-                        caxis_tick_labels_font_italic=False,
-                        caxis_tick_labels_font_color=(89,89,89),
+        # Category axis properties
+        caxis_visible=True,
+        caxis_tick_label_position='low',
+        caxis_tick_labels_offset=730,
+        caxis_has_major_gridlines=False,
+        caxis_has_minor_gridlines=False,
+        caxis_major_tick_mark='outside',
+        caxis_minor_tick_mark='none',
+        caxis_tick_labels_font_name="Calibri",
+        caxis_tick_labels_font_size=10,
+        caxis_tick_labels_font_bold=False,
+        caxis_tick_labels_font_italic=False,
+        caxis_tick_labels_font_color=(89, 89, 89),
 
-                        #Value axis properties
-                        vaxis_visible=True,
-                        vaxis_tick_label_position='low',
-                        vaxis_has_major_gridlines=True,
-                        vaxis_has_minor_gridlines=False,
-                        vaxis_major_tick_mark='outside',
-                        vaxis_minor_tick_mark='none',
-                        vaxis_max_scale=1.0,
-                        vaxis_min_scale=0,
-                        vaxis_major_unit=0.1,
-                        vaxis_minor_unit=None,
-                        vaxis_tick_labels_num_format='0%',
-                        vaxis_tick_labels_num_format_is_linked=False,
-                        vaxis_tick_labels_font_name="Calibri",
-                        vaxis_tick_labels_font_size=10,
-                        vaxis_tick_labels_font_bold=True,
-                        vaxis_tick_labels_font_italic=False,
-                        vaxis_tick_labels_font_color=(89,89,89),
+        # Value axis properties
+        vaxis_visible=True,
+        vaxis_tick_label_position='low',
+        vaxis_has_major_gridlines=True,
+        vaxis_has_minor_gridlines=False,
+        vaxis_major_tick_mark='outside',
+        vaxis_minor_tick_mark='none',
+        vaxis_max_scale=1.0,
+        vaxis_min_scale=0,
+        vaxis_major_unit=0.1,
+        vaxis_minor_unit=None,
+        vaxis_tick_labels_num_format='0%',
+        vaxis_tick_labels_num_format_is_linked=False,
+        vaxis_tick_labels_font_name="Calibri",
+        vaxis_tick_labels_font_size=10,
+        vaxis_tick_labels_font_bold=True,
+        vaxis_tick_labels_font_italic=False,
+        vaxis_tick_labels_font_color=(89, 89, 89),
 
-                        #Datalabel properties
-                        plot_has_data_labels=True,
-                        data_labels_position='center',
-                        data_labels_num_format='0%',
-                        data_labels_num_format_is_linked=False,
-                        data_labels_font_name="Calibri",
-                        data_labels_font_size=9,
-                        data_labels_font_bold=False,
-                        data_labels_font_italic=False,
-                        data_labels_font_color=(0,0,0),
+        # Datalabel properties
+        plot_has_data_labels=True,
+        data_labels_position='center',
+        data_labels_num_format='0%',
+        data_labels_num_format_is_linked=False,
+        data_labels_font_name="Calibri",
+        data_labels_font_size=9,
+        data_labels_font_bold=False,
+        data_labels_font_italic=False,
+        data_labels_font_color=(0, 0, 0),
 
-                        #Plot properties
-                        invert_series_color_if_negative=False,
-                        plot_gap_width=150,
-                        plot_overlap=100,
-                        series_line_color=None,
-                        series_line_width=None,
+        # Plot properties
+        invert_series_color_if_negative=False,
+        plot_gap_width=150,
+        plot_overlap=100,
+        series_line_color=None,
+        series_line_width=None,
 
-                        #Excel table
-                        excel_num_format='0.00%'
-                        ):
-    #-------------------------------------------------------------------------
+        # Excel table
+        excel_num_format='0.00%'
+):
+    # -------------------------------------------------------------------------
 
-    #strips html code
+    # strips html code
     dataframe = clean_axes_labels(dataframe)
 
-    #if category labels are split from chart shape then determine the width of the textboxes and adjust chart shape accordingly.
-    #textboxes in this case will take up 30% of the overall width of the chart shape. From this we can calculate the
-    #width of the chart shape.
+    # if category labels are split from chart shape then determine the width of the textboxes and adjust chart shape accordingly.
+    # textboxes in this case will take up 30% of the overall width of the chart shape. From this we can calculate the
+    # width of the chart shape.
 
-    if (caxis_visible == False) or (caxis_visible == True and str(tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
+    if (caxis_visible == False) or (caxis_visible == True and str(
+            tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
         catwidth = percentage_of_num(30, width)
         width = width - catwidth
         left = left + catwidth
@@ -1252,12 +1294,13 @@ def add_stacked_bar_chart(
     chart_data.categories = dataframe.index
 
     for i, col in enumerate(dataframe.columns):
-        chart_data.add_series(col, (dataframe.ix[:, i].values), excel_num_format)
+        chart_data.add_series(col, (dataframe.ix[:, i].values),
+                              excel_num_format)
 
     # add chart to slide
     x, y, cx, cy = left, top, width, height
     graphic_frame = slide.shapes.add_chart(
-        XL_CHART_TYPE.BAR_STACKED_100, x, y, cx, cy, chart_data
+            XL_CHART_TYPE.BAR_STACKED_100, x, y, cx, cy, chart_data
     )
     chart = graphic_frame.chart
 
@@ -1277,7 +1320,7 @@ def add_stacked_bar_chart(
         legend.font.size = Pt(legend_font_size)
         legend.font.bold = legend_font_bold
         legend.font.italic = legend_font_italic
-        legend.font.color.rgb  = RGBColor(*legend_font_color)
+        legend.font.color.rgb = RGBColor(*legend_font_color)
         legend.font.color.brightness = legend_font_brightness
 
     # set category axis (vertical) properties
@@ -1286,7 +1329,8 @@ def add_stacked_bar_chart(
     category_axis.has_minor_gridlines = caxis_has_minor_gridlines
     category_axis.major_tick_mark = tick_mark_pos_dct[caxis_major_tick_mark]
     category_axis.minor_tick_mark = tick_mark_pos_dct[caxis_minor_tick_mark]
-    category_axis.tick_label_position = tick_label_pos_dct[caxis_tick_label_position]
+    category_axis.tick_label_position = tick_label_pos_dct[
+        caxis_tick_label_position]
 
     category_axis.visible = caxis_visible
     if caxis_visible:
@@ -1294,9 +1338,10 @@ def add_stacked_bar_chart(
         caxis_tick_labels.offset = caxis_tick_labels_offset
         caxis_tick_labels.font.name = caxis_tick_labels_font_name
         caxis_tick_labels.font.size = Pt(caxis_tick_labels_font_size)
-        caxis_tick_labels.font.bold  = caxis_tick_labels_font_bold
+        caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
-        caxis_tick_labels.font.color.rgb = RGBColor(*caxis_tick_labels_font_color)
+        caxis_tick_labels.font.color.rgb = RGBColor(
+            *caxis_tick_labels_font_color)
 
     # set value axis (horizontal) properties
     value_axis = chart.value_axis
@@ -1308,7 +1353,8 @@ def add_stacked_bar_chart(
     value_axis.minor_unit = vaxis_minor_unit
     value_axis.major_tick_mark = tick_mark_pos_dct[vaxis_major_tick_mark]
     value_axis.minor_tick_mark = tick_mark_pos_dct[vaxis_minor_tick_mark]
-    value_axis.tick_label_position = tick_label_pos_dct[vaxis_tick_label_position]
+    value_axis.tick_label_position = tick_label_pos_dct[
+        vaxis_tick_label_position]
 
     value_axis.visible = vaxis_visible
     if vaxis_visible:
@@ -1317,7 +1363,8 @@ def add_stacked_bar_chart(
         vaxis_tick_labels.font.size = Pt(vaxis_tick_labels_font_size)
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.name = vaxis_tick_labels_font_name
-        vaxis_tick_labels.font.color.rgb = RGBColor(*vaxis_tick_labels_font_color)
+        vaxis_tick_labels.font.color.rgb = RGBColor(
+            *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -1345,17 +1392,18 @@ def add_stacked_bar_chart(
         ser.invert_if_negative = invert_series_color_if_negative
 
         if series_line_color is not None and series_line_width is not None:
-          ser.line.color.rgb = RGBColor(*series_line_color)
-          ser.line.width = Pt(series_line_width)
+            ser.line.color.rgb = RGBColor(*series_line_color)
+            ser.line.width = Pt(series_line_width)
 
         elif series_line_color is not None and series_line_width is None:
-          ser.line.color.rgb = RGBColor(*series_line_color)
+            ser.line.color.rgb = RGBColor(*series_line_color)
 
     # generate overlay axis labels
-    if (caxis_visible == False) or (caxis_visible == True and str(tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
+    if (caxis_visible == False) or (caxis_visible == True and str(
+            tick_label_pos_dct[caxis_tick_label_position]) == "NONE (-4142)"):
 
         cht_plot_height = get_cht_plot_height(height)
-        heightPerLabel = cht_plot_height/len(dataframe.index)
+        heightPerLabel = cht_plot_height / len(dataframe.index)
         rightofchart = left + width
         txtbx_width = width / 5
         firstposition = top + get_upper_cht_plot_gap(height)
@@ -1363,14 +1411,14 @@ def add_stacked_bar_chart(
         cat_labels = dataframe.T.columns
 
         for i, label in enumerate(cat_labels):
-
             top = 0
             pointRelPos = len(cat_labels) - (i + 1)
             top = firstposition + pointRelPos * heightPerLabel
 
             add_textbox(slide,
                         text=label,
-                        left=142875, top=top, width=rightofchart - width, height=heightPerLabel,
+                        left=142875, top=top, width=rightofchart - width,
+                        height=heightPerLabel,
                         font_name=caxis_tick_labels_font_name,
                         font_size=caxis_tick_labels_font_size,
                         fit_text=False,
@@ -1380,62 +1428,64 @@ def add_stacked_bar_chart(
                         horizontal_alignment='right',
                         vertical_alignment='middle')
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_table(
-            slide,
-            df,
-            question_text,
-            left=4, top=8, width=5, height=8,
-            margin_left=0.5,
-            margin_right=0.5,
-            margin_top=0.5,
-            margin_bottom=0.5,
+        slide,
+        df,
+        question_text,
+        left=4, top=8, width=5, height=8,
+        margin_left=0.5,
+        margin_right=0.5,
+        margin_top=0.5,
+        margin_bottom=0.5,
 
-            first_column_width=3000000,
+        first_column_width=3000000,
 
-            side_member_font_size=10,
-            side_member_font_name='Verdana',
-            side_member_font_bold=False,
-            side_member_font_italic=False,
-            side_member_font_color=(0,0,0),
-            side_member_font_para_alignment=PP_ALIGN.LEFT,
-            side_member_vert_alignment=MSO_ANCHOR.TOP,
-            sidemember_shading=True,
-            sidemember_shading_color='No fill',
+        side_member_font_size=10,
+        side_member_font_name='Verdana',
+        side_member_font_bold=False,
+        side_member_font_italic=False,
+        side_member_font_color=(0, 0, 0),
+        side_member_font_para_alignment=PP_ALIGN.LEFT,
+        side_member_vert_alignment=MSO_ANCHOR.TOP,
+        sidemember_shading=True,
+        sidemember_shading_color='No fill',
 
-            top_member_font_size=10,
-            top_member_font_name='Verdana',
-            top_member_font_bold=False,
-            top_member_font_italic=False,
-            top_member_font_color=(255,255,255),
-            top_member_font_para_alignment=PP_ALIGN.CENTER,
-            top_member_vert_alignment=MSO_ANCHOR.BOTTOM,
-            top_member_shading=True,
-            top_member_shading_color=(0,0,128),
+        top_member_font_size=10,
+        top_member_font_name='Verdana',
+        top_member_font_bold=False,
+        top_member_font_italic=False,
+        top_member_font_color=(255, 255, 255),
+        top_member_font_para_alignment=PP_ALIGN.CENTER,
+        top_member_vert_alignment=MSO_ANCHOR.BOTTOM,
+        top_member_shading=True,
+        top_member_shading_color=(0, 0, 128),
 
-            values_font_size=10,
-            values_font_name='Verdana',
-            values_font_bold=False,
-            values_font_italic=False,
-            values_font_color=(0,0,0),
-            values_font_para_alignment=PP_ALIGN.RIGHT,
-            values_vert_alignment=MSO_ANCHOR.TOP,
-            values_shading=True,
-            values_shading_shading_color='No fill',
+        values_font_size=10,
+        values_font_name='Verdana',
+        values_font_bold=False,
+        values_font_italic=False,
+        values_font_color=(0, 0, 0),
+        values_font_para_alignment=PP_ALIGN.RIGHT,
+        values_vert_alignment=MSO_ANCHOR.TOP,
+        values_shading=True,
+        values_shading_shading_color='No fill',
 
-            question_box_font_size=10,
-            question_box_font_name='Verdana',
-            question_box_font_bold=False,
-            question_box_font_italic=False,
-            question_box_font_color=(255,255,255),
-            question_box_vert_alignment=MSO_ANCHOR.BOTTOM,
-            question_box_para_alignment=PP_ALIGN.LEFT,
-            question_box_shading=True,
-            question_box_shading_color=(0,0,128)
-            ):
-    #-------------------------------------------------------------------------
+        question_box_font_size=10,
+        question_box_font_name='Verdana',
+        question_box_font_bold=False,
+        question_box_font_italic=False,
+        question_box_font_color=(255, 255, 255),
+        question_box_vert_alignment=MSO_ANCHOR.BOTTOM,
+        question_box_para_alignment=PP_ALIGN.LEFT,
+        question_box_shading=True,
+        question_box_shading_color=(0, 0, 128)
+):
+    # -------------------------------------------------------------------------
 
     left = Cm(left)
     top = Cm(top)
@@ -1448,27 +1498,26 @@ def add_table(
     shapes = slide.shapes
     table = shapes.add_table(rows, cols, left, top, width, height).table
 
-    #isolate seperate sections of a table
+    # isolate seperate sections of a table
     row_labels = list(df.index)
     col_labels = list(df.columns)
     table_values = df.values
     question_label = df.index.get_level_values(level=0)[0]
 
-    #table specific properties
+    # table specific properties
     for i in range(0, rows):
         for x in range(0, cols):
-
             cell = table.cell(i, x)
 
-            cell.margin_left= Cm(margin_left)
+            cell.margin_left = Cm(margin_left)
             cell.margin_right = Cm(margin_right)
             cell.margin_top = Cm(margin_top)
             cell.margin_bottom = Cm(margin_bottom)
 
-    #row specific properties
+    # row specific properties
     for idx, row_label in enumerate(row_labels):
 
-        cell = table.cell(idx+1, 0)
+        cell = table.cell(idx + 1, 0)
         cell.vertical_anchor = side_member_vert_alignment
 
         if sidemember_shading:
@@ -1480,7 +1529,7 @@ def add_table(
                 cfill = cell.fill
                 cfill.solid()
                 cfill.fore_color.rgb = RGBColor(*sidemember_shading_color)
-                #cfill.fore_color.brightness = textbox_color_brightness
+                # cfill.fore_color.brightness = textbox_color_brightness
 
         textframe = cell.text_frame
         paragraph = textframe.paragraphs[0]
@@ -1493,12 +1542,12 @@ def add_table(
 
         cell.text = row_label
 
-    #add col labels
+    # add col labels
     for idx, col_label in enumerate(col_labels):
 
         table.columns[0].width = Emu(first_column_width)
 
-        cell = table.cell(0, idx+1)
+        cell = table.cell(0, idx + 1)
         cell.vertical_anchor = top_member_vert_alignment
 
         if top_member_shading:
@@ -1509,7 +1558,7 @@ def add_table(
                 cfill = cell.fill
                 cfill.solid()
                 cfill.fore_color.rgb = RGBColor(*top_member_shading_color)
-                #cfill.fore_color.brightness = textbox_color_brightness
+                # cfill.fore_color.brightness = textbox_color_brightness
 
         textframe = cell.text_frame
         paragraph = textframe.paragraphs[0]
@@ -1522,11 +1571,11 @@ def add_table(
 
         cell.text = col_label
 
-    #add values
+    # add values
     for i, val in enumerate(table_values):
         for x, subval in enumerate(val):
 
-            cell = table.cell(i+1, x+1)
+            cell = table.cell(i + 1, x + 1)
 
             cell.vertical_anchor = values_vert_alignment
 
@@ -1537,7 +1586,8 @@ def add_table(
                 else:
                     cfill = cell.fill
                     cfill.solid()
-                    cfill.fore_color.rgb = RGBColor(*values_shading_shading_color)
+                    cfill.fore_color.rgb = RGBColor(
+                        *values_shading_shading_color)
 
             textframe = cell.text_frame
             paragraph = textframe.paragraphs[0]
@@ -1550,8 +1600,8 @@ def add_table(
 
             cell.text = str(subval)
 
-    #add question label
-    cell = table.cell(0,0)
+    # add question label
+    cell = table.cell(0, 0)
     cell.vertical_anchor = question_box_vert_alignment
 
     if question_box_shading:
@@ -1574,50 +1624,52 @@ def add_table(
 
     cell.text = question_text
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def add_net(
-            slide,
-            df,
-            left=Cm(27.55), top=Cm(3.69), width=Cm(1.8), # width for 1 column
-            height=Cm(10.68),
-            margin_left=0.0,
-            margin_right=0.0,
-            margin_top=0.0,
-            margin_bottom=0.0,
+        slide,
+        df,
+        left=Cm(27.55), top=Cm(3.69), width=Cm(1.8),  # width for 1 column
+        height=Cm(10.68),
+        margin_left=0.0,
+        margin_right=0.0,
+        margin_top=0.0,
+        margin_bottom=0.0,
 
-            # side_member_font_size=8,
-            # side_member_font_name='Trebuchet MS',
-            # side_member_font_bold=False,
-            # side_member_font_italic=False,
-            # side_member_font_color=(109,111,113),
-            # side_member_font_para_alignment=PP_ALIGN.LEFT,
-            # side_member_vert_alignment=MSO_ANCHOR.MIDDLE,
-            # sidemember_shading=True,
-            # sidemember_shading_color=(255,255,255),
+        # side_member_font_size=8,
+        # side_member_font_name='Trebuchet MS',
+        # side_member_font_bold=False,
+        # side_member_font_italic=False,
+        # side_member_font_color=(109,111,113),
+        # side_member_font_para_alignment=PP_ALIGN.LEFT,
+        # side_member_vert_alignment=MSO_ANCHOR.MIDDLE,
+        # sidemember_shading=True,
+        # sidemember_shading_color=(255,255,255),
 
-            top_member_font_size=8,
-            top_member_font_name='Trebuchet MS',
-            top_member_font_bold=False,
-            top_member_font_italic=False,
-            top_member_font_color=(0,0,0),
-            top_member_font_para_alignment=PP_ALIGN.CENTER,
-            top_member_vert_alignment=MSO_ANCHOR.MIDDLE,
-            top_member_shading=True,
-            top_member_shading_color=(255,255,255),
+        top_member_font_size=8,
+        top_member_font_name='Trebuchet MS',
+        top_member_font_bold=False,
+        top_member_font_italic=False,
+        top_member_font_color=(0, 0, 0),
+        top_member_font_para_alignment=PP_ALIGN.CENTER,
+        top_member_vert_alignment=MSO_ANCHOR.MIDDLE,
+        top_member_shading=True,
+        top_member_shading_color=(255, 255, 255),
 
-            values_font_size=8,
-            values_font_name='Trebuchet MS',
-            values_font_bold=False,
-            values_font_italic=False,
-            values_font_color=(0,0,0),
-            values_font_para_alignment=PP_ALIGN.CENTER,
-            values_vert_alignment=MSO_ANCHOR.TOP,
-            values_shading=True,
-            values_shading_shading_color=(255,255,255),
-            ):
-    #-------------------------------------------------------------------------
+        values_font_size=8,
+        values_font_name='Trebuchet MS',
+        values_font_bold=False,
+        values_font_italic=False,
+        values_font_color=(0, 0, 0),
+        values_font_para_alignment=PP_ALIGN.CENTER,
+        values_vert_alignment=MSO_ANCHOR.TOP,
+        values_shading=True,
+        values_shading_shading_color=(255, 255, 255),
+):
+    # -------------------------------------------------------------------------
 
     rows = len(df.index)
     cols = len(df.columns)
@@ -1627,7 +1679,7 @@ def add_net(
     if rows == 1:
         top = top + int(round(height * (0.3 / rows)) - header_row_height)
     else:
-        top = top + int(round(height* (0.45/rows)) - header_row_height)
+        top = top + int(round(height * (0.45 / rows)) - header_row_height)
     plot_area = int(round(height * 0.9)) - Cm(0.4)
     value_row_height = int(round(plot_area / rows))
     height = header_row_height + rows * value_row_height
@@ -1636,15 +1688,15 @@ def add_net(
     width = width * cols
 
     shapes = slide.shapes
-    table = shapes.add_table(rows+1, cols, left, top, width, height).table
+    table = shapes.add_table(rows + 1, cols, left, top, width, height).table
     table.horz_banding = True
-    #isolate seperate sections of a table
+    # isolate seperate sections of a table
     row_labels = list(df.index)
     col_labels = list(df.columns)
     table_values = df.values
-    #question_label = df.index.get_level_values(level=0)[0]
+    # question_label = df.index.get_level_values(level=0)[0]
 
-    #table specific properties
+    # table specific properties
     for i in range(0, rows + 1):
         if i == 0:
             table.rows[i].height = header_row_height
@@ -1652,18 +1704,17 @@ def add_net(
             table.rows[i].height = value_row_height
 
         for x in range(0, cols):
-
             cell = table.cell(i, x)
 
-            cell.margin_left= Cm(margin_left)
+            cell.margin_left = Cm(margin_left)
             cell.margin_right = Cm(margin_right)
             cell.margin_top = Cm(margin_top)
             cell.margin_bottom = Cm(margin_bottom)
 
-    #add col labels
+    # add col labels
     for idx, col_label in enumerate(col_labels):
 
-        #table.columns[0].width = Emu(first_column_width)
+        # table.columns[0].width = Emu(first_column_width)
 
         cell = table.cell(0, idx)
         cell.vertical_anchor = top_member_vert_alignment
@@ -1676,7 +1727,7 @@ def add_net(
                 cfill = cell.fill
                 cfill.solid()
                 cfill.fore_color.rgb = RGBColor(*top_member_shading_color)
-                #cfill.fore_color.brightness = textbox_color_brightness
+                # cfill.fore_color.brightness = textbox_color_brightness
 
         textframe = cell.text_frame
         paragraph = textframe.paragraphs[0]
@@ -1689,11 +1740,11 @@ def add_net(
 
         cell.text = col_label
 
-    #add values
+    # add values
     for i, val in enumerate(table_values):
         for x, subval in enumerate(val):
 
-            cell = table.cell(i+1, x)
+            cell = table.cell(i + 1, x)
             cell.vertical_anchor = values_vert_alignment
             cell.margin_top = Cm(0.1)
 
@@ -1704,7 +1755,8 @@ def add_net(
                 else:
                     cfill = cell.fill
                     cfill.solid()
-                    cfill.fore_color.rgb = RGBColor(*values_shading_shading_color)
+                    cfill.fore_color.rgb = RGBColor(
+                        *values_shading_shading_color)
 
             textframe = cell.text_frame
             paragraph = textframe.paragraphs[0]
@@ -1714,17 +1766,19 @@ def add_net(
             paragraph.font.italic = values_font_italic
             paragraph.font.color.rgb = RGBColor(*values_font_color)
             paragraph.alignment = values_font_para_alignment
-            #paragraph.line_spacing = Pt(6)
+            # paragraph.line_spacing = Pt(6)
             cell.text = str(subval)
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+
 def add_picture(
-              slide,
-              img_path,
-              left=Emu(50000), top=Emu(50000), width=Emu(50000), height=Emu(50000)
-              ):
+        slide,
+        img_path,
+        left=Emu(50000), top=Emu(50000), width=Emu(50000), height=Emu(50000)
+):
     '''
     Add picture shape displaying image
 
@@ -1738,11 +1792,12 @@ def add_picture(
     x, y, cx, cy = left, top, width, height
     slide.shapes.add_picture(img_path, x, y, cx, cy)
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def chart_selector(slide, df, chart_type, *args, **kwargs):
-
     if chart_type == "bar":
         add_bar_chart(slide,
                       df,

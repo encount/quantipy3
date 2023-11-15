@@ -9,8 +9,10 @@ import savReaderWriter as sr
 from quantipy.core.tools.dp.prep import condense_dichotomous_set, start_meta
 
 
-def parse_sav_file(filename, path=None, name="", ioLocale="en_US.UTF-8", ioUtf8=True, dichot=None,
-                   dates_as_strings=False, text_key="en-GB", engine='savReaderWriter'):
+def parse_sav_file(filename, path=None, name="", ioLocale="en_US.UTF-8",
+                   ioUtf8=True, dichot=None,
+                   dates_as_strings=False, text_key="en-GB",
+                   engine='savReaderWriter'):
     """ Parses a .sav file and returns a touple of Data and Meta
 
         Parameters
@@ -34,16 +36,20 @@ dates_as_strings : bool, default=False
         (data, meta) : The data is a Pandas Dataframe
                      : The meta is a JSON dictionary
     """
-    filepath="{}{}".format(path or '', filename)
+    filepath = "{}{}".format(path or '', filename)
     filepath = os.path.abspath(filepath)
-    data = extract_sav_data(filepath, ioLocale=ioLocale, ioUtf8=ioUtf8, engine=engine)
-    meta, data = extract_sav_meta(filepath, name="", data=data, ioLocale=ioLocale,
-                                  ioUtf8=ioUtf8, dichot=dichot, dates_as_strings=dates_as_strings,
+    data = extract_sav_data(filepath, ioLocale=ioLocale, ioUtf8=ioUtf8,
+                            engine=engine)
+    meta, data = extract_sav_meta(filepath, name="", data=data,
+                                  ioLocale=ioLocale,
+                                  ioUtf8=ioUtf8, dichot=dichot,
+                                  dates_as_strings=dates_as_strings,
                                   text_key=text_key, engine=engine)
     return (meta, data)
 
-def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True, engine='savReaderWriter'):
 
+def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True,
+                     engine='savReaderWriter'):
     """See parse_sav_file doc."""
     if Version(np.__version__) >= Version('1.20.0'):
         np_object = object
@@ -51,10 +57,12 @@ def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True, engine='savR
         np_object = np.object
 
     if engine == 'savReaderWriter':
-        with sr.SavReader(sav_file, returnHeader=True, ioLocale=ioLocale, ioUtf8=ioUtf8) as reader:
+        with sr.SavReader(sav_file, returnHeader=True, ioLocale=ioLocale,
+                          ioUtf8=ioUtf8) as reader:
             thedata = [x for x in reader]
             header = thedata[0]
-            dataframe = pd.DataFrame.from_records(thedata[1:], coerce_float=False)
+            dataframe = pd.DataFrame.from_records(thedata[1:],
+                                                  coerce_float=False)
             dataframe.columns = header
             for column in header:
 
@@ -63,26 +71,30 @@ def extract_sav_data(sav_file, ioLocale='en_US.UTF-8', ioUtf8=True, engine='savR
                     values = dataframe[column].dropna().values
                     if len(values) > 0:
                         if isinstance(values[0], str):
-                            dataframe[column] = dataframe[column].dropna().map(str.strip)
+                            dataframe[column] = dataframe[column].dropna().map(
+                                str.strip)
                         elif isinstance(values[0], str):
                             # savReaderWriter casts dates to str
-                            dataframe[column] = dataframe[column].dropna().map(str.strip)
+                            dataframe[column] = dataframe[column].dropna().map(
+                                str.strip)
                             # creating DATETIME objects should happen here
             return dataframe
     elif engine == 'readstat':
         df, meta = pyreadstat.read_sav(sav_file)
         return df
 
+
 def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                      ioUtf8=True, dichot=None, dates_as_strings=False,
                      text_key="en-GB", engine='savReaderWriter'):
-
     if engine == 'readstat':
-        df, metadata = pyreadstat.read_sav(sav_file, encoding=ioLocale.split(".")[-1], metadataonly=True)
+        df, metadata = pyreadstat.read_sav(sav_file,
+                                           encoding=ioLocale.split(".")[-1],
+                                           metadataonly=True)
         meta = start_meta(text_key=text_key)
 
         meta['info']['text'] = 'Converted from SAV file {}.'.format(name)
-        meta['info']['from_source'] = {'pandas_reader':'sav'}
+        meta['info']['from_source'] = {'pandas_reader': 'sav'}
         meta['sets']['data file']['items'] = [
             'columns@{}'.format(varName)
             for varName in metadata.column_names]
@@ -94,14 +106,18 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
             if column in metadata.variable_value_labels:
                 meta['columns'][column]['values'] = []
                 meta['columns'][column]['type'] = "single"
-                for value, text in metadata.variable_value_labels[column].items():
+                for value, text in metadata.variable_value_labels[
+                    column].items():
                     values = {'text': {text_key: str(text)},
-                            'value': int(value)}
+                              'value': int(value)
+                              }
                     meta['columns'][column]['values'].append(values)
                     # if user has stored single answer data as a string rather than number
                     # we convert it to floats and store non convertables as nan (with coerce)
                     if column in data.columns and data[column].dtype == 'O':
-                        data[column] = pd.to_numeric(data[column], errors='coerce', downcast='float')
+                        data[column] = pd.to_numeric(data[column],
+                                                     errors='coerce',
+                                                     downcast='float')
             else:
                 if column in metadata.original_variable_types:
                     f = metadata.original_variable_types[column]
@@ -123,14 +139,17 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                         meta['columns'][column]['type'] = "int"
 
             # add the variable label to the meta
-            meta['columns'][column]['text'] = {text_key : metadata.column_labels[index]}    
+            meta['columns'][column]['text'] = {
+                text_key: metadata.column_labels[index]
+                }
         return meta, data
 
     elif engine == 'savReaderWriter':
         if dichot is None: dichot = {'yes': 1, 'no': 0}
 
         """ see parse_sav_file doc """
-        with sr.SavHeaderReader(sav_file, ioLocale=ioLocale, ioUtf8=ioUtf8) as header:
+        with sr.SavHeaderReader(sav_file, ioLocale=ioLocale,
+                                ioUtf8=ioUtf8) as header:
             # Metadata Attributes
             # ['valueLabels', 'varTypes', 'varSets', 'varAttributes', 'varRoles',
             #  'measureLevels', 'caseWeightVar', 'varNames', 'varLabels', 'formats',
@@ -140,7 +159,7 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
 
         meta = start_meta(text_key=text_key)
         meta['info']['text'] = 'Converted from SAV file {}.'.format(name)
-        meta['info']['from_source'] = {'pandas_reader':'sav'}
+        meta['info']['from_source'] = {'pandas_reader': 'sav'}
         meta['sets']['data file']['items'] = [
             'columns@{}'.format(varName)
             for varName in metadata.varNames]
@@ -160,7 +179,8 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                 meta['columns'][column]['type'] = "single"
                 for value, text in metadata.valueLabels[column].items():
                     values = {'text': {text_key: str(text)},
-                            'value': int(value)}
+                              'value': int(value)
+                              }
                     meta['columns'][column]['values'].append(values)
             else:
                 if column in metadata.formats:
@@ -191,19 +211,26 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                             value = column_values.values[0]
                             if isinstance(value, pd.np.float64):
                                 # Float AND Int because savReaderWriter loads them both as float64
-                                meta['columns'][column]['text'] = {text_key: [column]}
+                                meta['columns'][column]['text'] = {
+                                    text_key: [column]
+                                    }
                                 meta['columns'][column]['type'] = "float"
                                 if (data[column].dropna() % 1).sum() == 0:
-                                    if (data[column].dropna() % 1).unique() == [0]:
+                                    if (data[column].dropna() % 1).unique() == [
+                                        0]:
                                         try:
-                                            data[column] = data[column].astype('int')
+                                            data[column] = data[column].astype(
+                                                'int')
                                         except:
                                             pass
                                         meta['columns'][column]['type'] = "int"
 
-                            elif isinstance(value, str) or isinstance(value, str):
+                            elif isinstance(value, str) or isinstance(value,
+                                                                      str):
                                 # Strings
-                                meta['columns'][column]['text'] = {text_key: [column]}
+                                meta['columns'][column]['text'] = {
+                                    text_key: [column]
+                                    }
                                 meta['columns'][column]['type'] = "string"
 
             if column in metadata.varTypes:
@@ -223,7 +250,9 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
 
             # Some labels are empty strings.note
             if column in metadata.varLabels:
-                meta['columns'][column]['text'] = {text_key: metadata.varLabels[column]}
+                meta['columns'][column]['text'] = {
+                    text_key: metadata.varLabels[column]
+                    }
 
         for mrset in metadata.multRespDefs:
             # meta['masks'][mrset] = {}
@@ -236,8 +265,9 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
             dls_idx = data.columns.tolist().index(varNames[0])
             if metadata.multRespDefs[mrset]['setType'] == 'C':
                 # Raise if value object of columns is not equal
-                if not all(meta['columns'][v]['values'] == meta['columns'][varNames[0]]['values']
-                        for v in varNames):
+                if not all(meta['columns'][v]['values'] ==
+                           meta['columns'][varNames[0]]['values']
+                           for v in varNames):
                     msg = 'Columns must have equal values to be combined in a set: {}'
                     raise ValueError(msg.format(varNames))
                 # Concatenate columns to set
@@ -245,20 +275,22 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                 dls = df_str.apply(lambda x: ';'.join([
                     v.replace('.0', '') for v in x.tolist()
                     if not v in ['nan', 'None']]),
-                    axis=1) + ';'
+                                   axis=1) + ';'
                 dls.replace({';': np.NaN}, inplace=True)
                 # Get value object
                 values = meta['columns'][varNames[0]]['values']
 
             elif metadata.multRespDefs[mrset]['setType'] == 'D':
                 # Generate the delimited set from the dichotomous set
-                dls = condense_dichotomous_set(data[varNames], values_from_labels=False, **dichot)
+                dls = condense_dichotomous_set(data[varNames],
+                                               values_from_labels=False,
+                                               **dichot)
                 # Get value object
                 values = [{
-                            'text': {text_key: metadata.varLabels[varName]},
-                            'value': int(v)
-                        }
-                        for v, varName in enumerate(varNames, start=1)]
+                    'text': {text_key: metadata.varLabels[varName]},
+                    'value': int(v)
+                }
+                    for v, varName in enumerate(varNames, start=1)]
             else:
                 continue
             # Insert the delimited set into data
@@ -269,12 +301,13 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                 'type': 'delimited set',
                 'text': {text_key: metadata.multRespDefs[mrset]['label']},
                 'parent': {},
-                'values': values}
+                'values': values
+            }
             # Add the new delimited set to the 'data file' set
             df_items = meta['sets']['data file']['items']
             df_items.insert(
-                df_items.index('columns@{}'.format(varNames[0])),
-                'columns@{}'.format(mrset))
+                    df_items.index('columns@{}'.format(varNames[0])),
+                    'columns@{}'.format(mrset))
 
             data = data.drop(varNames, axis=1)
             for varName in varNames:

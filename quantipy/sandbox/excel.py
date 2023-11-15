@@ -41,30 +41,31 @@ _SHEET_ATTR = ('str_table',
                'use_future_functions')
 
 # Defaults for _Sheet.
-_SHEET_DEFAULTS = dict(alternate_bg             = True,
-                       arrow_color_high         = '#2EB08C',
-                       arrow_rep_high           = '\u25B2',
-                       arrow_color_low          = '#FC8EAC',
-                       arrow_rep_low            = '\u25BC',
-                       column_width             = 9,
-                       column_width_label       = 35,
-                       column_width_frame       = 15,
-                       column_width_specific    = dict(),
-                       dummy_tests              = False,
-                       freq_0_rep               = '-',
-                       img_insert_x             = 0,
-                       img_insert_y             = 0,
-                       img_size                 = [130, 130],
-                       img_x_offset             = 0,
-                       img_y_offset             = 0,
-                       row_height_label         = 12.75,
-                       start_column             = 0,
-                       start_row                = 0,
-                       start_column_annotations = 0,
-                       start_row_annotations    = 0,
-                       stat_0_rep               = '-',
-                       y_header_height          = 33.75,
-                       y_row_height             = 50)
+_SHEET_DEFAULTS = dict(alternate_bg=True,
+                       arrow_color_high='#2EB08C',
+                       arrow_rep_high='\u25B2',
+                       arrow_color_low='#FC8EAC',
+                       arrow_rep_low='\u25BC',
+                       column_width=9,
+                       column_width_label=35,
+                       column_width_frame=15,
+                       column_width_specific=dict(),
+                       dummy_tests=False,
+                       freq_0_rep='-',
+                       img_insert_x=0,
+                       img_insert_y=0,
+                       img_size=[130, 130],
+                       img_x_offset=0,
+                       img_y_offset=0,
+                       row_height_label=12.75,
+                       start_column=0,
+                       start_row=0,
+                       start_column_annotations=0,
+                       start_row_annotations=0,
+                       stat_0_rep='-',
+                       y_header_height=33.75,
+                       y_row_height=50)
+
 
 class Excel(Workbook):
     """
@@ -351,6 +352,7 @@ class Excel(Workbook):
                   sheet_properties=sheet_properties,
                   **formats)
     """
+
     def __init__(self, filename, italicise_level=None, details=False,
                  annotations=None, decimals=None, image=None,
                  sheet_properties=None, views_groups=None, **formats):
@@ -379,7 +381,7 @@ class Excel(Workbook):
     def views_groups(self):
         if self._views_groups:
             return dict([(k, self._views_groups.get(k, v))
-                        for k, v in _VIEWS_GROUPS.items()])
+                         for k, v in _VIEWS_GROUPS.items()])
         return _VIEWS_GROUPS
 
     @lazy_property
@@ -415,7 +417,7 @@ class Excel(Workbook):
             if isinstance(self.annotations, list):
                 return annotations or self.annotations
             elif isinstance(self.annotations, dict):
-                sheet_anno = self.annotations.get(sheet_name,  annotations)
+                sheet_anno = self.annotations.get(sheet_name, annotations)
                 return annotations or sheet_anno
             else:
                 raise TypeError(error_message)
@@ -462,7 +464,7 @@ class Excel(Workbook):
                 else:
                     if chain.name in kwargs:
                         this_sheet_properties.update(kwargs[chain.name])
-                    self._write_chains((chain, ), chain.name,
+                    self._write_chains((chain,), chain.name,
                                        self._get_annotations(annotations,
                                                              chain.name),
                                        **this_sheet_properties)
@@ -479,7 +481,8 @@ class Excel(Workbook):
 
         init_data = {attr: getattr(self, attr, None) for attr in _SHEET_ATTR}
         init_data.update({'name': sheet_name,
-                          'index': len(self.worksheets_objs)})
+                          'index': len(self.worksheets_objs)
+                          })
         worksheet._initialize(init_data)
 
         self.worksheets_objs.append(worksheet)
@@ -557,21 +560,21 @@ class _Sheet(Worksheet):
 
     def write(self, *args):
         if isinstance(args[-1], dict):
-            args = args[:-1] + (self.excel._add_format(**args[-1]), )
+            args = args[:-1] + (self.excel._add_format(**args[-1]),)
         super(_Sheet, self).write(*args)
 
     def write_rich_string(self, *args):
-        args, rich_text = ((args[0], args[1]), ), args[2:]
+        args, rich_text = ((args[0], args[1]),), args[2:]
         for arg in rich_text:
             if isinstance(arg, dict):
-                args = args + (self.excel._add_format(**arg), )
+                args = args + (self.excel._add_format(**arg),)
             else:
-                args = args + (arg, )
-        args = (xl_rowcol_to_cell(*args[0]), ) + args[1:]
+                args = args + (arg,)
+        args = (xl_rowcol_to_cell(*args[0]),) + args[1:]
         super(_Sheet, self).write_rich_string(*args)
 
     def merge_range(self, *args):
-        args = args[:-1] + (self.excel._add_format(**args[-1]), )
+        args = args[:-1] + (self.excel._add_format(**args[-1]),)
         super(_Sheet, self).merge_range(*args)
 
     def write_chains(self):
@@ -613,7 +616,7 @@ class _Sheet(Worksheet):
 
             # write frame
             box = _Box(self, chain, self._row, self._column)
-            box.to_sheet(columns=(i==0))
+            box.to_sheet(columns=(i == 0))
 
             del box
 
@@ -701,16 +704,17 @@ class _Sheet(Worksheet):
             else:
                 return ImageFont.truetype('%s.ttf' % fn, fs)
         except Exception as e:
-            return  ImageFont.load_default()
+            return ImageFont.load_default()
 
     def set_row(self, row, height, label=None, font_name=None, font_size=None):
         padding = 5
-        units_to_pixels = 1.4213480314960607 # 4/3
+        units_to_pixels = 1.4213480314960607  # 4/3
 
         if isinstance(label, str):
 
             if font_size is not None:
-                fact = float(font_size)/ float(self.excel._formats.default_attributes['font_size'])
+                fact = float(font_size) / float(
+                        self.excel._formats.default_attributes['font_size'])
             else:
                 fact = 1
 
@@ -720,7 +724,8 @@ class _Sheet(Worksheet):
                 # text too tall
                 return
 
-            if (dimensions[0] * fact) >= int(self._size_col(self.start_column)/units_to_pixels):
+            if (dimensions[0] * fact) >= int(
+                    self._size_col(self.start_column) / units_to_pixels):
                 # text too long
                 return
 
@@ -740,13 +745,13 @@ class _Sheet(Worksheet):
 
 
 class _Box(object):
-
-    __slots__ = ('sheet', 'chain', '_formats', '_single_columns','_column_edges',
-                 '_columns', '_italic', '_lazy_excel', '_lazy_index',
-                 '_lazy_columns', '_lazy_values', '_lazy_contents',
-                 '_lazy_is_weighted', '_lazy_shape', '_lazy_has_tests',
-                 '_lazy_arrow_rep', '_lazy_arrow_color', '_lazy_header_left',
-                 '_lazy_header_center', '_lazy_header_title', '_lazy_notes')
+    __slots__ = (
+    'sheet', 'chain', '_formats', '_single_columns', '_column_edges',
+    '_columns', '_italic', '_lazy_excel', '_lazy_index',
+    '_lazy_columns', '_lazy_values', '_lazy_contents',
+    '_lazy_is_weighted', '_lazy_shape', '_lazy_has_tests',
+    '_lazy_arrow_rep', '_lazy_arrow_color', '_lazy_header_left',
+    '_lazy_header_center', '_lazy_header_title', '_lazy_notes')
 
     def __init__(self, sheet, chain, row, column):
         self.sheet = sheet
@@ -833,12 +838,14 @@ class _Box(object):
     @lazy_property
     def arrow_rep(self):
         return {"'@L'": self.sheet.arrow_rep_high,
-                "'@H'": self.sheet.arrow_rep_low}
+                "'@H'": self.sheet.arrow_rep_low
+                }
 
     @lazy_property
     def arrow_color(self):
         return {"'@L'": self.sheet.arrow_color_high,
-                "'@H'": self.sheet.arrow_color_low}
+                "'@H'": self.sheet.arrow_color_low
+                }
 
     @lazy_property
     def header_left(self):
@@ -881,8 +888,9 @@ class _Box(object):
                 if left == right:
                     merge_range(fixed, l, fixed + 1, l, label, format_)
                 else:
-                    for column in range(l, r+1):
-                      merge_range(fixed, column, fixed + 1, column, label, format_)
+                    for column in range(l, r + 1):
+                        merge_range(fixed, column, fixed + 1, column, label,
+                                    format_)
             else:
                 if left == right:
                     if index == 'index':
@@ -968,7 +976,7 @@ class _Box(object):
         flat = frame.values.flat
         rel_x, rel_y = flat.coords
         for data in flat:
-            name =  'left^right^'
+            name = 'left^right^'
             if rel_x == 0:
                 name += 'top^'
             elif rel_x == row_max:
@@ -981,8 +989,9 @@ class _Box(object):
                 try:
                     decs = str(data).split('.')[1]
                     d = len(decs)
-                    if not(d == 1 and decs == '0'):
-                        format_ = cp.loads(cp.dumps(format_, cp.HIGHEST_PROTOCOL))
+                    if not (d == 1 and decs == '0'):
+                        format_ = cp.loads(
+                            cp.dumps(format_, cp.HIGHEST_PROTOCOL))
                         format_['num_format'] = '0.%s' % ('0' * d)
                 except IndexError:
                     pass
@@ -1011,10 +1020,10 @@ class _Box(object):
         sizes = [x[1] for x in self.chain.shapes]
         for level_id in range(nlevels):
             write_labels = not (arr_style_0 and level_id == 0)
-            borders = [sum(sizes[:i+1]) for i in range(len(sizes))]
+            borders = [sum(sizes[:i + 1]) for i in range(len(sizes))]
             border = borders.pop(0)
             row = self.sheet._row + level_id
-            is_tests =  self.has_tests and (level_id == (nlevels - 1))
+            is_tests = self.has_tests and (level_id == (nlevels - 1))
             is_values = (level_id % 2) or is_tests
             if (level_id == 0) or is_values:
                 group_sizes = []
@@ -1046,7 +1055,8 @@ class _Box(object):
                 if level_id == 0:
                     if left == right:
                         level = -(1 + self.has_tests)
-                        lowest_label = self.columns.get_level_values(level)[left]
+                        lowest_label = self.columns.get_level_values(level)[
+                            left]
                         if lowest_label in ['Total', 'Gesamt']:
                             self.single_columns.append(left)
                     self.column_edges.append(right + 1)
@@ -1081,14 +1091,15 @@ class _Box(object):
                     if write_labels:
                         self.sheet.set_row(row, self.sheet.y_header_height)
                 else:
-                    self.sheet.set_row(row - int(arr_style_0), self.sheet.y_row_height)
+                    self.sheet.set_row(row - int(arr_style_0),
+                                       self.sheet.y_row_height)
 
         for cindex in self.single_columns:
             level = -(1 + self.has_tests)
             data = self._cell(self.columns.get_level_values(level)[cindex],
                               **contents)
             if write_labels:
-                merge_range(row - nlevels + 1  - int(arr_style_0),
+                merge_range(row - nlevels + 1 - int(arr_style_0),
                             column + cindex,
                             row - int(arr_style_0),
                             column + cindex,
@@ -1110,8 +1121,8 @@ class _Box(object):
 
         if self.chain._is_mask_item:
             write(self.sheet._row, column,
-                                   levels(0).unique().values[0],
-                                   self.formats['mask_label'])
+                  levels(0).unique().values[0],
+                  self.formats['mask_label'])
             self._format_row(self.formats['mask_label'])
         else:
             write(self.sheet._row, column,
@@ -1153,14 +1164,14 @@ class _Box(object):
             else:
                 x_contents = contents[rel_x]
 
-
             if rel_y == 0 and self.chain.array_style == 0:
                 name = 'counts'
             else:
                 name = self._row_format_name(**x_contents)
 
             if rel_y == 0:
-                sig_level_row = data != '' and name in ['propstest', 'meanstest']
+                sig_level_row = data != '' and name in ['propstest',
+                                                        'meanstest']
                 if data == '' or sig_level_row:
                     view_border = False
                 else:
@@ -1174,7 +1185,7 @@ class _Box(object):
             if self.excel.italicise_level:
                 base = self._is('base', **x_contents)
                 if rel_y and self.chain.array_style == 0:
-                    if base and  not x_contents['is_weighted']:
+                    if base and not x_contents['is_weighted']:
                         if data == data:
                             if data <= self.excel.italicise_level:
                                 arr_summ_ital = True
@@ -1215,7 +1226,8 @@ class _Box(object):
                 arrow_rep = self.arrow_rep.get(arrow)
                 arrow_color = self.arrow_color.get(arrow)
                 arrow_format = {"'@L'": arrow_high_format,
-                                "'@H'": arrow_low_format}.get(arrow)
+                                "'@H'": arrow_low_format
+                                }.get(arrow)
 
                 if arrow_format is _None:
                     arrow_format = self._format_x(name, rel_x, rel_y,
@@ -1428,8 +1440,8 @@ class _Box(object):
             try:
                 index = np.insert(index, idx, '')
                 values = np.vstack((values[:idx, :],
-                                   dummy_arr,
-                                   values[idx:, :]))
+                                    dummy_arr,
+                                    values[idx:, :]))
             except IndexError:
                 index = np.append(index, '')
                 values = np.vstack((values, dummy_arr))
@@ -1439,12 +1451,13 @@ class _Box(object):
         for key in sorted(self.contents):
             if (key + num_dummies) in dummy_idx:
                 num_dummies += 1
-            contents[key+num_dummies] = self.contents[key]
+            contents[key + num_dummies] = self.contents[key]
         for key in dummy_idx:
-            contents[key] = {k: v for k, v in contents[key-1].items()}
+            contents[key] = {k: v for k, v in contents[key - 1].items()}
             contents[key].update({'is_dummy': True,
                                   'is_propstest': True,
-                                  'is_meanstest': contents[key-1]['is_stat']})
+                                  'is_meanstest': contents[key - 1]['is_stat']
+                                  })
 
         return index, values, contents
 
@@ -1476,6 +1489,7 @@ class _Box(object):
     @staticmethod
     def _is(name, **contents):
         return any(name in _ for _ in list(filter(contents.get, contents)))
+
 
 class _Cell(object):
 

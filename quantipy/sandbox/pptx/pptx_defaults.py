@@ -7,7 +7,7 @@ import pandas as pd
 # ----------------------------------------------------------------------------
 # Font defaults
 
-default_font_name='Trebuchet MS'
+default_font_name = 'Trebuchet MS'
 # default_font_file='fonts\Raleway-Regular.ttf'
 
 default_font = OrderedDict([
@@ -74,7 +74,7 @@ default_cell_kwargs = OrderedDict([
     ('margin_bottom', 36000),  # Cm(0.1)
     ('vertical_alignment', 'top'),
     ('shading', True),
-    ('shading_color', (255,255,255)),
+    ('shading_color', (255, 255, 255)),
 ])
 
 # -----------------------------------------------------------------------------
@@ -82,7 +82,8 @@ default_cell_kwargs = OrderedDict([
 default_table = OrderedDict([
     ('dataframe', pd.DataFrame()),
     ('text', None),
-    ('left', 838800), ('top', 1476000), ('width', 10515600), ('height', 4140000),
+    ('left', 838800), ('top', 1476000), ('width', 10515600),
+    ('height', 4140000),
 
     ('show_side_member', True),
     ('side_member_column_width', 2160000),  # Cm(6)
@@ -114,19 +115,25 @@ default_side_table['values_column_width'] = 648000  # Cm(1.8)
 default_side_table['top_member_row_height'] = 612000  # Cm(1.7)
 default_side_table['values_textframe_kwargs'] = default_textframe.copy()
 default_side_table['values_textframe_kwargs']['horizontal_alignment'] = 'center'
-default_side_table['values_textframe_kwargs']['font_kwargs'] = default_font.copy()
+default_side_table['values_textframe_kwargs'][
+    'font_kwargs'] = default_font.copy()
 default_side_table['values_textframe_kwargs']['font_kwargs']['font_size'] = 8
 
 default_side_table['top_member_textframe_kwargs'] = default_textframe.copy()
-default_side_table['top_member_textframe_kwargs']['horizontal_alignment'] = 'center'
-default_side_table['top_member_textframe_kwargs']['font_kwargs'] = default_font.copy()
-default_side_table['top_member_textframe_kwargs']['font_kwargs']['font_size'] = 8
+default_side_table['top_member_textframe_kwargs'][
+    'horizontal_alignment'] = 'center'
+default_side_table['top_member_textframe_kwargs'][
+    'font_kwargs'] = default_font.copy()
+default_side_table['top_member_textframe_kwargs']['font_kwargs'][
+    'font_size'] = 8
 
 default_side_table['top_member_cell_kwargs'] = default_cell_kwargs.copy()
 default_side_table['top_member_cell_kwargs']['vertical_alignment'] = 'middle'
 
-default_side_table['side_member_textframe_kwargs']['font_kwargs'] = default_font.copy()
-default_side_table['side_member_textframe_kwargs']['font_kwargs']['font_size'] = 8
+default_side_table['side_member_textframe_kwargs'][
+    'font_kwargs'] = default_font.copy()
+default_side_table['side_member_textframe_kwargs']['font_kwargs'][
+    'font_size'] = 8
 
 # -------------------------------------------------------------------------------------------
 # Chart defaults (Bar_clustered 1 series)
@@ -134,7 +141,8 @@ default_side_table['side_member_textframe_kwargs']['font_kwargs']['font_size'] =
 default_chart = OrderedDict([
     ('dataframe', pd.DataFrame()),
     ('chart_type', 'bar_clustered'),
-    ('left', 838800), ('top', 1476000), ('width', 10515600), ('height', 4140000),
+    ('left', 838800), ('top', 1476000), ('width', 10515600),
+    ('height', 4140000),
     ('chart_style', 2),
 
     # Title
@@ -262,9 +270,9 @@ header_shape['width'] = 10515600
 header_shape['height'] = 468000
 header_shape['textframe_kwargs'] = default_textframe.copy()
 header_shape['textframe_kwargs']['font_kwargs'] = default_font.copy()
-header_shape['textframe_kwargs']['font_kwargs']['font_size']=11
-header_shape['textframe_kwargs']['font_kwargs']['font_bold']=True
-header_shape['textframe_kwargs']['font_kwargs']['font_italic']=True
+header_shape['textframe_kwargs']['font_kwargs']['font_size'] = 11
+header_shape['textframe_kwargs']['font_kwargs']['font_bold'] = True
+header_shape['textframe_kwargs']['font_kwargs']['font_italic'] = True
 
 # ----------------------------
 # Base_description-dict for default_slide_kwargs
@@ -277,14 +285,16 @@ footer_shape['textframe_kwargs'] = default_textframe.copy()
 footer_shape['textframe_kwargs']['font_kwargs'] = default_font.copy()
 footer_shape['textframe_kwargs']['font_kwargs']['font_bold'] = True
 
-shapes = {'charts' : {'bar': default_chart_bar,
-                      'bar_stacked100': default_chart_bar_stacked100,
-                      'line': default_chart_line,
-                      'column': default_chart_column,
-                      'pie': default_chart_pie},
-          'textboxes' : {'header': header_shape,
-                         'footer': footer_shape},
-          'tables' : {'table' : default_table,
-                      'side_table': default_side_table},
+shapes = {'charts': {'bar': default_chart_bar,
+                     'bar_stacked100': default_chart_bar_stacked100,
+                     'line': default_chart_line,
+                     'column': default_chart_column,
+                     'pie': default_chart_pie
+                     },
+          'textboxes': {'header': header_shape,
+                        'footer': footer_shape
+                        },
+          'tables': {'table': default_table,
+                     'side_table': default_side_table
+                     },
           }
-

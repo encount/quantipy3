@@ -12,7 +12,6 @@ import warnings
 import numpy as np
 import pandas as pd
 from lxml import etree
-from pandas.util.version import Version
 
 import quantipy as qp
 from quantipy.dependency_versions import __pandas_version_parsed__
@@ -283,7 +282,7 @@ def as_L1(child, parent=None, force_single=False):
         for level_id in level_ids:
             grid_name = level_id[8:]
             new_grid_name = grid_name + '~' + child_as_L1[level_id].astype(
-                'str')
+                    'str')
             child_as_L1[level_id] = new_grid_name
         child_as_L1.set_index(id_L1 + level_ids, drop=True, inplace=True)
         child_as_L1 = child_as_L1.unstack([2, 1])
@@ -425,7 +424,7 @@ def get_meta_values(xml, column, data, map_values=True):
         except Exception as e:
             values = range(1, len(categories) + 1)
             msg = 'NULL in values for {} will be replaced with empty value'.format(
-                var_name)
+                    var_name)
             warnings.warn(msg)
     else:
         values = list(range(1, len(categories) + 1))
@@ -605,7 +604,7 @@ def map_cols_from_grid(xml, data):
                 l1_grid_name = l1[0]
                 l1_element_name = xml.xpath(
                         "//categorymap//categoryid[@value='%s']" % l1[1].rstrip(
-                            ';')
+                                ';')
                 )[0].get('name')
                 field_name = c[0]
                 mapped_columns[c] = '%s[{%s}].%s' % (
@@ -618,13 +617,13 @@ def map_cols_from_grid(xml, data):
                 l1_grid_name = l1[0]
                 l1_element_name = xml.xpath(
                         "//categorymap//categoryid[@value='%s']" % l1[1].rstrip(
-                            ';')
+                                ';')
                 )[0].get('name')
                 l2 = c[2].split("~")
                 l2_grid_name = l2[0]
                 l2_element_name = xml.xpath(
                         "//categorymap//categoryid[@value='%s']" % l2[1].rstrip(
-                            ';')
+                                ';')
                 )[0].get('name')
                 field_name = c[0]
                 mapped_columns[c] = '%s[{%s}].%s[{%s}].%s' % (
@@ -727,7 +726,7 @@ def get_columns_meta(xml, meta, data, map_values=True):
 
             try:
                 xpath_properties = "//design//category[@name='%s']//properties" % (
-                tmap[1])
+                    tmap[1])
                 xpath_elements = xpath_grid + "//categories//category"
                 elem_name = None
                 for element in xml.xpath(xpath_elements):
@@ -735,8 +734,8 @@ def get_columns_meta(xml, meta, data, map_values=True):
                         elem_name = element.get('name')
                 if elem_name is None:
                     raise KeyError(
-                        "Grid element '{}' not gound in grid '{}'.".format(
-                                tmap[1], col_name))
+                            "Grid element '{}' not gound in grid '{}'.".format(
+                                    tmap[1], col_name))
                 xpath_labels = xpath_elements + "[@name='%s']//labels//text" % (
                     elem_name)
                 sources = xml.xpath(xpath_labels)
@@ -1012,7 +1011,8 @@ def quantipy_from_dimensions(path_mdd, path_ddf, fields='all', grids=None):
             L1 = L1.join(pd.concat(two_level, axis=1))
         if empty_grids:
             print(
-                '\n*** Empty grids %s ignored ***\n' % (', '.join(empty_grids)))
+                    '\n*** Empty grids %s ignored ***\n' % (
+                        ', '.join(empty_grids)))
 
     meta, ddf = mdd_to_quantipy(path_mdd, data=L1)
 

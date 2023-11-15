@@ -48,14 +48,15 @@ class Chain(defaultdict):
 
     def __repr__(self):
         return ('%s:\norientation-axis: %s - %s,\ncontent-axis: %s, \nviews: %s'
-                %(Chain, self.orientation, self.source_name,
-                  self.content_of_axis, len(self.views)))
+                % (Chain, self.orientation, self.source_name,
+                   self.content_of_axis, len(self.views)))
 
     def __setstate__(self, attr_dict):
         self.__dict__.update(attr_dict)
 
     def __reduce__(self):
-        return self.__class__, (self.name, ), self.__dict__, None, iter(list(self.items()))
+        return self.__class__, (self.name,), self.__dict__, None, iter(
+            list(self.items()))
 
     def save(self, path=None):
         """
@@ -80,7 +81,7 @@ class Chain(defaultdict):
         cPickle.
         """
         new_chain = pickle.loads(
-            pickle.dumps(self, pickle.HIGHEST_PROTOCOL))
+                pickle.dumps(self, pickle.HIGHEST_PROTOCOL))
         return new_chain
 
     def _lazy_name(self):
@@ -88,9 +89,12 @@ class Chain(defaultdict):
         Apply lazy-name logic to chains created without an explicit name.
          - This method does not take any responsibilty for uniquley naming chains
         """
-        self.name = '%s.%s.%s.%s' % (self.orientation, self.source_name, '.'.join(self.content_of_axis), '.'.join(self.views).replace(' ', '_'))
+        self.name = '%s.%s.%s.%s' % (
+        self.orientation, self.source_name, '.'.join(self.content_of_axis),
+        '.'.join(self.views).replace(' ', '_'))
 
-    def _derive_attributes(self, data_key, filter, x_def, y_def, views, source_type=None, orientation=None):
+    def _derive_attributes(self, data_key, filter, x_def, y_def, views,
+                           source_type=None, orientation=None):
         """
         A simple method that is deriving attributes of the chain from its specification:
         (some attributes are only updated when chains get post-processed,
@@ -107,7 +111,7 @@ class Chain(defaultdict):
         """
         if x_def is not None or y_def is not None:
             self.orientation = orientation
-            if self.orientation=='x':
+            if self.orientation == 'x':
                 self.source_name = ''.join(x_def)
                 self.len_of_axis = len(y_def)
                 self.content_of_axis = y_def
@@ -140,14 +144,14 @@ class Chain(defaultdict):
                                [view].dataframe.copy())
                         if self.source_name == '@':
                             res.columns = pd.MultiIndex.from_product(
-                                ['@', '-'], names=['Question', 'Values'])
+                                    ['@', '-'], names=['Question', 'Values'])
                         views_on_var.append(res)
                     except:
                         pass
                 contents.append(views_on_var)
             for c in contents:
                 full_chain.append(pd.concat(c, axis=0))
-            concat_chain =  pd.concat(full_chain, axis=0)
+            concat_chain = pd.concat(full_chain, axis=0)
         else:
             for var in self.content_of_axis:
                 views_on_var = []
@@ -157,7 +161,7 @@ class Chain(defaultdict):
                                [view].dataframe.copy())
                         if var == '@':
                             res.columns = pd.MultiIndex.from_product(
-                                ['@', '-'], names=['Question', 'Values'])
+                                    ['@', '-'], names=['Question', 'Values'])
                         views_on_var.append(res)
                     except:
                         pass
@@ -217,7 +221,8 @@ class Chain(defaultdict):
         if not query is None:
             df = df.query(query)
         if not index is None or not columns is None:
-            df = df.pivot_table(values='#', index=index, columns=columns, aggfunc='count')
+            df = df.pivot_table(values='#', index=index, columns=columns,
+                                aggfunc='count')
         return df
 
     # STATIC METHODS

@@ -1,4 +1,3 @@
-
 import warnings
 
 import pandas as pd
@@ -8,14 +7,13 @@ from quantipy.core.tools.dp.prep import condense_dichotomous_set, start_meta
 
 
 def quantipy_from_ascribe(path_xml, path_txt, text_key='main'):
-
     # Read the AScribe data (tab-delimited)
     meta_ascribe = xmltodict.parse(open(path_xml))
     data_ascribe = pd.DataFrame.from_csv(
-        path_txt,
-        sep='\t',
-        header=0,
-        encoding='utf-16'
+            path_txt,
+            sep='\t',
+            header=0,
+            encoding='utf-16'
     )
     data_ascribe[data_ascribe.index.name] = data_ascribe.index
 
@@ -54,11 +52,11 @@ def quantipy_from_ascribe(path_xml, path_txt, text_key='main'):
         values = []
         for val in var['Answers']['Answer']:
             value = int(val['@Precode'])
-            if value==0:
+            if value == 0:
                 msg = (
-                    "The value 0 has been assigned to a code for the "
-                    "variable '%s'."
-                ) % (name)
+                          "The value 0 has been assigned to a code for the "
+                          "variable '%s'."
+                      ) % (name)
                 warnings.warn(msg)
             val_text = val['Texts']['Text']['#text']
             val_text = '' if val_text is None else val_text.replace('\n', ' ')
@@ -69,14 +67,14 @@ def quantipy_from_ascribe(path_xml, path_txt, text_key='main'):
 
         # Create a single series from the dichotomous set
         data_ascribe[name] = condense_dichotomous_set(
-            data_ascribe[columns],
-            sniff_single=True
+                data_ascribe[columns],
+                sniff_single=True
         )
 
         # Determine the Quantipy type of the returned
         # series from its dtype (see 'sniff_sinlge' in
         # condense_dichotomous_set()
-        if data_ascribe[columns].sum(axis=1).max()==1:
+        if data_ascribe[columns].sum(axis=1).max() == 1:
             col_type = 'single'
         else:
             col_type = 'delimited set'
@@ -99,6 +97,6 @@ def quantipy_from_ascribe(path_xml, path_txt, text_key='main'):
     ])
 
     # Keep only the slice that has been converted.
-    data = data_ascribe[[data_ascribe.index.name]+coded_names]
+    data = data_ascribe[[data_ascribe.index.name] + coded_names]
 
     return meta, data

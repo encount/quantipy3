@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2 as chi2dist, f as fdist
 
-
 import quantipy as qp
 import quantipy.dependency_versions
 from quantipy.core.cache import Cache
@@ -45,7 +44,6 @@ if quantipy.dependency_versions.__scipy_version_parsed__ >= scipy_made__ttest_fi
     from scipy.stats._stats_py import _ttest_finish as get_pval
 else:
     from scipy.stats.stats import _ttest_finish as get_pval
-
 
 _TOTAL = '@'
 _AXES = ['x', 'y']
@@ -92,6 +90,7 @@ class ChainManager(object):
             return obj
         else:
             raise StopIteration
+
     next = __next__
 
     def add_chain(self, chain):
@@ -102,7 +101,8 @@ class ChainManager(object):
         """
         Folder indices, names and number of stored ``qp.Chain`` items (as tuples).
         """
-        return [(self.__chains.index(f), list(f.keys())[0], len(list(f.values())[0]))
+        return [(self.__chains.index(f), list(f.keys())[0],
+                 len(list(f.values())[0]))
                 for f in self if isinstance(f, dict)]
 
     @property
@@ -222,7 +222,8 @@ class ChainManager(object):
                 is_folder = False
             for name, occ in list(iter_over.items()):
                 if occ > 1:
-                    new_names = ['{}_{}'.format(name, i) for i in range(1, occ + 1)]
+                    new_names = ['{}_{}'.format(name, i) for i in
+                                 range(1, occ + 1)]
                     idx = [s[0] for s in self.singles if s[1] == name]
                     pairs = list(zip(idx, new_names))
                     if is_folder:
@@ -232,7 +233,6 @@ class ChainManager(object):
                         for p in pairs:
                             self.__chains[p[0]].name = p[1]
         return None
-
 
     def _set_to_folderitems(self, folder):
         """
@@ -258,7 +258,6 @@ class ChainManager(object):
         self.__chains = items
         self.__chains[index] = new_folder[0]
         return None
-
 
     @staticmethod
     def _dupes_in_chainref(chain_refs):
@@ -479,10 +478,11 @@ class ChainManager(object):
         None
         """
         if not isinstance(other_cm, ChainManager):
-            raise ValueError("other_cm must be a quantipy.ChainManager instance.")
+            raise ValueError(
+                "other_cm must be a quantipy.ChainManager instance.")
         if not index == -1:
-            before_c = self.__chains[:index+1]
-            after_c = self.__chains[index+1:]
+            before_c = self.__chains[:index + 1]
+            after_c = self.__chains[index + 1:]
             new_chains = before_c + other_cm.__chains + after_c
             self.__chains = new_chains
         else:
@@ -523,7 +523,7 @@ class ChainManager(object):
             err = "One or more folder names from 'folders' do not exist!"
             ValueError(err)
         folders = [f if isinstance(f, str) else self._name_from_idx(f)
-                  for f in folders]
+                   for f in folders]
         folder_idx = self._idx_from_name(folders[0])
         if not new_name: new_name = folders[0]
         merged_items = []
@@ -625,7 +625,7 @@ class ChainManager(object):
             old_pos = self._idx_from_name(f)
             items = self[f]
             start = self.__chains[: old_pos]
-            end = self.__chains[old_pos + 1: ]
+            end = self.__chains[old_pos + 1:]
             self.__chains = start + items + end
         return None
 
@@ -657,8 +657,8 @@ class ChainManager(object):
         if folder:
             org_chains, org_index = cm._set_to_folderitems(folder)
         if not isinstance(chains, list): chains = [chains]
-        remove_idxs= [c if isinstance(c, int) else cm._idx_from_name(c)
-                      for c in chains]
+        remove_idxs = [c if isinstance(c, int) else cm._idx_from_name(c)
+                       for c in chains]
         if cm._dupes_in_chainref(remove_idxs):
             err = "Cannot remove with duplicate chain references: {}"
             raise ValueError(err.format(remove_idxs))
@@ -708,7 +708,8 @@ class ChainManager(object):
                     ci = 'counts'
             if c.sig_test_letters: c._remove_letter_header()
             idxs, names, order = c._view_idxs(
-                values, keep_tests=tests, keep_bases=base, names=True, ci=ci)
+                    values, keep_tests=tests, keep_bases=base, names=True,
+                    ci=ci)
             idxs = [i for _, i in sorted(zip(order, idxs))]
             names = [n for _, n in sorted(zip(order, names))]
             if c.ci_count > 1: c._non_grouped_axis()
@@ -761,12 +762,14 @@ class ChainManager(object):
             df = c.dataframe
 
             if not c.array_style == 0:
-                new_label.append(df.index.get_level_values(0).values.tolist()[0])
+                new_label.append(
+                        df.index.get_level_values(0).values.tolist()[0])
                 new_label.extend((len(c.describe()) - 1) * [''])
             else:
                 new_label.extend(df.index.get_level_values(1).values.tolist())
             names = ['Question', 'Values']
-            join_idx = pd.MultiIndex.from_product([[title], new_label], names=names)
+            join_idx = pd.MultiIndex.from_product([[title], new_label],
+                                                  names=names)
             df.index = join_idx
 
             df.rename(columns={c._x_keys[0]: 'Total'}, inplace=True)
@@ -774,7 +777,8 @@ class ChainManager(object):
             if not c.array_style == 0:
                 custom_views.extend(c._views_per_rows())
             else:
-                df.columns.set_levels(levels=[title]*totalmul, level=0, inplace=True)
+                df.columns.set_levels(levels=[title] * totalmul, level=0,
+                                      inplace=True)
 
             concat_dfs.append(df)
 
@@ -885,15 +889,15 @@ class ChainManager(object):
         """
         if not text_key: text_key = 'en-GB'
         replacements = {
-                'en-GB': {
-                    'Weighted N': 'Base',                             # Crunch
-                    'N': 'Base',                                      # Crunch
-                    'Mean': 'Mean',                                   # Dims
-                    'StdDev': 'Std. dev',                             # Dims
-                    'StdErr': 'Std. err. of mean',                    # Dims
-                    'SampleVar': 'Sample variance'                    # Dims
-                    },
-                }
+            'en-GB': {
+                'Weighted N': 'Base',  # Crunch
+                'N': 'Base',  # Crunch
+                'Mean': 'Mean',  # Dims
+                'StdDev': 'Std. dev',  # Dims
+                'StdErr': 'Std. err. of mean',  # Dims
+                'SampleVar': 'Sample variance'  # Dims
+            },
+        }
 
         native_stat_names = []
         for val in idxvals_list:
@@ -957,7 +961,7 @@ class ChainManager(object):
                 names.extend([c.name for c in chains])
                 folders.extend(folder_name * len(chains))
                 array_sum.extend([True if c.array_style > -1 else False
-                                 for c in chains])
+                                  for c in chains])
                 sources.extend(c.source if not c.edited else 'edited'
                                for c in chains)
                 for c in chains:
@@ -996,7 +1000,7 @@ class ChainManager(object):
         df = pd.DataFrame(df_data).T
         df.columns = df_cols
         if by_folder:
-            df =  df.set_index(['Position', 'Folder', 'Item'])
+            df = df.set_index(['Position', 'Folder', 'Item'])
         if not show_hidden:
             df = df[df['Hidden'] == False][df.columns[:-1]]
         return df
@@ -1025,6 +1029,7 @@ class ChainManager(object):
             Will consist of Quantipy representations of the pandas-converted
             .mtd file.
         """
+
         def relabel_axes(df, meta, sigtested, labels=True):
             """
             """
@@ -1036,7 +1041,7 @@ class ChainManager(object):
                 levels = transf_axis.nlevels
                 axis_meta = 'index-emetas' if axis == 'x' else 'columns-emetas'
                 for l in range(0, levels):
-                    if not (sigtested and axis == 'y' and l == levels -1):
+                    if not (sigtested and axis == 'y' and l == levels - 1):
                         org_vals = transf_axis.get_level_values(l).tolist()
                         org_names = [ov.split('|')[0] for ov in org_vals]
                         org_labs = [ov.split('|')[1] for ov in org_vals]
@@ -1046,17 +1051,21 @@ class ChainManager(object):
                                 if axmeta['Type'] != 'Category':
                                     new_vals[no] = axmeta['Type']
                             new_vals = self._native_stat_names(new_vals)
-                        rename_dict = {old: new for old, new in zip(org_vals, new_vals)}
+                        rename_dict = {old: new for old, new in
+                                       zip(org_vals, new_vals)}
                         if axis == 'x':
                             df.rename(index=rename_dict, inplace=True)
-                            df.index.names = ['Question', 'Values'] * (levels / 2)
+                            df.index.names = ['Question', 'Values'] * (
+                                        levels / 2)
                         else:
                             df.rename(columns=rename_dict, inplace=True)
                             if sigtested:
-                                df.columns.names = (['Question', 'Values'] * (levels / 2) +
+                                df.columns.names = (['Question', 'Values'] * (
+                                            levels / 2) +
                                                     ['Test-IDs'])
                             else:
-                                df.columns.names = ['Question', 'Values'] * (levels / 2)
+                                df.columns.names = ['Question', 'Values'] * (
+                                            levels / 2)
             return None
 
         def split_tab(tab):
@@ -1065,13 +1074,14 @@ class ChainManager(object):
             df, meta = tab['df'], tab['tmeta']
             mtd_slicer = df.index.get_level_values(0)
             meta_limits = list(OrderedDict(
-                (i, mtd_slicer.tolist().count(i)) for i in mtd_slicer).values())
+                    (i, mtd_slicer.tolist().count(i)) for i in
+                    mtd_slicer).values())
             meta_slices = []
             for start, end in enumerate(meta_limits):
                 if start == 0:
                     i_0 = 0
                 else:
-                    i_0 = meta_limits[start-1]
+                    i_0 = meta_limits[start - 1]
                 meta_slices.append((i_0, end))
             df_slicers = []
             for e in mtd_slicer:
@@ -1143,10 +1153,13 @@ class ChainManager(object):
                             else:
                                 invalid = ['-', '*', '**']
                                 df = df.applymap(
-                                    lambda x: float(x.replace(',', '.').replace('%', ''))
-                                              if isinstance(x, str) and not x in invalid
-                                              else x
-                                    )
+                                        lambda x: float(
+                                            x.replace(',', '.').replace('%',
+                                                                        ''))
+                                        if isinstance(x,
+                                                      str) and not x in invalid
+                                        else x
+                                )
                             x, y = _get_axis_vars(df)
                             df.replace('-', np.NaN, inplace=True)
                             relabel_axes(df, meta, sigtested, labels=paint)
@@ -1173,6 +1186,7 @@ class ChainManager(object):
                 except:
                     failed.append(name)
             return chain_coll
+
         chain_coll = []
         chains = mine_mtd(mtd_doc, paint, chain_coll)
         self.__chains = chains
@@ -1219,10 +1233,12 @@ class ChainManager(object):
                     if array_summaries:
                         arr_sum_df = cubegroup_df.copy().unstack()['All']
                         arr_sum_df.is_summary = True
-                        x_label = arr_sum_df.index.get_level_values(0).tolist()[0]
+                        x_label = arr_sum_df.index.get_level_values(0).tolist()[
+                            0]
                         x_name = cubegroup.rowdim.alias
                         dfs.append((arr_sum_df, x_label, x_name))
-                    array_elements = cubegroup_df.index.levels[1].values.tolist()
+                    array_elements = cubegroup_df.index.levels[
+                        1].values.tolist()
                     ai_df = cubegroup_df.copy()
                     idx = cubegroup_df.index.droplevel(0)
                     ai_df.index = idx
@@ -1263,7 +1279,8 @@ class ChainManager(object):
                     cgdf.columns = col_mi
                     if is_summary:
                         cgdf = cgdf.T
-                    chain_dfs.append((cgdf, x_var_name, y_var_names, cubegroup._meta))
+                    chain_dfs.append(
+                            (cgdf, x_var_name, y_var_names, cubegroup._meta))
             return chain_dfs
 
         def _calc_pct(df):
@@ -1316,11 +1333,11 @@ class ChainManager(object):
             # self._group_style = None      ?
             # self._transl = qp.core.view.View._metric_name_map() * with CMT/MTD
 
-
         self.source = 'Crunch multitable'
         cubegroups = crunch_tabbook.cube_groups
         meta = {'display_settings': crunch_tabbook.display_settings,
-                'weight': crunch_tabbook.weight}
+                'weight': crunch_tabbook.weight
+                }
         if cell_items == 'c':
             meta['display_settings']['countsOrPercents'] = 'counts'
         elif cell_items == 'p':
@@ -1347,6 +1364,7 @@ class ChainManager(object):
         """
         self.source = 'native (old qp.Cluster of qp.Chain)'
         qp.set_option('new_chains', True)
+
         def check_cell_items(views):
             c = any('counts' in view.split('|')[-1] for view in views)
             p = any('c%' in view.split('|')[-1] for view in views)
@@ -1361,7 +1379,8 @@ class ChainManager(object):
             """
             """
             levels = []
-            sigs = [v.split('|')[1] for v in views if v.split('|')[1].startswith('t.')]
+            sigs = [v.split('|')[1] for v in views if
+                    v.split('|')[1].startswith('t.')]
             for sig in sigs:
                 l = '0.{}'.format(sig.split('.')[-1])
                 if not l in levels: levels.append(l)
@@ -1371,12 +1390,14 @@ class ChainManager(object):
             cluster_defs = []
             for cluster_def_name, cluster in list(clusters.items()):
                 for name in cluster:
-                    if isinstance(list(cluster[name].items())[0][1], pd.DataFrame):
+                    if isinstance(list(cluster[name].items())[0][1],
+                                  pd.DataFrame):
                         cluster_def = {'name': name,
                                        'oe': True,
                                        'df': list(cluster[name].items())[0][1],
                                        'filter': chain.filter,
-                                       'data_key': chain.data_key}
+                                       'data_key': chain.data_key
+                                       }
 
                     else:
                         xs, views, weight = [], [], []
@@ -1387,16 +1408,18 @@ class ChainManager(object):
                                 if v not in views: views.append(v)
                             xs.append(chain.source_name)
                         ys = chain.content_of_axis
-                        cluster_def = {'name': '{}-{}'.format(cluster_def_name, name),
-                                       'filter': chain.filter,
-                                       'data_key': chain.data_key,
-                                       'xs': xs,
-                                       'ys': ys,
-                                       'views': views,
-                                       'weight': weight[-1],
-                                       'bases': 'both' if len(weight) == 2 else 'auto',
-                                       'cell_items': check_cell_items(views),
-                                       'tests': check_sigtest(views)}
+                        cluster_def = {
+                            'name': '{}-{}'.format(cluster_def_name, name),
+                            'filter': chain.filter,
+                            'data_key': chain.data_key,
+                            'xs': xs,
+                            'ys': ys,
+                            'views': views,
+                            'weight': weight[-1],
+                            'bases': 'both' if len(weight) == 2 else 'auto',
+                            'cell_items': check_cell_items(views),
+                            'tests': check_sigtest(views)
+                            }
                     cluster_defs.append(cluster_def)
             return cluster_defs
 
@@ -1410,12 +1433,12 @@ class ChainManager(object):
                 vm.get_views(cell_items=cluster_spec['cell_items'],
                              weight=cluster_spec['weight'],
                              bases=cluster_spec['bases'],
-                             stats= ['mean', 'stddev', 'median', 'min', 'max'],
+                             stats=['mean', 'stddev', 'median', 'min', 'max'],
                              tests=cluster_spec['tests'])
                 self.get(data_key=cluster_spec['data_key'],
                          filter_key=cluster_spec['filter'],
-                         x_keys = cluster_spec['xs'],
-                         y_keys = cluster_spec['ys'],
+                         x_keys=cluster_spec['xs'],
+                         y_keys=cluster_spec['ys'],
                          views=vm.views,
                          orient='x',
                          prioritize=True)
@@ -1443,7 +1466,7 @@ class ChainManager(object):
 
         if invalid:
             raise ValueError("Keys %s do not exist in meta['columns'] or "
-                              "meta['masks']." % ", ".join(invalid))
+                             "meta['masks']." % ", ".join(invalid))
 
         return keys
 
@@ -1609,7 +1632,7 @@ class ChainAnnotations(dict):
         self.footer_right = []
         self.notes = []
         for v in VALID_ANNOT_TYPES:
-                self[v] = []
+            self[v] = []
 
     def __setitem__(self, key, value):
         self._test_valid_key(key)
@@ -1621,9 +1644,9 @@ class ChainAnnotations(dict):
 
     def __repr__(self):
         headers = [(h.split('-')[1], self[h]) for h in self.populated if
-                    h.split('-')[0] == 'header']
+                   h.split('-')[0] == 'header']
         footers = [(f.split('-')[1], self[f]) for f in self.populated if
-                    f.split('-')[0] == 'footer']
+                   f.split('-')[0] == 'footer']
         notes = self['notes'] if self['notes'] else []
         if notes:
             ar = 'Notes\n'
@@ -1660,9 +1683,11 @@ class ChainAnnotations(dict):
                 elif not acat in VALID_ANNOT_CATS and not apos in VALID_ANNOT_POS:
                     msg = "'{}' is not a valid annotation type!".format(key)
                 elif acat not in VALID_ANNOT_CATS:
-                    msg = "'{}' is not a valid annotation category!".format(acat)
+                    msg = "'{}' is not a valid annotation category!".format(
+                        acat)
                 elif apos not in VALID_ANNOT_POS:
-                    msg = "'{}' is not a valid annotation position!".format(apos)
+                    msg = "'{}' is not a valid annotation position!".format(
+                        apos)
             else:
                 msg = "'{}' is not a valid annotation type!".format(key)
             raise KeyError(msg)
@@ -1719,32 +1744,35 @@ class ChainAnnotations(dict):
         self.__dict__[akey.replace('-', '_')].append(text)
         return None
 
-CELL_DETAILS = {'en-GB': {'cc':    'Cell Contents',
-                          'N':     'Counts',
-                          'c%':    'Column Percentages',
-                          'r%':    'Row Percentages',
-                          'str':   'Statistical Test Results',
-                          'cp':    'Column Proportions',
-                          'cm':    'Means',
+
+CELL_DETAILS = {'en-GB': {'cc': 'Cell Contents',
+                          'N': 'Counts',
+                          'c%': 'Column Percentages',
+                          'r%': 'Row Percentages',
+                          'str': 'Statistical Test Results',
+                          'cp': 'Column Proportions',
+                          'cm': 'Means',
                           'stats': 'Statistics',
-                          'mb':    'Minimum Base',
-                          'sb':	   'Small Base',
-                          'up':    ' indicates result is significantly higher than the result in the Total column',
-                          'down':  ' indicates result is significantly lower than the result in the Total column'
+                          'mb': 'Minimum Base',
+                          'sb': 'Small Base',
+                          'up': ' indicates result is significantly higher than the result in the Total column',
+                          'down': ' indicates result is significantly lower than the result in the Total column'
                           },
-                'fr-FR': {'cc':    'Contenu cellule',
-                          'N':     'Total',
-                          'c%':    'Pourcentage de colonne',
-                          'r%':    'Pourcentage de ligne',
-                          'str':   'Résultats test statistique',
-                          'cp':    'Proportions de colonne',
-                          'cm':    'Moyennes de colonne',
+                'fr-FR': {'cc': 'Contenu cellule',
+                          'N': 'Total',
+                          'c%': 'Pourcentage de colonne',
+                          'r%': 'Pourcentage de ligne',
+                          'str': 'Résultats test statistique',
+                          'cp': 'Proportions de colonne',
+                          'cm': 'Moyennes de colonne',
                           'stats': 'Statistiques',
-                          'mb':    'Base minimum',
-                          'sb':    'Petite base',
-                          'up':    ' indique que le résultat est significativement supérieur au résultat de la colonne Total',
-                          'down':  ' indique que le résultat est significativement inférieur au résultat de la colonne Total'
-                          }}
+                          'mb': 'Base minimum',
+                          'sb': 'Petite base',
+                          'up': ' indique que le résultat est significativement supérieur au résultat de la colonne Total',
+                          'down': ' indique que le résultat est significativement inférieur au résultat de la colonne Total'
+                          }
+                }
+
 
 class Chain(object):
 
@@ -1783,6 +1811,7 @@ class Chain(object):
     class _TransformedChainDF(object):
         """
         """
+
         def __init__(self, chain):
             c = chain.clone()
             self.org_views = c.views
@@ -1850,7 +1879,7 @@ class Chain(object):
             i = d = 0
             new_tuples = []
             for merged_val in merged:
-                idx = i-d if i-d != len(org_tuples) else i-d-1
+                idx = i - d if i - d != len(org_tuples) else i - d - 1
                 if org_tuples[idx][1] == merged_val:
                     new_tuples.append(org_tuples[idx])
                 else:
@@ -1893,7 +1922,8 @@ class Chain(object):
 
     def __str__(self):
         if self.structure is not None:
-            return '%s...\n%s' % (self.__class__.__name__, str(self.structure.head()))
+            return '%s...\n%s' % (
+            self.__class__.__name__, str(self.structure.head()))
 
         str_format = ('%s...'
                       '\nSource:          %s'
@@ -1916,7 +1946,8 @@ class Chain(object):
 
     def __len__(self):
         """Returns the total number of cells in the Chain.dataframe"""
-        return (len(getattr(self, 'index', [])) * len(getattr(self, 'columns', [])))
+        return (len(getattr(self, 'index', [])) * len(
+            getattr(self, 'columns', [])))
 
     def clone(self):
         """
@@ -1946,7 +1977,7 @@ class Chain(object):
     @lazy_property
     def axis(self):
         # TODO: name appropriate?
-        return int(self.orientation=='x')
+        return int(self.orientation == 'x')
 
     @lazy_property
     def axes(self):
@@ -2140,14 +2171,16 @@ class Chain(object):
         lang = self._default_text if self._default_text == 'fr-FR' else 'en-GB'
         cd = CELL_DETAILS[lang]
         ci = self.cell_items
-        cd_str = '%s (%s)' % (cd['cc'], ', '.join([cd[_] for _ in self._ci_simple]))
+        cd_str = '%s (%s)' % (
+        cd['cc'], ', '.join([cd[_] for _ in self._ci_simple]))
         against_total = False
         if self.sig_test_letters:
             mapped = ''
             group = None
-            i =  0 if (self._frame.columns.nlevels in [2, 3]) else 4
+            i = 0 if (self._frame.columns.nlevels in [2, 3]) else 4
 
-            for letter, lab in zip(self.sig_test_letters, self._frame.columns.codes[-i]):
+            for letter, lab in zip(self.sig_test_letters,
+                                   self._frame.columns.codes[-i]):
                 if letter == '@':
                     continue
                 if group is not None:
@@ -2166,19 +2199,23 @@ class Chain(object):
             levels = []
             for key in ('props', 'means'):
                 for level in self.sig_levels.get(key, iter(())):
-                    l = '%s%%' % int(100. - float(level.split('+@')[0].split('.')[1]))
+                    l = '%s%%' % int(
+                        100. - float(level.split('+@')[0].split('.')[1]))
                     if l not in levels:
                         levels.append(l)
                     if '+@' in level:
                         against_total = True
 
-            cd_str = cd_str[:-1] + ', ' + cd['str'] +'), '
-            cd_str += '%s (%s, (%s): %s' % (cd['stats'], test_types, ', '.join(levels), mapped)
+            cd_str = cd_str[:-1] + ', ' + cd['str'] + '), '
+            cd_str += '%s (%s, (%s): %s' % (
+            cd['stats'], test_types, ', '.join(levels), mapped)
             if self._flag_bases:
                 flags = ([], [])
-                [(flags[0].append(min), flags[1].append(small)) for min, small in self._flag_bases]
-                cd_str += ', %s: %s (**), %s: %s (*)' % (cd['mb'], ', '.join(map(str, flags[0])),
-                                                         cd['sb'], ', '.join(map(str, flags[1])))
+                [(flags[0].append(min), flags[1].append(small)) for min, small
+                 in self._flag_bases]
+                cd_str += ', %s: %s (**), %s: %s (*)' % (
+                cd['mb'], ', '.join(map(str, flags[0])),
+                cd['sb'], ', '.join(map(str, flags[1])))
             cd_str += ')'
 
         cd_str = [cd_str]
@@ -2192,7 +2229,8 @@ class Chain(object):
             descr = []
             for r, m in list(cell_defs.items()):
                 descr.append(
-                    [k if isinstance(v, bool) else v for k, v in list(m.items()) if v])
+                        [k if isinstance(v, bool) else v for k, v in
+                         list(m.items()) if v])
             if any('is_block' in d for d in descr):
                 blocks = self._describe_block(descr, row_id)
                 calc = 'calc' in blocks
@@ -2200,8 +2238,10 @@ class Chain(object):
                     if b:
                         d.append(b) if not calc else d.extend([b, 'has_calc'])
             return descr
+
         if self._array_style == 0:
-            description = {k: _describe(v, k) for k, v in list(self.contents.items())}
+            description = {k: _describe(v, k) for k, v in
+                           list(self.contents.items())}
         else:
             description = _describe(self.contents, None)
         return description
@@ -2211,7 +2251,6 @@ class Chain(object):
         """
         self._frame = self._frame.fillna(method='ffill')
         return None
-
 
     # @lazy_property
     def _counts_first(self):
@@ -2223,7 +2262,7 @@ class Chain(object):
                 else:
                     return False
 
-    #@property
+    # @property
     def _views_per_rows(self):
         """
         """
@@ -2243,7 +2282,7 @@ class Chain(object):
             else:
                 main_vk = pct_vk.format(w if w else '')
             base_vk = base_vk.format(w if w else '')
-            metrics = [base_vk] + (len(self.dataframe.index)-1) * [main_vk]
+            metrics = [base_vk] + (len(self.dataframe.index) - 1) * [main_vk]
         elif self.source == 'Dimensions MTD':
             ci = self._meta['cell_items']
             w = None
@@ -2268,7 +2307,8 @@ class Chain(object):
         else:
             #  Native Chain views
             # ----------------------------------------------------------------
-            if self.edited and (self._custom_views and not self.array_style == 0):
+            if self.edited and (
+                    self._custom_views and not self.array_style == 0):
                 return self._custom_views
             else:
                 if self._array_style != 0:
@@ -2288,7 +2328,7 @@ class Chain(object):
                                 metrics.extend(view * size)
                 else:
                     counts = []
-                    colpcts =  []
+                    colpcts = []
                     rowpcts = []
                     metrics = []
                     ci = self.cell_items
@@ -2297,19 +2337,20 @@ class Chain(object):
                             parts = v.split('|')
                             is_completed = ']*:' in v
                             if not self._is_c_pct(parts):
-                                counts.extend([v]*self.views[v])
+                                counts.extend([v] * self.views[v])
                             if self._is_r_pct(parts):
-                                rowpcts.extend([v]*self.views[v])
+                                rowpcts.extend([v] * self.views[v])
                             if (self._is_c_pct(parts) or self._is_base(parts) or
-                                self._is_stat(parts)):
-                                colpcts.extend([v]*self.views[v])
+                                    self._is_stat(parts)):
+                                colpcts.extend([v] * self.views[v])
                         else:
                             counts = counts + ['__viewlike__']
                             colpcts = colpcts + ['__viewlike__']
                             rowpcts = rowpcts + ['__viewlike__']
                     dims = self._frame.shape
                     for row in range(0, dims[0]):
-                        if ci in ['counts_colpct', 'colpct_counts'] and self.grouping:
+                        if ci in ['counts_colpct',
+                                  'colpct_counts'] and self.grouping:
                             if row % 2 == 0:
                                 if self._counts_first():
                                     vc = counts
@@ -2322,7 +2363,8 @@ class Chain(object):
                                     vc = colpcts
                         else:
                             vc = counts if ci == 'counts' else colpcts
-                        metrics.append({col: vc[col] for col in range(0, dims[1])})
+                        metrics.append(
+                                {col: vc[col] for col in range(0, dims[1])})
         return metrics
 
     def _valid_views(self, flat=False):
@@ -2355,7 +2397,6 @@ class Chain(object):
                             clean_view_list.append(new_v)
         return clean_view_list
 
-
     def _add_contents(self, viewelement):
         """
         """
@@ -2380,7 +2421,7 @@ class Chain(object):
                     is_c_pct_cumsum=self._is_c_pct_cumsum(parts),
                     is_net=self._is_net(parts),
                     is_block=self._is_block(parts),
-                    is_calc_only = self._is_calc_only(parts),
+                    is_calc_only=self._is_calc_only(parts),
                     is_mean=self._is_mean(parts),
                     is_stddev=self._is_stddev(parts),
                     is_min=self._is_min(parts),
@@ -2410,7 +2451,8 @@ class Chain(object):
         repeat = self.ci_count
         return (start, repeat)
 
-    def _view_idxs(self, view_tags, keep_tests=True, keep_bases=True, names=False, ci=None):
+    def _view_idxs(self, view_tags, keep_tests=True, keep_bases=True,
+                   names=False, ci=None):
         """
         """
         if not isinstance(view_tags, list): view_tags = [view_tags]
@@ -2458,7 +2500,6 @@ class Chain(object):
                     names.append(self._views_per_rows()[i])
         return (idxs, order) if not names else (idxs, names, order)
 
-
     @staticmethod
     def _remove_grouped_blanks(viewindex_labs):
         """
@@ -2485,7 +2526,6 @@ class Chain(object):
             names = ['Question', 'Values']
         return pd.MultiIndex.from_tuples(axis_tuples, names=names)
 
-
     def _non_grouped_axis(self):
         """
         """
@@ -2509,7 +2549,8 @@ class Chain(object):
         if self.array_style == 0:
             n = self._frame.columns.get_level_values(1).values.tolist()
             n = self._remove_grouped_blanks(n)
-            mapped = {rowid: list(zip(n, rowmeta)) for rowid, rowmeta in list(d.items())}
+            mapped = {rowid: list(zip(n, rowmeta)) for rowid, rowmeta in
+                      list(d.items())}
         else:
             n = self._frame.index.get_level_values(1).values.tolist()
             n = self._remove_grouped_blanks(n)
@@ -2556,7 +2597,7 @@ class Chain(object):
 
     def _is_net(self, parts):
         return parts[1].startswith(('f', 'f.c:f', 't.props')) and \
-               len(parts[2]) > 3 and not parts[2] == 'x++'
+            len(parts[2]) > 3 and not parts[2] == 'x++'
 
     def _is_calc_only(self, parts):
         if self._is_net(parts) and not self._is_block(parts):
@@ -2684,9 +2725,10 @@ class Chain(object):
         else:
             idx = self.dataframe.index.get_level_values(1).tolist()
         idx_view_map = list(zip(idx, vpr))
-        block_net_vk = [v for v in vpr if len(v.split('|')[2].split('['))>2 or
+        block_net_vk = [v for v in vpr if len(v.split('|')[2].split('[')) > 2 or
                         '[+{' in v.split('|')[2] or '}+]' in v.split('|')[2]]
-        has_calc = any([v.split('|')[1].startswith('f.c') for v in block_net_vk])
+        has_calc = any(
+                [v.split('|')[1].startswith('f.c') for v in block_net_vk])
         is_tested = any(v.split('|')[1].startswith('t.props') for v in vpr)
         if block_net_vk:
             expr = block_net_vk[0].split('|')[2]
@@ -2695,7 +2737,8 @@ class Chain(object):
             expanded_codes = []
         for idx, m in enumerate(idx_view_map):
             if idx_view_map[idx][0] == '':
-                idx_view_map[idx] = (idx_view_map[idx-1][0], idx_view_map[idx][1])
+                idx_view_map[idx] = (
+                idx_view_map[idx - 1][0], idx_view_map[idx][1])
         for idx, row in enumerate(description):
             if not 'is_block' in row:
                 idx_view_map[idx] = None
@@ -2762,7 +2805,7 @@ class Chain(object):
                     continue
                 if prioritize: link = self._drop_substituted_views(link)
                 found_views, y_frames = self._concat_views(
-                    link, views, rules_weight)
+                        link, views, rules_weight)
                 found.append(found_views)
 
                 try:
@@ -2784,8 +2827,7 @@ class Chain(object):
                 self.shapes.append(x_frames[-1].shape)
                 self._frame = pd.concat(self._pad(x_frames), axis=self.axis)
 
-
-            if self._group_style == 'reduced' and self.array_style >- 1:
+            if self._group_style == 'reduced' and self.array_style > - 1:
                 scan_views = [v if isinstance(v, (tuple, list)) else [v]
                               for v in self._given_views]
                 scan_views = [v for v in scan_views if len(v) > 1]
@@ -2798,7 +2840,8 @@ class Chain(object):
                     no_tests.append(new_views)
                 cond = any(len(v) >= 2 for v in no_tests)
                 if cond:
-                    self._frame = self._reduce_grouped_index(self._frame, 2, self._array_style)
+                    self._frame = self._reduce_grouped_index(self._frame, 2,
+                                                             self._array_style)
             if self.axis == 1:
                 self.views = found[-1]
             else:
@@ -2831,7 +2874,8 @@ class Chain(object):
             names = ['x|f|x:|||cbase']
         else:
             drop_rows = has_wgt_b
-            names = ['x|f|x:||{}|cbase'.format(list(contents.values())[0]['weight'])]
+            names = [
+                'x|f|x:||{}|cbase'.format(list(contents.values())[0]['weight'])]
 
         for v in self.views.copy():
             if v in names:
@@ -2974,7 +3018,8 @@ class Chain(object):
         """
         df.index = df.index.set_levels([varname], level=0, inplace=False)
         if df.columns.get_level_values(0).tolist()[0] != varname and total:
-            df.columns = df.columns.set_levels([varname], level=0, inplace=False)
+            df.columns = df.columns.set_levels([varname], level=0,
+                                               inplace=False)
         return df
 
     def _concat_views(self, link, views, rules_weight, found=None):
@@ -3008,13 +3053,16 @@ class Chain(object):
                     else:
                         use_grp_type = self._group_style
 
-                    found, grouped = self._concat_views(link, view, rules_weight, found=found)
+                    found, grouped = self._concat_views(link, view,
+                                                        rules_weight,
+                                                        found=found)
                     if grouped:
                         frames.append(self._group_views(grouped, use_grp_type))
                 else:
                     agg = link[view].meta()['agg']
                     is_descriptive = agg['method'] == 'descriptives'
-                    is_base = agg['name'] in ['cbase', 'rbase', 'ebase', 'cbase_gross']
+                    is_base = agg['name'] in ['cbase', 'rbase', 'ebase',
+                                              'cbase_gross']
                     is_sum = agg['name'] in ['counts_sum', 'c%_sum']
                     is_net = link[view].is_net()
                     oth_src = link[view].has_other_source()
@@ -3024,7 +3072,8 @@ class Chain(object):
                         statname = agg['fullname'].split('|')[1].split('.')[1]
                         if not statname in self._custom_texts:
                             self._custom_texts[statname] = []
-                        self._custom_texts[statname].append(link[view]._custom_txt)
+                        self._custom_texts[statname].append(
+                            link[view]._custom_txt)
 
                     if is_descriptive:
                         text = agg['name']
@@ -3038,7 +3087,8 @@ class Chain(object):
                             self._text_map.update({name: agg['text']})
                         except AttributeError:
                             self._text_map = {name: agg['text'],
-                                              _TOTAL: 'Total'}
+                                              _TOTAL: 'Total'
+                                              }
                     if agg['grp_text_map']:
                         # try:
                         if not agg['grp_text_map'] in self._grp_text_map:
@@ -3048,7 +3098,8 @@ class Chain(object):
 
                     frame = link[view].dataframe
                     if oth_src:
-                        frame = self._reindx_source(frame, link.x, link.y == _TOTAL)
+                        frame = self._reindx_source(frame, link.x,
+                                                    link.y == _TOTAL)
 
                     # RULES SECTION
                     # ========================================================
@@ -3065,7 +3116,8 @@ class Chain(object):
                         rules.apply()
                         frame = rules.rules_df()
                     # ========================================================
-                    if not no_total_sign and (link.x == _TOTAL or link.y == _TOTAL):
+                    if not no_total_sign and (
+                            link.x == _TOTAL or link.y == _TOTAL):
                         if link.x == _TOTAL:
                             level_names = [[link.y], ['@']]
                         elif link.y == _TOTAL:
@@ -3112,8 +3164,8 @@ class Chain(object):
             else:
                 order_idx.append(i)
         # Drop unwanted levels (keep last Values Index-level in that process)
-        levels = list(range(0, df.columns.nlevels-1))
-        drop_levels = levels[:-2]+ [levels[-1]]
+        levels = list(range(0, df.columns.nlevels - 1))
+        drop_levels = levels[:-2] + [levels[-1]]
         df.columns = df.columns.droplevel(drop_levels)
         # Apply the new flat labels and resort the columns
         df.columns.set_levels(levels=flat_cols, level=0, inplace=True)
@@ -3128,7 +3180,7 @@ class Chain(object):
         .. note:: The modified df will be stripped of all indexing on both rows
         and columns.
         """
-        all_dfs  = []
+        all_dfs = []
         ignore = False
         for col in list(replacement_map.keys()):
             target_col = df.columns[0] if col == '@' else col
@@ -3151,7 +3203,8 @@ class Chain(object):
                         else:
                             case = 'up'
                     for no, l in sorted(list(r.items()), reverse=True):
-                        v = [char.replace(str(no), l if case == 'up' else l.lower())
+                        v = [char.replace(str(no),
+                                          l if case == 'up' else l.lower())
                              if isinstance(char, str)
                              else char for char in v]
 
@@ -3164,8 +3217,9 @@ class Chain(object):
         # Clean it up
         letter_df.replace('-', np.NaN, inplace=True)
         for signs in [('[', ''), (']', ''), (', ', '.')]:
-            letter_df = letter_df.applymap(lambda x: x.replace(signs[0], signs[1])
-                                           if isinstance(x, str) else x)
+            letter_df = letter_df.applymap(
+                lambda x: x.replace(signs[0], signs[1])
+                if isinstance(x, str) else x)
         return letter_df
 
     @staticmethod
@@ -3182,7 +3236,7 @@ class Chain(object):
                 extend_abc = ['{}{}'.format(letter, l) for l in abc]
                 letters.extend(extend_abc)
         if incl_total:
-            letters = ['@'] + letters[:no_of_cols-1]
+            letters = ['@'] + letters[:no_of_cols - 1]
         else:
             letters = letters[:no_of_cols]
         return letters
@@ -3204,7 +3258,8 @@ class Chain(object):
         tests = [(no, v) for no, v in enumerate(vpr)
                  if v.split('|')[1].startswith('t.')]
         s = [(t[0],
-              float(int(t[1].split('|')[1].split('.')[3].split('+')[0]))/100.0)
+              float(
+                  int(t[1].split('|')[1].split('.')[3].split('+')[0])) / 100.0)
              for t in tests]
         return s
 
@@ -3235,8 +3290,8 @@ class Chain(object):
         column_letters = self._get_abc_letters(len(number_codes), has_total)
         vals = df.columns.get_level_values(0).tolist()
         mi = pd.MultiIndex.from_arrays(
-            (vals,
-             column_letters))
+                (vals,
+                 column_letters))
         df.columns = mi
         self.sig_test_letters = df.columns.get_level_values(1).tolist()
         # Build the replacements dict and build list of unique column indices
@@ -3260,7 +3315,7 @@ class Chain(object):
             l0 = df.index.get_level_values(0).tolist()[0]
             tuples = [(l0, i) for i in index]
             index = pd.MultiIndex.from_tuples(
-                tuples, names=['Question', 'Values'])
+                    tuples, names=['Question', 'Values'])
             letter_df.index = index
         else:
             letter_df.index = df.index
@@ -3280,7 +3335,7 @@ class Chain(object):
         org_names = [n for n in df.columns.names]
         idx = df.columns
         for i, l in zip(idx, self.sig_test_letters):
-            new_tuples.append(i + (l, ))
+            new_tuples.append(i + (l,))
         if not 'Test-IDs' in org_names:
             org_names.append('Test-IDs')
         mi = pd.MultiIndex.from_tuples(new_tuples, names=org_names)
@@ -3305,14 +3360,15 @@ class Chain(object):
                 if 'properties' in test_mask:
                     base_text = test_mask['properties'].get('base_text', None)
                 elif 'properties' in test_item:
-                        base_text = test_item['properties'].get('base_text', None)
+                    base_text = test_item['properties'].get('base_text', None)
                 else:
                     base_text = None
                 self.base_descriptions = base_text
             else:
                 for x in self._x_keys:
                     if 'properties' in self._meta['columns'][x]:
-                        bt = self._meta['columns'][x]['properties'].get('base_text', None)
+                        bt = self._meta['columns'][x]['properties'].get(
+                            'base_text', None)
                         if bt:
                             base_texts[x] = bt
                 if base_texts:
@@ -3349,8 +3405,10 @@ class Chain(object):
 
         return text_keys
 
-    def paint(self, text_key=None, text_loc_x=None, text_loc_y=None, display=None,
-              axes=None, view_level=False, transform_tests='upper', display_level=True,
+    def paint(self, text_key=None, text_loc_x=None, text_loc_y=None,
+              display=None,
+              axes=None, view_level=False, transform_tests='upper',
+              display_level=True,
               add_test_ids=True, add_base_texts='simple', totalize=False,
               sep=None, na_rep=None, transform_column_names=None,
               exclude_mask_text=False):
@@ -3404,7 +3462,8 @@ class Chain(object):
             self._paint_structure(text_key, sep=sep, na_rep=na_rep)
         else:
             self.totalize = totalize
-            if transform_tests: self.transform_tests(transform_tests, display_level)
+            if transform_tests: self.transform_tests(transform_tests,
+                                                     display_level)
             # Remove any letter header row from transformed tests...
             if self.sig_test_letters:
                 self._remove_letter_header()
@@ -3441,7 +3500,8 @@ class Chain(object):
             meta = self._meta['columns'][column]
 
             if sep:
-                column_mapper[column] = str_format % (column, meta['text'][text_key])
+                column_mapper[column] = str_format % (
+                column, meta['text'][text_key])
             else:
                 column_mapper[column] = meta['text'][text_key]
 
@@ -3460,18 +3520,19 @@ class Chain(object):
                     series = self.structure[column]
                     try:
                         series = (series.str.split(';')
-                                        .apply(pd.Series, 1)
-                                        .stack(dropna=False)
-                                        .map(value_mapper.get) #, na_action='ignore')
-                                        .unstack())
+                                  .apply(pd.Series, 1)
+                                  .stack(dropna=False)
+                                  .map(
+                            value_mapper.get)  # , na_action='ignore')
+                                  .unstack())
                         first = series[series.columns[0]]
                         rest = [series[c] for c in series.columns[1:]]
                         self.structure[column] = (
                             first
-                                .str.cat(rest, sep=', ', na_rep='')
-                                .str.slice(0, -2)
-                                .replace(to_replace=pattern, value='', regex=True)
-                                .replace(to_replace='', value=na_rep)
+                            .str.cat(rest, sep=', ', na_rep='')
+                            .str.slice(0, -2)
+                            .replace(to_replace=pattern, value='', regex=True)
+                            .replace(to_replace='', value=na_rep)
                         )
                     except AttributeError:
                         continue
@@ -3481,9 +3542,9 @@ class Chain(object):
                         for item in values
                     }
                     self.structure[column] = (self.structure[column]
-                                                  .map(value_mapper.get,
-                                                       na_action='ignore')
-                                             )
+                                              .map(value_mapper.get,
+                                                   na_action='ignore')
+                                              )
 
             self.structure[column].fillna(na_rep, inplace=True)
 
@@ -3517,12 +3578,13 @@ class Chain(object):
 
             for i in range(0, nlevels, 2):
                 index_0 = index.get_level_values(i)
-                index_1 = index.get_level_values(i+1)
+                index_1 = index.get_level_values(i + 1)
                 tuples = list(zip(index_0.values, index_1.values))
                 names = (index_0.name, index_1.name)
                 sub = pd.MultiIndex.from_tuples(tuples, names=names)
                 sub = self._paint_index(sub, text_keys, display, axis, bases,
-                                        transform_column_names, exclude_mask_text)
+                                        transform_column_names,
+                                        exclude_mask_text)
                 arrays.extend(self._lzip(sub.ravel()))
 
             tuples = self._lzip(arrays)
@@ -3551,7 +3613,8 @@ class Chain(object):
                 if value in list(self._text_map.keys()):
                     value = self._text_map[value]
                 else:
-                    text = self._get_text(value, text_keys[axis], exclude_mask_text)
+                    text = self._get_text(value, text_keys[axis],
+                                          exclude_mask_text)
                     if axis in display:
                         if transform_column_names:
                             value = transform_column_names.get(value, value)
@@ -3582,8 +3645,10 @@ class Chain(object):
             elif str(value).startswith('#Level: '):
                 level_1_text.append(value.replace('#Level: ', ''))
             else:
-                translate = list(self._transl[list(self._transl.keys())[0]].keys())
-                if value in list(self._text_map.keys()) and value not in translate:
+                translate = list(
+                    self._transl[list(self._transl.keys())[0]].keys())
+                if value in list(
+                        self._text_map.keys()) and value not in translate:
                     level_1_text.append(self._text_map[value])
                 elif value in translate:
                     if value == 'All':
@@ -3598,7 +3663,8 @@ class Chain(object):
                     text = self._specify_base(i, text_keys[axis], bases)
                     level_1_text.append(text)
                 else:
-                    if any(self.array_style == a and axis == x for a, x in ((0, 'x'), (1, 'y'))):
+                    if any(self.array_style == a and axis == x for a, x in
+                           ((0, 'x'), (1, 'y'))):
                         text = self._get_text(value, text_keys[axis], True)
                         level_1_text.append(text)
                     else:
@@ -3609,13 +3675,15 @@ class Chain(object):
                             else:
                                 for item in self._get_values(levels[0][i]):
                                     if int(value) == item['value']:
-                                        text = self._get_text(item, text_keys[axis])
+                                        text = self._get_text(item,
+                                                              text_keys[axis])
                                         level_1_text.append(text)
                         except (ValueError, UnboundLocalError):
                             if self._grp_text_map:
                                 for gtm in self._grp_text_map:
                                     if value in list(gtm.keys()):
-                                        text = self._get_text(gtm[value], text_keys[axis])
+                                        text = self._get_text(gtm[value],
+                                                              text_keys[axis])
                                         level_1_text.append(text)
         return list(map(str, level_1_text))
 
@@ -3669,7 +3737,8 @@ class Chain(object):
                 base_value = self._transl[tk_transl]['gross All']
             elif basetype == 'ebase':
                 base_value = 'Effective base'
-            elif not bases or (bases == 'simple-no-items' and self._is_mask_item):
+            elif not bases or (
+                    bases == 'simple-no-items' and self._is_mask_item):
                 base_value = self._transl[tk_transl]['All']
             else:
                 key = tk
@@ -3781,12 +3850,13 @@ class Chain(object):
         len_of_frame = len(frame)
         frame = pd.concat(frame, axis=0)
         index_order = frame.index.get_level_values(1).tolist()
-        index_order =  index_order[:int(len(index_order) / len_of_frame)]
+        index_order = index_order[:int(len(index_order) / len_of_frame)]
         gb_df = frame.groupby(level=1, sort=False)
         for i in index_order:
             grouped_df = gb_df.get_group(i)
             if group_type == 'reduced':
-                grouped_df = self._reduce_grouped_index(grouped_df, len_of_frame-1)
+                grouped_df = self._reduce_grouped_index(grouped_df,
+                                                        len_of_frame - 1)
             grouped_frame.append(grouped_df)
         grouped_frame = pd.concat(grouped_frame, verify_integrity=False)
         return grouped_frame
@@ -3817,7 +3887,6 @@ class Chain(object):
         grouped_df.index = mi
         return grouped_df
 
-
     @staticmethod
     def _lzip(arr):
         """
@@ -3835,12 +3904,11 @@ class Chain(object):
         cls._pad_id += 1
         return cls._pad_id
 
-
-# class MTDChain(Chain):
-#     def __init__(self, mtd_doc, name=None):
-#         super(MTDChain, self).__init__(stack=None, name=name, structure=None)
-#         self.mtd_doc = mtd_doc
-#         self.source = 'Dimensions MTD'
+        # class MTDChain(Chain):
+        #     def __init__(self, mtd_doc, name=None):
+        #         super(MTDChain, self).__init__(stack=None, name=name, structure=None)
+        #         self.mtd_doc = mtd_doc
+        #         self.source = 'Dimensions MTD'
         self.get = self._get
 
 
@@ -3879,9 +3947,6 @@ class Chain(object):
 #         return per_folder
 
 
-
-
-
 ##############################################################################
 
 class Quantity(object):
@@ -3894,6 +3959,7 @@ class Quantity(object):
     of the data input matrices and section definitions as well as the majority
     of statistical calculations.
     """
+
     # -------------------------------------------------
     # Instance initialization
     # -------------------------------------------------
@@ -3906,7 +3972,8 @@ class Quantity(object):
         self._dataidx = link.get_data().index
         if self._uses_meta:
             self.meta = self._meta
-            if list(self.meta().values()) == [None] * len(list(self.meta().values())):
+            if list(self.meta().values()) == [None] * len(
+                    list(self.meta().values())):
                 self._uses_meta = False
                 self.meta = None
         else:
@@ -3940,7 +4007,7 @@ class Quantity(object):
             return '%s' % (self.result)
         else:
             return 'Quantity - x: {}, xdef: {} y: {}, ydef: {}, w: {}'.format(
-                self.x, self.xdef, self.y, self.ydef, self.w)
+                    self.x, self.xdef, self.y, self.ydef, self.w)
 
     # -------------------------------------------------
     # Matrix creation and retrievel
@@ -3966,7 +4033,8 @@ class Quantity(object):
             if any(mask in list(self.meta()['masks'].keys()) for mask in masks):
                 mask = {
                     True: self.x,
-                    False: self.y}.get(self.x in list(self.meta()['masks'].keys()))
+                    False: self.y
+                }.get(self.x in list(self.meta()['masks'].keys()))
                 if self.meta()['masks'][mask]['type'] == 'array':
                     if self.x == '@':
                         self.x, self.y = self.y, self.x
@@ -4032,7 +4100,8 @@ class Quantity(object):
             rescodes = [v['value'] for v in self.meta()['lib']['values'][var]]
         else:
             values = emulate_meta(
-                self.meta(), self.meta()['columns'][var].get('values', None))
+                    self.meta(),
+                    self.meta()['columns'][var].get('values', None))
             rescodes = [v['value'] for v in values]
         return rescodes
 
@@ -4045,7 +4114,8 @@ class Quantity(object):
             restexts = [v[text_key] for v in self.meta()['lib']['values'][var]]
         else:
             values = emulate_meta(
-                self.meta(), self.meta()['columns'][var].get('values', None))
+                    self.meta(),
+                    self.meta()['columns'][var].get('values', None))
             restexts = [v['text'][text_key] for v in values]
         return restexts
 
@@ -4130,7 +4200,7 @@ class Quantity(object):
         self
         """
         proper_scaling = {old_code: new_code for old_code, new_code
-                         in list(scaling.items()) if old_code in self.xdef}
+                          in list(scaling.items()) if old_code in self.xdef}
         xdef_ref = [proper_scaling[code] if code in list(proper_scaling.keys())
                     else code for code in self.xdef]
         if drop:
@@ -4182,10 +4252,11 @@ class Quantity(object):
         else:
             column = list(condition.keys())[0]
             logic = list(condition.values())[0]
-        idx, logical_expression = get_logic_index(self.d()[column], logic, self.d())
+        idx, logical_expression = get_logic_index(self.d()[column], logic,
+                                                  self.d())
         logical_expression = logical_expression.split(':')[0]
         if not column == self.x:
-            logical_expression = logical_expression.replace('x[', column+'[')
+            logical_expression = logical_expression.replace('x[', column + '[')
         self.logical_conditions.append(logical_expression)
         return idx
 
@@ -4245,8 +4316,9 @@ class Quantity(object):
                     else:
                         self.miss_y = codes
                     if self.type == 'array':
-                        mask = np.nansum(missingfied.matrix[:, missingfied._x_indexers],
-                                         axis=1, keepdims=True)
+                        mask = np.nansum(
+                                missingfied.matrix[:, missingfied._x_indexers],
+                                axis=1, keepdims=True)
                         mask /= mask
                         mask = mask > 0
                     else:
@@ -4268,7 +4340,8 @@ class Quantity(object):
 
     def _organize_global_missings(self, missings):
         hidden = [c for c in list(missings.keys()) if missings[c] == 'hidden']
-        excluded = [c for c in list(missings.keys()) if missings[c] == 'excluded']
+        excluded = [c for c in list(missings.keys()) if
+                    missings[c] == 'excluded']
         shown = [c for c in list(missings.keys()) if missings[c] == 'shown']
         return hidden, excluded, shown
 
@@ -4402,12 +4475,14 @@ class Quantity(object):
                     names.extend(name)
                     names.extend([c for c in group])
                     combines.append(
-                        np.concatenate([vec, self.matrix[:, m_idx]], axis=1))
+                            np.concatenate([vec, self.matrix[:, m_idx]],
+                                           axis=1))
                 else:
                     names.extend([c for c in group])
                     names.extend(name)
                     combines.append(
-                        np.concatenate([self.matrix[:, m_idx], vec], axis=1))
+                            np.concatenate([self.matrix[:, m_idx], vec],
+                                           axis=1))
             else:
                 names.extend(name)
                 combines.append(vec)
@@ -4497,7 +4572,7 @@ class Quantity(object):
         frame = [code for code in frame if not code == '-']
         for code in frame:
             if code[0] in list(frame_lookup.keys()):
-               frame[frame.index([code[0]])] = frame_lookup[code[0]]
+                frame[frame.index([code[0]])] = frame_lookup[code[0]]
         return frame
 
     def _organize_grp_def(self, grp_def, method_expand, complete, axis):
@@ -4513,7 +4588,8 @@ class Quantity(object):
         if not self._grp_type(grp_def) == 'block':
             grp_def = [{'net': grp_def, 'expand': method_expand}]
         for grp in grp_def:
-            if any(isinstance(val, (tuple, dict)) for val in list(grp.values())):
+            if any(isinstance(val, (tuple, dict)) for val in
+                   list(grp.values())):
                 if complete:
                     ni_err = ('Logical expr. unsupported when complete=True. '
                               'Only list-type nets/groups can be completed.')
@@ -4532,7 +4608,8 @@ class Quantity(object):
                 else:
                     expand = method_expand
                 logical = False
-            organized_def.append([list(grp.keys()), list(grp.values())[0], expand, logical])
+            organized_def.append(
+                    [list(grp.keys()), list(grp.values())[0], expand, logical])
             if expand:
                 any_extensions = True
             if logical:
@@ -4540,8 +4617,9 @@ class Quantity(object):
             codes_used.extend(list(grp.values())[0])
         if not any_logical:
             if len(set(codes_used)) != len(codes_used) and any_extensions:
-                ni_err_extensions = ('Same codes in multiple groups unsupported '
-                                     'with expand and/or complete =True.')
+                ni_err_extensions = (
+                    'Same codes in multiple groups unsupported '
+                    'with expand and/or complete =True.')
                 raise NotImplementedError(ni_err_extensions)
         if complete:
             return self._add_unused_codes(organized_def, axis)
@@ -4752,7 +4830,8 @@ class Quantity(object):
                 if self.x == '@' or self.y == '@':
                     self.result = counts[:, [0]]
                 else:
-                    self.result = np.nansum(counts[:, 1:], axis=1, keepdims=True)
+                    self.result = np.nansum(counts[:, 1:], axis=1,
+                                            keepdims=True)
         self._organize_margins(margin)
         if as_df:
             self.to_df()
@@ -4793,8 +4872,8 @@ class Quantity(object):
 
     def _effective_n(self, axis=None, margin=True):
         self.weight()
-        effective = (np.nansum(self.matrix, axis=0)**2 /
-                     np.nansum(self.matrix**2, axis=0))
+        effective = (np.nansum(self.matrix, axis=0) ** 2 /
+                     np.nansum(self.matrix ** 2, axis=0))
         self.unweight()
         start_on = 0 if margin else 1
         if axis is None:
@@ -4847,7 +4926,7 @@ class Quantity(object):
                     self._percentile(perc=0.50),
                     self._percentile(perc=0.75),
                     self._max(axis)
-                    ], axis=0)
+                ], axis=0)
             elif stat == 'mean':
                 self.result = self._means(axis)
             elif stat == 'var':
@@ -4883,7 +4962,7 @@ class Quantity(object):
             factorized._switch_axes()
         np.copyto(factorized.matrix[:, 1:, :],
                   np.atleast_3d(factorized.xdef),
-                  where=factorized.matrix[:, 1:, :]>0)
+                  where=factorized.matrix[:, 1:, :] > 0)
         if not inplace:
             return factorized
 
@@ -4894,7 +4973,7 @@ class Quantity(object):
         fact_prod = np.nansum(fact.matrix, axis=0)
         fact_prod_sum = np.nansum(fact_prod[1:, :], axis=0, keepdims=True)
         bases = fact_prod[[0], :]
-        means = fact_prod_sum/bases
+        means = fact_prod_sum / bases
         if axis == 'y':
             self._switch_axes()
             means = means.T
@@ -4921,7 +5000,7 @@ class Quantity(object):
         if not self.w == '@1':
             factorized.weight()
         diff_sqrt = np.nansum(factorized.matrix[:, 1:], axis=1)
-        disp = np.nansum(diff_sqrt/unbiased_n, axis=0, keepdims=True)
+        disp = np.nansum(diff_sqrt / unbiased_n, axis=0, keepdims=True)
         disp[disp <= 0] = np.NaN
         disp[np.isinf(disp)] = np.NaN
         if measure == 'sd':
@@ -4980,7 +5059,7 @@ class Quantity(object):
         factorized = self._factorize(axis, inplace=False)
         vals = np.nansum(np.nansum(factorized.matrix[:, 1:, :], axis=1,
                                    keepdims=True), axis=1)
-        weights = (vals/vals)*self.wv
+        weights = (vals / vals) * self.wv
         for shape_i in range(0, vals.shape[1]):
             iter_weights = weights[:, shape_i]
             iter_vals = vals[:, shape_i]
@@ -5004,19 +5083,20 @@ class Quantity(object):
                 percs.append(iter_vals[-1])
             else:
                 wcsum_k = iter_wcsum[iter_wcsum <= k][-1]
-                p_k_idx = np.searchsorted(np.ndarray.flatten(iter_wcsum), wcsum_k)
+                p_k_idx = np.searchsorted(np.ndarray.flatten(iter_wcsum),
+                                          wcsum_k)
                 p_k = iter_vals[p_k_idx]
-                p_k1 = iter_vals[p_k_idx+1]
-                w_k1 = iter_weights[p_k_idx+1]
+                p_k1 = iter_vals[p_k_idx + 1]
+                w_k1 = iter_weights[p_k_idx + 1]
                 excess = k - wcsum_k
                 if excess >= 1.0:
                     percs.append(p_k1)
                 else:
                     if w_k1 >= 1.0:
-                        percs.append((1.0-excess)*p_k + excess*p_k1)
+                        percs.append((1.0 - excess) * p_k + excess * p_k1)
                     else:
-                        percs.append((1.0-(excess/w_k1))*p_k +
-                                     (excess/w_k1)*p_k1)
+                        percs.append((1.0 - (excess / w_k1)) * p_k +
+                                     (excess / w_k1) * p_k1)
         return np.array(percs)[None, :]
 
     def _organize_margins(self, margin):
@@ -5093,7 +5173,7 @@ class Quantity(object):
     def _get_y_indexers(self):
         if self._squeezed or self.type in ['simple', 'nested']:
             if self.ydef is not None:
-                idxs = list(range(1, len(self.ydef)+1))
+                idxs = list(range(1, len(self.ydef) + 1))
                 return self._sort_indexer_as_codes(idxs, self.ydef)
             else:
                 return [1]
@@ -5111,7 +5191,7 @@ class Quantity(object):
 
     def _get_x_indexers(self):
         if self._squeezed or self.type in ['simple', 'nested']:
-            idxs = list(range(1, len(self.xdef)+1))
+            idxs = list(range(1, len(self.xdef) + 1))
             return self._sort_indexer_as_codes(idxs, self.xdef)
         else:
             x_indexers = []
@@ -5144,8 +5224,8 @@ class Quantity(object):
             self._x_indexers = self._get_x_indexers()
             self._y_indexers = []
         elif self.type in ['simple', 'nested']:
-            x = self.matrix[:, :len(self.xdef)+1]
-            y = self.matrix[:, len(self.xdef)+1:-1]
+            x = self.matrix[:, :len(self.xdef) + 1]
+            y = self.matrix[:, len(self.xdef) + 1:-1]
             for i in range(0, y.shape[1]):
                 sects.append(x * y[:, [i]])
             sects = np.dstack(sects)
@@ -5153,11 +5233,11 @@ class Quantity(object):
             self.matrix = sects
             self._x_indexers = self._get_x_indexers()
             self._y_indexers = self._get_y_indexers()
-        #=====================================================================
-        #THIS CAN SPEED UP PERFOMANCE BY A GOOD AMOUNT BUT STACK-SAVING
-        #TIME & SIZE WILL SUFFER. WE CAN DEL THE "SQUEEZED" COLLECTION AT
-        #SAVE STAGE.
-        #=====================================================================
+        # =====================================================================
+        # THIS CAN SPEED UP PERFOMANCE BY A GOOD AMOUNT BUT STACK-SAVING
+        # TIME & SIZE WILL SUFFER. WE CAN DEL THE "SQUEEZED" COLLECTION AT
+        # SAVE STAGE.
+        # =====================================================================
         # self._cache.set_obj(collection='squeezed',
         #                     key=self.f+self.w+self.x+self.y,
         #                     obj=(self.xdef, self.ydef,
@@ -5208,7 +5288,8 @@ class Quantity(object):
                 section_data = self.d()[section].str.get_dummies(';')
                 if self._uses_meta:
                     res_codes = self._get_response_codes(section)
-                    section_data.columns = [int(col) for col in section_data.columns]
+                    section_data.columns = [int(col) for col in
+                                            section_data.columns]
                     section_data = section_data.reindex(columns=res_codes)
                     section_data.replace(np.NaN, 0, inplace=True)
                 if not self._uses_meta:
@@ -5221,13 +5302,13 @@ class Quantity(object):
                     section_data = section_data.reindex(columns=res_codes)
                     section_data.replace(np.NaN, 0, inplace=True)
                 section_data.rename(
-                    columns={
-                        col: int(col)
-                        if float(col).is_integer()
-                        else col
-                        for col in section_data.columns
-                    },
-                    inplace=True)
+                        columns={
+                            col: int(col)
+                            if float(col).is_integer()
+                            else col
+                            for col in section_data.columns
+                        },
+                        inplace=True)
             return section_data.values, section_data.columns.tolist()
         elif section is None and self.type == 'array':
             a_i = [i['source'].split('@')[-1] for i in
@@ -5241,7 +5322,8 @@ class Quantity(object):
                     dummies.append(i_dummy.reindex(columns=a_res))
             else:
                 for i in a_i:
-                    dummies.append(pd.get_dummies(self.d()[i]).reindex(columns=a_res))
+                    dummies.append(
+                        pd.get_dummies(self.d()[i]).reindex(columns=a_res))
             a_data = pd.concat(dummies, axis=1)
             return a_data.values, a_res, a_i
 
@@ -5252,23 +5334,25 @@ class Quantity(object):
         mat = self.matrix.copy()
         mat_indexer = np.expand_dims(self._dataidx, 1)
         if not self.type == 'array':
-            xmask = (np.nansum(mat[:, 1:len(self.xdef)+1], axis=1) > 0)
+            xmask = (np.nansum(mat[:, 1:len(self.xdef) + 1], axis=1) > 0)
             if self.ydef is not None:
                 if self.base_all:
-                    ymask = (np.nansum(mat[:, len(self.xdef)+1:-1], axis=1) > 0)
+                    ymask = (np.nansum(mat[:, len(self.xdef) + 1:-1],
+                                       axis=1) > 0)
                 else:
-                    ymask = (np.nansum(mat[:, len(self.xdef)+2:-1], axis=1) > 0)
+                    ymask = (np.nansum(mat[:, len(self.xdef) + 2:-1],
+                                       axis=1) > 0)
                 self.idx_map = np.concatenate(
-                    [np.expand_dims(xmask & ymask, 1), mat_indexer], axis=1)
+                        [np.expand_dims(xmask & ymask, 1), mat_indexer], axis=1)
                 return mat[xmask & ymask]
             else:
                 self.idx_map = np.concatenate(
-                    [np.expand_dims(xmask, 1), mat_indexer], axis=1)
+                        [np.expand_dims(xmask, 1), mat_indexer], axis=1)
                 return mat[xmask]
         else:
             mask = (np.nansum(mat[:, :-1], axis=1) > 0)
             self.idx_map = np.concatenate(
-                [np.expand_dims(mask, 1), mat_indexer], axis=1)
+                    [np.expand_dims(mask, 1), mat_indexer], axis=1)
             return mat[mask]
 
     def _is_raw_numeric(self, var):
@@ -5287,6 +5371,7 @@ class Quantity(object):
         return self.current_agg in ['mean', 'min', 'max', 'varcoeff', 'sem',
                                     'stddev', 'var', 'median', 'upper_q',
                                     'lower_q']
+
     def to_df(self):
         if self.current_agg == 'freq':
             if not self.comb_x:
@@ -5323,8 +5408,9 @@ class Quantity(object):
                 self.x_agg_vals = self.xdef if not self.comb_x else self.comb_x
                 self.y_agg_vals = self.current_agg
         # can this made smarter WITHOUT 1000000 IF-ELSEs above?:
-        if ((self.current_agg in ['freq', 'cbase', 'x_sum', 'summary', 'calc'] or
-                self._res_is_stat()) and not self.type == 'array'):
+        if ((self.current_agg in ['freq', 'cbase', 'x_sum', 'summary',
+                                  'calc'] or
+             self._res_is_stat()) and not self.type == 'array'):
             if self.y == '@' or self.x == '@':
                 self.y_agg_vals = '@'
         df = pd.DataFrame(self.result)
@@ -5374,7 +5460,7 @@ class Quantity(object):
             total_mi = pd.MultiIndex.from_product(total_mi_values,
                                                   names=nest_mi.names)
             full_nest_mi = nest_mi.union(total_mi)
-            for lvl, c in zip(list(range(1, len(full_nest_mi)+1, 2)),
+            for lvl, c in zip(list(range(1, len(full_nest_mi) + 1, 2)),
                               self.nest_def['level_codes']):
                 full_nest_mi.set_levels(['All'] + c, level=lvl, inplace=True)
             self.result.columns = full_nest_mi
@@ -5459,7 +5545,7 @@ class Quantity(object):
             idx_err = 'Axis defintion is not a subset of rebase reference.'
             raise IndexError(idx_err)
         ref_freq = ref.count(as_df=False)
-        self.result = (self.result/ref_freq.result) * 100
+        self.result = (self.result / ref_freq.result) * 100
         if overwrite_margins:
             self.rbase = ref_freq.rbase
             self.cbase = ref_freq.cbase
@@ -5485,12 +5571,14 @@ class Quantity(object):
     def _sect_is_subset(axdef1, axdef2):
         return set(axdef1).intersection(set(axdef2)) > 0
 
+
 class Test(object):
     """
     The Quantipy Test object is a defined by a Link and the view name notation
     string of a counts or means view. All auxiliary figures needed to arrive
     at the test results are computed inside the instance of the object.
     """
+
     def __init__(self, link, view_name_notation, test_total=False):
         super(Test, self).__init__()
         # Infer whether a mean or proportion test is being performed
@@ -5527,9 +5615,9 @@ class Test(object):
 
     def __repr__(self):
         return ('%s, total included: %s, test metric: %s, parameters: %s, '
-                'mimicked: %s, level: %s ')\
-                % (Test, self.test_total, self.metric, self.parameters,
-                   self.mimic, self.level)
+                'mimicked: %s, level: %s ') \
+            % (Test, self.test_total, self.metric, self.parameters,
+               self.mimic, self.level)
 
     def _set_baseline_aggregates(self, view):
         """
@@ -5564,7 +5652,8 @@ class Test(object):
                 self.rbases = agg.rbase[1:, :]
                 self.tbase = agg.cbase[0, 0]
 
-    def set_params(self, test_total=False, level='mid', mimic='Dim', testtype='pooled',
+    def set_params(self, test_total=False, level='mid', mimic='Dim',
+                   testtype='pooled',
                    use_ebase=True, ovlp_correc=True, cwi_filter=False,
                    flag_bases=None):
         """
@@ -5637,20 +5726,22 @@ class Test(object):
                                    'use_ebase': False,
                                    'ovlp_correc': False,
                                    'cwi_filter': True,
-                                   'base_flags': None}
+                                   'base_flags': None
+                                   }
                 self.test_total = False
             elif self.mimic == 'Dim':
                 self.parameters = {'testtype': 'pooled',
                                    'use_ebase': True,
                                    'ovlp_correc': True,
                                    'cwi_filter': False,
-                                   'base_flags': flag_bases}
+                                   'base_flags': flag_bases
+                                   }
             self.level = level
             self.comparevalue, self.level = self._convert_level(level)
             # Get value differences between column pairings
             if self.metric == 'means':
                 self.valdiffs = np.array(
-                    [m1 - m2 for m1, m2 in combinations(self.values[0], 2)])
+                        [m1 - m2 for m1, m2 in combinations(self.values[0], 2)])
             if self.metric == 'proportions':
                 # special to askia testing: counts-when-independent filtering
                 if cwi_filter:
@@ -5662,9 +5753,11 @@ class Test(object):
             # [1] effective base usage
             if use_ebase and self.is_weighted:
                 if not self.test_total:
-                    self.ebases = self.Quantity._effective_n(axis='x', margin=False)
+                    self.ebases = self.Quantity._effective_n(axis='x',
+                                                             margin=False)
                 else:
-                    self.ebases = self.Quantity._effective_n(axis='x', margin=True)
+                    self.ebases = self.Quantity._effective_n(axis='x',
+                                                             margin=True)
             else:
                 self.ebases = self.cbases
             # [2] overlap correction
@@ -5675,7 +5768,8 @@ class Test(object):
             # [3] base flags
             if flag_bases:
                 self.flags = {'min': flag_bases[0],
-                              'small': flag_bases[1]}
+                              'small': flag_bases[1]
+                              }
                 self.flags['flagged_bases'] = self._get_base_flags()
             else:
                 self.flags = None
@@ -5708,10 +5802,12 @@ class Test(object):
         stat = self.get_statistic()
         stat = self._convert_statistic(stat)
         if self.metric == 'means':
-            diffs = pd.DataFrame(self.valdiffs, index=self.ypairs, columns=self.xdef).T
+            diffs = pd.DataFrame(self.valdiffs, index=self.ypairs,
+                                 columns=self.xdef).T
         elif self.metric == 'proportions':
             stat = pd.DataFrame(stat, index=self.xdef, columns=self.ypairs)
-            diffs = pd.DataFrame(self.valdiffs, index=self.xdef, columns=self.ypairs)
+            diffs = pd.DataFrame(self.valdiffs, index=self.xdef,
+                                 columns=self.ypairs)
         if self.mimic == 'Dim':
             return diffs[(diffs != 0) & (stat < self.comparevalue)]
         elif self.mimic == 'askia':
@@ -5811,8 +5907,8 @@ class Test(object):
         """
         Estimated standard errors of prop. diff. (unpool. var.) per col. pair.
         """
-        props = self.values/self.cbases
-        unp_sd = ((props*(1-props))/self.cbases).T
+        props = self.values / self.cbases
+        unp_sd = ((props * (1 - props)) / self.cbases).T
         return np.array([np.sqrt(cat1 + cat2)
                          for cat1, cat2 in combinations(unp_sd, 2)]).T
 
@@ -5844,12 +5940,12 @@ class Test(object):
             ovlp_correc_pairs = self.overlap
 
         counts_sum_pairs = np.array(
-            [c1 + c2 for c1, c2 in combinations(self.values.T, 2)])
+                [c1 + c2 for c1, c2 in combinations(self.values.T, 2)])
         bases_sum_pairs = np.expand_dims(
-            [b1 + b2 for b1, b2 in combinations(self.cbases[0], 2)], 1)
-        pooled_props = (counts_sum_pairs/bases_sum_pairs).T
+                [b1 + b2 for b1, b2 in combinations(self.cbases[0], 2)], 1)
+        pooled_props = (counts_sum_pairs / bases_sum_pairs).T
         return (np.sqrt(pooled_props * (1 - pooled_props) *
-                (np.array(ebases_correc_pairs - ovlp_correc_pairs))))
+                        (np.array(ebases_correc_pairs - ovlp_correc_pairs))))
 
     def _se_mean_pooled(self):
         """
@@ -5859,8 +5955,8 @@ class Test(object):
         supported and applied as defined by the test's parameters setup.
         """
         ssw_base_ratios = self._sum_sq_w(base_ratio=True)
-        enum = np.nan_to_num((self.sd ** 2) * (self.cbases-1))
-        denom = self.cbases-ssw_base_ratios
+        enum = np.nan_to_num((self.sd ** 2) * (self.cbases - 1))
+        denom = self.cbases - ssw_base_ratios
 
         enum_pairs = np.array([enum1 + enum2
                                for enum1, enum2
@@ -5869,18 +5965,18 @@ class Test(object):
                                 for denom1, denom2
                                 in combinations(denom[0], 2)])
 
-        ebases_correc_pairs = np.array([1/x + 1/y
+        ebases_correc_pairs = np.array([1 / x + 1 / y
                                         for x, y
                                         in combinations(self.ebases[0], 2)])
 
         if self.y_is_multi and self.parameters['ovlp_correc']:
-            ovlp_correc_pairs = ((2*self.overlap) /
+            ovlp_correc_pairs = ((2 * self.overlap) /
                                  [x * y for x, y
                                   in combinations(self.ebases[0], 2)])
         else:
             ovlp_correc_pairs = self.overlap[None, :]
 
-        return (np.sqrt((enum_pairs/denom_pairs) *
+        return (np.sqrt((enum_pairs / denom_pairs) *
                         (ebases_correc_pairs - ovlp_correc_pairs)))
 
     # -------------------------------------------------
@@ -5896,7 +5992,7 @@ class Test(object):
         else:
             ssw = np.nansum(self.Quantity.matrix ** 2, axis=0)[[0], :]
         if base_ratio:
-            return ssw/self.cbases
+            return ssw / self.cbases
         else:
             return ssw
 
@@ -5934,16 +6030,17 @@ class Test(object):
         col_pairs = list(combinations(list(range(0, m.shape[1])), 2))
         if self.parameters['use_ebase'] and self.is_weighted:
             # Overlap computation when effective base is being used
-            w_sum_sq = np.array([np.nansum(m[:, [c1]] + m[:, [c2]], axis=0)**2
+            w_sum_sq = np.array([np.nansum(m[:, [c1]] + m[:, [c2]], axis=0) ** 2
                                  for c1, c2 in col_pairs])
-            w_sq_sum = np.array([np.nansum(m[:, [c1]]**2 + m[:, [c2]]**2, axis=0)
-                        for c1, c2 in col_pairs])
-            return np.nan_to_num((w_sum_sq/w_sq_sum)/2).T
+            w_sq_sum = np.array(
+                    [np.nansum(m[:, [c1]] ** 2 + m[:, [c2]] ** 2, axis=0)
+                     for c1, c2 in col_pairs])
+            return np.nan_to_num((w_sum_sq / w_sq_sum) / 2).T
         else:
             # Overlap with simple weighted/unweighted base size
             ovlp = np.array([np.nansum(m[:, [c1]] + m[:, [c2]], axis=0)
                              for c1, c2 in col_pairs])
-            return (np.nan_to_num(ovlp)/2).T
+            return (np.nan_to_num(ovlp) / 2).T
 
     def _get_base_flags(self):
         bases = self.ebases[0]
@@ -5967,7 +6064,8 @@ class Test(object):
         test_columns = ['@'] + self.ydef if self.test_total else self.ydef
         for col, val in sigs.items():
             if self._flags_exist():
-                b1ix, b2ix = test_columns.index(col[0]), test_columns.index(col[1])
+                b1ix, b2ix = test_columns.index(col[0]), test_columns.index(
+                        col[1])
                 b1_ok = self.flags['flagged_bases'][b1ix] != '**'
                 b2_ok = self.flags['flagged_bases'][b2ix] != '**'
             else:
@@ -5988,8 +6086,8 @@ class Test(object):
         test = pd.DataFrame(res).applymap(lambda x: str(x))
         test = test.reindex(index=self.xdef, columns=self.ydef)
         if self._flags_exist():
-           test = self._apply_base_flags(test)
-           test.replace('[]*', '*', inplace=True)
+            test = self._apply_base_flags(test)
+            test.replace('[]*', '*', inplace=True)
         test.replace('[]', np.NaN, inplace=True)
         # removing test results on post-aggregation rows [calc()]
         if self.has_calc:
@@ -6014,9 +6112,10 @@ class Test(object):
                 values = [np.NaN]
             if self.no_diffs and not self.no_pairs:
                 values[:] = np.NaN
-        return  pd.DataFrame(values,
-                             index=self.multiindex[0],
-                             columns=self.multiindex[1])
+        return pd.DataFrame(values,
+                            index=self.multiindex[0],
+                            columns=self.multiindex[1])
+
     def _flags_exist(self):
         return (self.flags is not None and
                 not all(self.flags['flagged_bases']) == '')
@@ -6025,19 +6124,21 @@ class Test(object):
         flags = self.flags['flagged_bases']
         if self.test_total: flags = flags[1:]
         for res_col, flag in zip(sigres.columns, flags):
-                if flag == '**':
-                    if replace:
-                        sigres[res_col] = flag
-                    else:
-                        sigres[res_col] = sigres[res_col] + flag
-                elif flag == '*':
+            if flag == '**':
+                if replace:
+                    sigres[res_col] = flag
+                else:
                     sigres[res_col] = sigres[res_col] + flag
+            elif flag == '*':
+                sigres[res_col] = sigres[res_col] + flag
         return sigres
+
 
 class Nest(object):
     """
     Description of class...
     """
+
     def __init__(self, nest, data, meta):
         self.data = data
         self.meta = meta
@@ -6060,7 +6161,8 @@ class Nest(object):
                                           target=self.name, mapper=recode_map)
         nest_info = {'variables': self.variables,
                      'level_codes': self.level_codes,
-                     'levels': self.levels}
+                     'levels': self.levels
+                     }
         return nest_info
 
     def _any_multicoded(self):
@@ -6083,8 +6185,9 @@ class Nest(object):
         qtext, valtexts = self._interlock_texts()
         meta_dict['type'] = 'delimited set' if self._needs_multi else 'single'
         meta_dict['text'] = {'en-GB': '>'.join(qtext[0])}
-        meta_dict['values'] = [{'text' : {'en-GB': '>'.join(valtext)},
-                                'value': c}
+        meta_dict['values'] = [{'text': {'en-GB': '>'.join(valtext)},
+                                'value': c
+                                }
                                for c, valtext
                                in enumerate(valtexts, start=1)]
         self.meta['columns'][self.name] = meta_dict
@@ -6105,6 +6208,7 @@ class Nest(object):
         interlocked_qtexts = list(product(*all_qtexts))
         return interlocked_qtexts, interlocked_valtexts
 
+
 ##############################################################################
 
 class Multivariate(object):
@@ -6114,14 +6218,16 @@ class Multivariate(object):
     def _select_variables(self, x, y=None, w=None, drop_listwise=False):
         x_vars, y_vars = [], []
         if not isinstance(x, list): x = [x]
-        if not isinstance(y, list) and not y=='@': y = [y]
+        if not isinstance(y, list) and not y == '@': y = [y]
         if w is None: w = '@1'
         wrong_var_sel_1_on_1 = 'Can only analyze 1-to-1 relationships.'
-        if self.analysis == 'Reduction' and (not (len(x) == 1 and len(y) == 1) or y=='@'):
+        if self.analysis == 'Reduction' and (
+                not (len(x) == 1 and len(y) == 1) or y == '@'):
             raise AttributeError(wrong_var_sel_1_on_1)
         for var in x:
             if self.ds._is_array(var):
-                if self.analysis == 'Reduction': raise AttributeError(wrong_var_sel_1_on_1)
+                if self.analysis == 'Reduction': raise AttributeError(
+                    wrong_var_sel_1_on_1)
                 x_a_items = self.ds._get_itemmap(var, non_mapped='items')
                 x_vars += x_a_items
             else:
@@ -6129,7 +6235,8 @@ class Multivariate(object):
         if y and not y == '@':
             for var in y:
                 if self.ds._is_array(var):
-                    if self.analysis == 'Reduction': raise AttributeError(wrong_var_sel_1_on_1)
+                    if self.analysis == 'Reduction': raise AttributeError(
+                        wrong_var_sel_1_on_1)
                     y_a_items = self.ds._get_itemmap(var, non_mapped='items')
                     y_vars += y_a_items
                 else:
@@ -6185,7 +6292,7 @@ class Multivariate(object):
             l = helper_stack[self.ds.name]['no_filter'][x][y]
             crossed_quantities.append(qp.Quantity(l, weight=w))
 
-        for x in self._org_x+self._org_y:
+        for x in self._org_x + self._org_y:
             helper_stack.add_link(x=x, y='@')
             l = helper_stack[self.ds.name]['no_filter'][x]['@']
             single_quantities.append(qp.Quantity(l, weight=w))
@@ -6193,6 +6300,7 @@ class Multivariate(object):
         self.single_quantities = single_quantities
         self.crossed_quantities = crossed_quantities
         return None
+
 
 class Reductions(Multivariate):
     def __init__(self, dataset):
@@ -6206,8 +6314,8 @@ class Reductions(Multivariate):
         plt.figure(figsize=(5, 5))
         plt.xlim([-1, 1])
         plt.ylim([-1, 1])
-        #plt.axvline(x=0.0, c='grey', ls='solid', linewidth=0.9)
-        #plt.axhline(y=0.0, c='grey', ls='solid', linewidth=0.9)
+        # plt.axvline(x=0.0, c='grey', ls='solid', linewidth=0.9)
+        # plt.axhline(y=0.0, c='grey', ls='solid', linewidth=0.9)
         x = plt.scatter(point_coords['x'][0], point_coords['x'][1],
                         edgecolor='w', marker='o', c='red', s=20)
         y = plt.scatter(point_coords['y'][0], point_coords['y'][1],
@@ -6228,18 +6336,17 @@ class Reductions(Multivariate):
         y1 = fig.get_axes()[0].get_position().y1
 
         text = 'Correspondence map'
-        plt.figtext(x0+0.015, 1.09-y0, text, fontsize=12, color='w',
+        plt.figtext(x0 + 0.015, 1.09 - y0, text, fontsize=12, color='w',
                     fontweight='bold', verticalalignment='top',
-                    bbox={'facecolor':'red', 'alpha': 0.8, 'edgecolor': 'w',
-                          'pad': 10})
-
-
+                    bbox={'facecolor': 'red', 'alpha': 0.8, 'edgecolor': 'w',
+                          'pad': 10
+                          })
 
         label_map = self._get_point_label_map('CA', point_coords)
         for axis in list(label_map.keys()):
             for lab, coord in list(label_map[axis].items()):
                 plt.annotate(lab, coord, ha='left', va='bottom',
-                    fontsize=6)
+                             fontsize=6)
             plt.legend((x, y), (self.x[0], self.y[0]),
                        loc='best', bbox_to_anchor=(1.325, 1.07),
                        ncol=2, fontsize=6, title='                         ')
@@ -6247,26 +6354,33 @@ class Reductions(Multivariate):
         x_codes, x_texts = self.ds._get_valuemap(self.x[0], non_mapped='lists')
         y_codes, y_texts = self.ds._get_valuemap(self.y[0], non_mapped='lists')
 
-        text = ' '*80
+        text = ' ' * 80
         for var in zip(x_codes, x_texts):
             text += '\n{}: {}\n'.format(var[0], var[1])
-        fig.text(1.06-x0, 0.85, text, fontsize=5, verticalalignment='top',
-                          bbox={'facecolor':'red',
-                          'edgecolor': 'w', 'pad': 10})
+        fig.text(1.06 - x0, 0.85, text, fontsize=5, verticalalignment='top',
+                 bbox={'facecolor': 'red',
+                       'edgecolor': 'w', 'pad': 10
+                       })
         x_len = len(x_codes)
-        text = ' '*80
+        text = ' ' * 80
         for var in zip(y_codes, y_texts):
             text += '\n{}: {}\n'.format(var[0], var[1])
-        test = fig.text(1.06-x0, 0.85-((x_len)*0.0155)-((x_len)*0.0155)-0.05, text, fontsize=5, verticalalignment='top',
-                          bbox={'facecolor': 'lightgrey', 'alpha': 0.65,
-                          'edgecolor': 'w', 'pad': 10})
+        test = fig.text(1.06 - x0,
+                        0.85 - ((x_len) * 0.0155) - ((x_len) * 0.0155) - 0.05,
+                        text, fontsize=5, verticalalignment='top',
+                        bbox={'facecolor': 'lightgrey', 'alpha': 0.65,
+                              'edgecolor': 'w', 'pad': 10
+                              })
 
-        logo = Image.open('C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
-        newax = fig.add_axes([x0+0.005, y0-0.25, 0.1, 0.1], anchor='NE', zorder=-1)
+        logo = Image.open(
+            'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
+        newax = fig.add_axes([x0 + 0.005, y0 - 0.25, 0.1, 0.1], anchor='NE',
+                             zorder=-1)
         newax.imshow(logo)
         newax.axis('off')
 
-        fig.savefig(self.ds.path + 'correspond.png', bbox_inches='tight', dpi=300)
+        fig.savefig(self.ds.path + 'correspond.png', bbox_inches='tight',
+                    dpi=300)
 
     def correspondence(self, x, y, w=None, norm='sym', diags=True, plot=True):
         """
@@ -6300,7 +6414,7 @@ class Reductions(Multivariate):
         a = 0.5 if norm == 'sym' else 1.0
         row_mass = self.mass(x=x, y=y, margin='x')
         col_mass = self.mass(x=x, y=y, margin='y')
-        dim = min(row_mass.shape[0]-1, col_mass.shape[0]-1)
+        dim = min(row_mass.shape[0] - 1, col_mass.shape[0] - 1)
         row_sc = (row_eigen_mat * sv[:, 0] ** a) / np.sqrt(row_mass)
         col_sc = (col_eigen_mat.T * sv[:, 0] ** a) / np.sqrt(col_mass)
 
@@ -6313,32 +6427,34 @@ class Reductions(Multivariate):
             dim1_xitem, dim2_xitem = dim1_c[:item_sep], dim2_c[:item_sep]
             dim1_yitem, dim2_yitem = dim1_c[item_sep:], dim2_c[item_sep:]
             coords = {'x': [dim1_xitem, dim2_xitem],
-                      'y': [dim1_yitem, dim2_yitem]}
+                      'y': [dim1_yitem, dim2_yitem]
+                      }
             self.plot('CA', coords)
             plt.show()
 
         if diags:
-            _dim = range(1, dim+1)
+            _dim = range(1, dim + 1)
             chisq_stats = [chisq, 'sig: {}'.format(sig),
-                           'dof: {}'.format((obs.shape[0] - 1)*(obs.shape[1] - 1))]
-            _chisq = ([np.NaN] * (dim-3)) + chisq_stats
-            _sig = ([np.NaN] * (dim-2)) + [chisq]
+                           'dof: {}'.format(
+                               (obs.shape[0] - 1) * (obs.shape[1] - 1))]
+            _chisq = ([np.NaN] * (dim - 3)) + chisq_stats
+            _sig = ([np.NaN] * (dim - 2)) + [chisq]
             _sv, _ev = sv[:dim, 0], ev[:dim, 0]
             _expl_inertia = 100 * (ev[:dim, 0] / inertia)
             _cumul_expl_inertia = np.cumsum(_expl_inertia)
             _perc_chisq = _expl_inertia / 100 * chisq
             labels = ['Dimension', 'Singular values', 'Eigen values',
-                     'explained % of Inertia', 'cumulative % explained',
-                     'explained Chi^2', 'Total Chi^2']
+                      'explained % of Inertia', 'cumulative % explained',
+                      'explained Chi^2', 'Total Chi^2']
             results = pd.DataFrame([_dim, _sv, _ev, _expl_inertia,
-                                    _cumul_expl_inertia,_perc_chisq, _chisq]).T
+                                    _cumul_expl_inertia, _perc_chisq, _chisq]).T
             results.columns = labels
             results.set_index('Dimension', inplace=True)
             return results
 
     def _get_point_label_map(self, type, point_coords):
         if type == 'CA':
-            xcoords = list(zip(point_coords['x'][0],point_coords['x'][1]))
+            xcoords = list(zip(point_coords['x'][0], point_coords['x'][1]))
             xlabels = self.crossed_quantities[0].xdef
             x_point_map = {lab: coord for lab, coord in zip(xlabels, xcoords)}
             ycoords = list(zip(point_coords['y'][0], point_coords['y'][1]))
@@ -6355,15 +6471,15 @@ class Reductions(Multivariate):
         if margin is None:
             return counts.result.values / total
         elif margin == 'x':
-            return  counts.rbase[1:, :] / total
+            return counts.rbase[1:, :] / total
         elif margin == 'y':
-            return  (counts.cbase[:, 1:] / total).T
+            return (counts.cbase[:, 1:] / total).T
 
     def expected_counts(self, x, y, w=None, return_observed=False):
         """
         Compute expected cell distribution given observed absolute frequencies.
         """
-        #self.single_quantities, self.crossed_quantities = self._get_quantities()
+        # self.single_quantities, self.crossed_quantities = self._get_quantities()
         counts = self.crossed_quantities[0].count(margin=False)
         total = counts.cbase[0, 0]
         row_m = counts.rbase[1:, :]
@@ -6378,7 +6494,7 @@ class Reductions(Multivariate):
         Compute global Chi^2 statistic, optionally transformed into Inertia.
         """
         obs, exp = self.expected_counts(x=x, y=y, return_observed=True)
-        diff_matrix = ((obs - exp)**2) / exp
+        diff_matrix = ((obs - exp) ** 2) / exp
         total_chi_sq = np.nansum(diff_matrix)
         if sig:
             dof = (obs.shape[0] - 1) * (obs.shape[1] - 1)
@@ -6406,10 +6522,12 @@ class Reductions(Multivariate):
             else:
                 return s, (s ** 2)
 
+
 class LinearModels(Multivariate):
     """
     OLS REGRESSION, ...
     """
+
     def __init__(self, dataset):
         self.ds = dataset.copy()
         self.single_quantities = None
@@ -6453,9 +6571,9 @@ class LinearModels(Multivariate):
     def get_coefs(self, standardize=False):
         coefs = self._coefs() if not standardize else self._betas()
         coef_df = pd.DataFrame(coefs,
-                               index = ['-c-'] + self.x
+                               index=['-c-'] + self.x
                                if self._use_intercept else self.x,
-                               columns = ['b']
+                               columns=['b']
                                if not standardize else ['beta'])
         coef_df.replace(np.NaN, '', inplace=True)
         return coef_df
@@ -6463,8 +6581,9 @@ class LinearModels(Multivariate):
     def _betas(self):
         """
         """
-        corr_mat = Relations(self.ds).corr(self.x, self.y, self.w, n=False, sig=None,
-                            drop_listwise=True, matrixed=True)
+        corr_mat = Relations(self.ds).corr(self.x, self.y, self.w, n=False,
+                                           sig=None,
+                                           drop_listwise=True, matrixed=True)
         corr_mat = corr_mat.values
         predictors = corr_mat[:-1, :-1]
         y = corr_mat[:-1, [-1]]
@@ -6478,7 +6597,7 @@ class LinearModels(Multivariate):
         """
         """
         w, y, x = self._vectors()
-        coefs = np.dot(np.linalg.inv(np.dot(x.T, x*w)), np.dot(x.T, y*w))
+        coefs = np.dot(np.linalg.inv(np.dot(x.T, x * w)), np.dot(x.T, y * w))
         return coefs
 
     def get_modelfit(self, r_sq=True):
@@ -6491,18 +6610,17 @@ class LinearModels(Multivariate):
         anova_df.replace(np.NaN, '', inplace=True)
         return anova_df
 
-
     def _sum_of_squares(self):
         """
         """
         w, y, x = self._vectors()
-        x_w = x*w
+        x_w = x * w
         hat = x_w.dot(np.dot(np.linalg.inv(np.dot(x.T, x_w)), x.T))
-        tss  = (w*(y - self._ymean)**2).sum()[None]
-        rss = y.T.dot(np.dot(np.eye(hat.shape[0])-hat, y*w))[0]
-        ess = tss-rss
+        tss = (w * (y - self._ymean) ** 2).sum()[None]
+        rss = y.T.dot(np.dot(np.eye(hat.shape[0]) - hat, y * w))[0]
+        ess = tss - rss
         all_ss = np.vstack([tss, ess, rss])
-        rsq = np.vstack([[np.NaN], ess/tss, [np.NaN]])
+        rsq = np.vstack([[np.NaN], ess / tss, [np.NaN]])
         r = np.sqrt(rsq)
         all_rs = np.hstack([r, rsq])
         return all_ss, all_rs
@@ -6519,24 +6637,25 @@ class LinearModels(Multivariate):
         rss = modelfit.loc['residual', 'sum of squares']
         ess = modelfit.loc['model', 'sum of squares']
         # coefficients: std. errors, t-stats, sigs
-        c_se = np.diagonal(np.sqrt(np.linalg.inv(np.dot(x.T,x*w)) *
-                                   (rss/self.dofs[-1])))[None].T
-        c_sigs = np.hstack(get_pval(self.dofs[-1], coefs/c_se))
+        c_se = np.diagonal(np.sqrt(np.linalg.inv(np.dot(x.T, x * w)) *
+                                   (rss / self.dofs[-1])))[None].T
+        c_sigs = np.hstack(get_pval(self.dofs[-1], coefs / c_se))
         c_diags = np.round(np.hstack([c_se, c_sigs]), 6)
         c_diags_df = pd.DataFrame(c_diags, index=coefs.index,
                                   columns=['se', 't-stat', 'p'])
         # modelfit: se, F-stat, ...
-        m_se = np.vstack([[np.NaN], np.sqrt(rss/self.dofs[-1]), [np.NaN]])
+        m_se = np.vstack([[np.NaN], np.sqrt(rss / self.dofs[-1]), [np.NaN]])
         m_fstat = np.vstack([[np.NaN],
-                             (ess/self.dofs[1]) / (rss/self.dofs[-1]),
+                             (ess / self.dofs[1]) / (rss / self.dofs[-1]),
                              [np.NaN]])
-        m_sigs = 1-fdist.cdf(m_fstat, self.dofs[1], self.dofs[-1])
+        m_sigs = 1 - fdist.cdf(m_fstat, self.dofs[1], self.dofs[-1])
         m_diags = np.round(np.hstack([m_se, m_fstat, m_sigs]), 6)
         m_diags_df = pd.DataFrame(m_diags, index=modelfit.index,
                                   columns=['se', 'F-stat', 'p'])
         # Put everything together
         parameter_results = pd.concat([coefs, betas, c_diags_df], axis=1)
-        fit_summary = pd.concat([modelfit, m_diags_df], axis=1).replace(np.NaN, '')
+        fit_summary = pd.concat([modelfit, m_diags_df], axis=1).replace(np.NaN,
+                                                                        '')
         return parameter_results, fit_summary
 
     def _lmg_models_per_var(self):
@@ -6574,7 +6693,8 @@ class LinearModels(Multivariate):
         self._analysisdata = self._analysisdata.copy().dropna(subset=cols)
         total_rsq = self._rsq_lmg_subset(self.x)
         all_models = self._lmg_models_per_var()
-        model_max_no = len(list(all_models.keys())) * len(list(all_models.values())[0])
+        model_max_no = len(list(all_models.keys())) * len(
+                list(all_models.values())[0])
         # print 'LMG analysis on {} models started...'.format(model_max_no)
         for x, diff_models in list(all_models.items()):
             group_results = {size: [] for size in range(1, full_len + 1)}
@@ -6599,7 +6719,7 @@ class LinearModels(Multivariate):
                     else:
                         r2 = self._rsq_lmg_subset(diff_model[1])
                         known_rsq[tuple(diff_model[1])] = r2
-                    group_results[len(diff_model[0])].append((r1-r2))
+                    group_results[len(diff_model[0])].append((r1 - r2))
             x_results[x] = group_results
         lmgs = []
         for var, results in list(x_results.items()):
@@ -6615,10 +6735,12 @@ class LinearModels(Multivariate):
                 result = result / total_rsq * 100
         return result
 
+
 class Relations(Multivariate):
     """
     COV, CORR, SCATTER
     """
+
     def __init__(self, dataset):
         self.ds = dataset
         self.single_quantities = None
@@ -6636,7 +6758,7 @@ class Relations(Multivariate):
         x_range = list(range(0, len(self.x)))
         y_range = list(range(x_range[-1] + 1, full_range + 1))
         if self._has_matrix_structure():
-            return list(product(list(range(0, full_range+1)), repeat=2))
+            return list(product(list(range(0, full_range + 1)), repeat=2))
         else:
             return list(product(x_range, y_range))
 
@@ -6648,7 +6770,8 @@ class Relations(Multivariate):
             return [(pairs[p[0], p[1]], pairs[p[0], p[1]]) for p in pair_list]
 
     def action_matrix(self, perf, imp, w=None, measures={
-            'method': 'simple', 'perf': 'mean', 'imp': 'mean'}):
+        'method': 'simple', 'perf': 'mean', 'imp': 'mean'
+    }):
         """
         ... DESP ...
 
@@ -6680,27 +6803,32 @@ class Relations(Multivariate):
             self._get_quantities()
             il = len(self._org_x)
             if perf_stat == 'mean':
-                perfs = [q.summarize('mean', as_df=False, margin=False).result[0, 0]
-                         for q in self.single_quantities[:il]]
+                perfs = [
+                    q.summarize('mean', as_df=False, margin=False).result[0, 0]
+                    for q in self.single_quantities[:il]]
                 perfs = np.array(perfs)
             else:
-                perfs = [q.group(perf_stat) for q in self.single_quantities[:il]]
-                perfs = [p.count(as_df=False, margin=False).normalize().result[0, 0]
-                        for p in perfs]
+                perfs = [q.group(perf_stat) for q in
+                         self.single_quantities[:il]]
+                perfs = [
+                    p.count(as_df=False, margin=False).normalize().result[0, 0]
+                    for p in perfs]
                 perfs = np.array(perfs)
             if imp_stat == 'mean':
-                imps = [q.summarize('mean', as_df=False, margin=False).result[0, 0]
-                        for q in self.single_quantities[il:]]
+                imps = [
+                    q.summarize('mean', as_df=False, margin=False).result[0, 0]
+                    for q in self.single_quantities[il:]]
                 imps = np.array(imps)
             else:
                 imps = [q.group(imp_stat) for q in self.single_quantities[il:]]
-                imps = [i.count(as_df=False, margin=False).normalize().result[0, 0]
-                        for i in imps]
+                imps = [
+                    i.count(as_df=False, margin=False).normalize().result[0, 0]
+                    for i in imps]
                 imps = np.array(imps)
         # Centering of data - currently only valid for the 'simple' approach!
         perf_mean, perf_sd = perfs.mean(), perfs.std(ddof=1)
         imps_mean, imps_sd = imps.mean(), imps.std(ddof=1)
-        perf_c = (perfs -  perfs.mean()) / perfs.std(ddof=1)
+        perf_c = (perfs - perfs.mean()) / perfs.std(ddof=1)
         imps_c = (imps - imps.mean()) / imps.std(ddof=1)
 
         plt.set_autoscale_on = False
@@ -6717,7 +6845,7 @@ class Relations(Multivariate):
             plt.xlim([0, 6])
             plt.ylim([-1, 1])
             vals = result.values
-        x = plt.scatter(vals[:, 1], vals[:, 0],  edgecolor='w', marker='o',
+        x = plt.scatter(vals[:, 1], vals[:, 0], edgecolor='w', marker='o',
                         c='red', s=80)
         fig = x.get_figure()
         xlab = 'Performance\n({})'
@@ -6744,28 +6872,34 @@ class Relations(Multivariate):
                  va='center', fontsize=7, transform=ax.transAxes)
 
         text = 'Priority matrix'
-        plt.figtext(x0+0.015, 1.09-y0, text, fontsize=12, color='w',
+        plt.figtext(x0 + 0.015, 1.09 - y0, text, fontsize=12, color='w',
                     fontweight='bold', verticalalignment='top',
-                    bbox={'facecolor':'red', 'alpha': 0.8, 'edgecolor': 'w',
-                          'pad': 10})
+                    bbox={'facecolor': 'red', 'alpha': 0.8, 'edgecolor': 'w',
+                          'pad': 10
+                          })
         label_vars = self._org_x
         text = ''
         for no, var in enumerate(label_vars, start=1):
             text += '\n{}: {}\n'.format(no, self.ds._get_label(var))
-        fig.text(1.06-x0, 1.011-y0, text, fontsize=6, verticalalignment='top',
-                 bbox={'facecolor':'lightgrey', 'alpha': 0.65,
-                       'edgecolor': 'w', 'pad': 10})
+        fig.text(1.06 - x0, 1.011 - y0, text, fontsize=6,
+                 verticalalignment='top',
+                 bbox={'facecolor': 'lightgrey', 'alpha': 0.65,
+                       'edgecolor': 'w', 'pad': 10
+                       })
 
         for no, coord in enumerate(vals, start=1):
             coord = [coord[1], coord[0]]
             plt.annotate(no, coord, ha='center', va='center',
-                fontsize=7)
+                         fontsize=7)
 
-        logo = Image.open('C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
-        newax = fig.add_axes([x0+0.005, y0-0.15, 0.1, 0.1], anchor='NE', zorder=-1)
+        logo = Image.open(
+            'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
+        newax = fig.add_axes([x0 + 0.005, y0 - 0.15, 0.1, 0.1], anchor='NE',
+                             zorder=-1)
         newax.imshow(logo)
         newax.axis('off')
-        fig.savefig(self.ds.path + 'action_matrix.png', bbox_inches='tight', dpi=300)
+        fig.savefig(self.ds.path + 'action_matrix.png', bbox_inches='tight',
+                    dpi=300)
 
     def cov(self, x, y, w=None, n=False, drop_listwise=False):
         self._select_variables(x, y, w, drop_listwise)
@@ -6796,7 +6930,8 @@ class Relations(Multivariate):
         # else:
         #     return cov
 
-    def corr(self, x, y, w=None, n=False, sig='full', drop_listwise=False, matrixed=False, plot=False):
+    def corr(self, x, y, w=None, n=False, sig='full', drop_listwise=False,
+             matrixed=False, plot=False):
         self._select_variables(x, y, w, drop_listwise)
         self._has_analysis_data()
         self._has_yvar()
@@ -6808,7 +6943,7 @@ class Relations(Multivariate):
         normalizer = [stddev1 * stddev2 for stddev1, stddev2 in stddev_paired]
         corr = cov / np.array(normalizer).reshape(cov.shape)
         ns = pd.DataFrame(np.array(ns).reshape(corr.shape),
-                         index=corr.index, columns=corr.columns)
+                          index=corr.index, columns=corr.columns)
         corr.index.name = None
 
         if not matrixed:
@@ -6819,11 +6954,12 @@ class Relations(Multivariate):
             return corr
 
         if sig and sig not in ['flag', 'full']:
-                raise ValueError('"sig" must be one of None, "flag" or "full".')
-        sigtest = np.sqrt((ns-2)/(1-corr**2))*corr
-        sigtest = pd.DataFrame(get_pval(ns-2, sigtest)[1], index=corr.index, columns=corr.columns)
+            raise ValueError('"sig" must be one of None, "flag" or "full".')
+        sigtest = np.sqrt((ns - 2) / (1 - corr ** 2)) * corr
+        sigtest = pd.DataFrame(get_pval(ns - 2, sigtest)[1], index=corr.index,
+                               columns=corr.columns)
         sigtest.replace(np.NaN, 0, inplace=True)
-        sigtest_flags = sigtest.copy()[sigtest<0.05]
+        sigtest_flags = sigtest.copy()[sigtest < 0.05]
         sigtest_flags[sigtest_flags < 0.01] = 1
         sigtest_flags[(sigtest_flags != 1) & (~np.isnan(sigtest_flags))] = 2
         sigtest_flags.replace(1, '**', inplace=True)
@@ -6834,7 +6970,9 @@ class Relations(Multivariate):
         corr_iter = np.round(corr.copy(), 4)
         sigtest = np.round(sigtest, 3)
         ns = np.round(ns, 0)
-        for r, flag, p, n_ in zip(corr_iter.iterrows(), sigtest_flags.iterrows(), sigtest.iterrows(), ns.iterrows()):
+        for r, flag, p, n_ in zip(corr_iter.iterrows(),
+                                  sigtest_flags.iterrows(), sigtest.iterrows(),
+                                  ns.iterrows()):
             row1 = pd.DataFrame(r[1]).T
             row2 = pd.DataFrame(flag[1]).T
             row3 = pd.DataFrame(p[1]).T
@@ -6844,7 +6982,8 @@ class Relations(Multivariate):
 
         var = self._org_x if not matrixed else self._org_x + self._org_y
         stats = ['r', 'sig.', 'p', 'n']
-        mi = pd.MultiIndex.from_product([var, stats], names=['', 'Correlations'])
+        mi = pd.MultiIndex.from_product([var, stats],
+                                        names=['', 'Correlations'])
         final.index = mi
         if not n or sig != 'full':
             if n:
@@ -6885,10 +7024,12 @@ class Relations(Multivariate):
             y1 = fig.get_axes()[0].get_position().y1
 
             text = 'Correlation matrix (Pearson)'
-            plt.figtext(x0+0.017, 1.115-y0, text, fontsize=12, color='w',
+            plt.figtext(x0 + 0.017, 1.115 - y0, text, fontsize=12, color='w',
                         fontweight='bold', verticalalignment='top',
-                        bbox={'facecolor':'red', 'alpha': 0.8, 'edgecolor': 'w',
-                              'pad': 10})
+                        bbox={'facecolor': 'red', 'alpha': 0.8,
+                              'edgecolor': 'w',
+                              'pad': 10
+                              })
             if self._has_matrix_structure():
                 label_vars = self.x
             else:
@@ -6896,11 +7037,15 @@ class Relations(Multivariate):
             text = ''
             for var in label_vars:
                 text += '\n{}: {}\n'.format(var, self.ds._get_label(var))
-            fig.text(1.06-x0, 1.0-y0, text, fontsize=6, verticalalignment='top',
-                     bbox={'facecolor':'lightgrey', 'alpha': 0.65,
-                           'edgecolor': 'w', 'pad': 10})
-            logo = Image.open('C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
-            newax = fig.add_axes([x0+0.005, y0-0.25, 0.1, 0.1], anchor='NE', zorder=-1)
+            fig.text(1.06 - x0, 1.0 - y0, text, fontsize=6,
+                     verticalalignment='top',
+                     bbox={'facecolor': 'lightgrey', 'alpha': 0.65,
+                           'edgecolor': 'w', 'pad': 10
+                           })
+            logo = Image.open(
+                'C:/Users/alt/Documents/IPython Notebooks/Designs/Multivariate class/__resources__/YG_logo.png')
+            newax = fig.add_axes([x0 + 0.005, y0 - 0.25, 0.1, 0.1], anchor='NE',
+                                 zorder=-1)
             newax.imshow(logo)
             newax.axis('off')
             fig.savefig(self.ds.path + 'corr.png', bbox_inches='tight', dpi=300)
@@ -6908,10 +7053,10 @@ class Relations(Multivariate):
         final.index.name = 'Correlation'
         return final
 
+
 ##############################################################################
 
 class Cache(defaultdict):
-
 
     def __init__(self):
         # The 'lock_cache' raises an exception in the
@@ -6919,7 +7064,6 @@ class Cache(defaultdict):
 
     def __reduce__(self):
         return self.__class__, tuple(), None, None, iter(self.items())
-
 
     def set_obj(self, collection, key, obj):
         '''
@@ -6961,9 +7105,11 @@ class Cache(defaultdict):
         if collection == 'matrices':
             return self[collection].get(key, (None, None))
         elif collection == 'squeezed':
-            return self[collection].get(key, (None, None, None, None, None, None, None))
+            return self[collection].get(key, (
+            None, None, None, None, None, None, None))
         else:
             return self[collection].get(key, None)
+
 
 ##############################################################################
 
@@ -6978,7 +7124,7 @@ class Link(Quantity, dict):
         self.stack_connection = False
         self.quantified = False
         self._quantify(ds)
-        #---------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
     def _clear(self):
         ds_key, filters, x, y = self.ds_key, self.filters, self.x, self.y
@@ -6996,21 +7142,25 @@ class Link(Quantity, dict):
             Ensure a Link is able to track back to its orignating dataset.
             """
             return ds
+
         def data():
             """
             Ensure a Link is able to track back to its orignating case data.
             """
             return ds.data()
+
         def meta():
             """
             Ensure a Link is able to track back to its orignating meta data.
             """
             return ds.meta()
+
         def cache():
             """
             Ensure a Link is able to track back to its cached data vectors.
             """
             return ds.cache()
+
         self.dataset = dataset
         self.data = data
         self.meta = meta
@@ -7018,15 +7168,16 @@ class Link(Quantity, dict):
         Quantity.__init__(self, self)
         return None
 
-#     def __repr__(self):
-#         info = 'Link - id: {}\nquantified: {} | stack connected: {} | views: {}'
-#         return info.format(self.id, self.quantified, self.stack_connection,
-#                            len(self.values()))
+    #     def __repr__(self):
+    #         info = 'Link - id: {}\nquantified: {} | stack connected: {} | views: {}'
+    #         return info.format(self.id, self.quantified, self.stack_connection,
+    #                            len(self.values()))
 
     def describe(self):
         described = pd.Series(list(self.keys()), name=self.id)
         described.index.name = 'views'
         return described
+
 
 ##############################################################################
 
@@ -7088,7 +7239,8 @@ class Stack(defaultdict):
         for _filter in filters:
             for _x in x:
                 for _y in y:
-                    if not isinstance(self[self.ds.name][_filter][_x][_y], Link):
+                    if not isinstance(self[self.ds.name][_filter][_x][_y],
+                                      Link):
                         l = self.ds.link(_filter, _x, _y)
                         l.stack_connection = True
                         self[self.ds.name][_filter][_x][_y] = l
@@ -7127,7 +7279,8 @@ class Stack(defaultdict):
             l._quantify(self.ds)
         return l
 
-    def describe(self, index=None, columns=None, query=None, split_view_names=False):
+    def describe(self, index=None, columns=None, query=None,
+                 split_view_names=False):
         """
         Generates a structured overview of all Link defining Stack elements.
 
@@ -7153,9 +7306,9 @@ class Stack(defaultdict):
             path_dk = [dk]
             filters = self[dk]
 
-#             for fk in filters.keys():
-#                 path_fk = path_dk + [fk]
-#                 xs = self[dk][fk]
+            #             for fk in filters.keys():
+            #                 path_fk = path_dk + [fk]
+            #                 xs = self[dk][fk]
 
             for fk in list(filters.keys()):
                 path_fk = path_dk + [fk]
@@ -7178,22 +7331,25 @@ class Stack(defaultdict):
                             stack_tree.append(tuple(path_vk))
 
         column_names = ['data', 'filter', 'x', 'y', 'view', '#']
-        description = pd.DataFrame.from_records(stack_tree, columns=column_names)
+        description = pd.DataFrame.from_records(stack_tree,
+                                                columns=column_names)
         if split_view_names:
             views_as_series = pd.DataFrame(
-                description.pivot_table(values='#', columns='view', aggfunc='count')
-                ).reset_index()['view']
+                    description.pivot_table(values='#', columns='view',
+                                            aggfunc='count')
+            ).reset_index()['view']
             parts = ['xpos', 'agg', 'condition', 'rel_to', 'weights',
                      'shortname']
             description = pd.concat(
-                (views_as_series,
-                 pd.DataFrame(views_as_series.str.split('|').tolist(),
-                              columns=parts)), axis=1)
+                    (views_as_series,
+                     pd.DataFrame(views_as_series.str.split('|').tolist(),
+                                  columns=parts)), axis=1)
 
         description.replace('|||||', np.NaN, inplace=True)
         if query is not None:
             description = description.query(query)
         if not index is None or not columns is None:
-            description = description.pivot_table(values='#', index=index, columns=columns,
-                                aggfunc='count')
+            description = description.pivot_table(values='#', index=index,
+                                                  columns=columns,
+                                                  aggfunc='count')
         return description

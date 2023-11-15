@@ -1,4 +1,3 @@
-
 from inspect import getfullargspec as getargspec
 
 from decorator import decorator
@@ -12,17 +11,22 @@ def lazy_property(func):
     """Decorator that makes a property lazy-evaluated.
     """
     attr_name = '_lazy_' + func.__name__
+
     @property
     def _lazy_property(self):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, func(self))
         return getattr(self, attr_name)
+
     return _lazy_property
 
-def verify(variables=None, categorical=None, text_keys=None, axis=None, is_str=None):
+
+def verify(variables=None, categorical=None, text_keys=None, axis=None,
+           is_str=None):
     """
     Decorator to verify arguments.
     """
+
     @decorator
     def _var_in_ds(func, *args, **kwargs):
         all_args = getargspec(func)[0]
@@ -37,7 +41,8 @@ def verify(variables=None, categorical=None, text_keys=None, axis=None, is_str=N
                 collection = ['columns', 'masks']
             else:
                 collection = [collection]
-            c = [key for col in collection for key in list(list(ds._meta[col].keys()))]
+            c = [key for col in collection for key in
+                 list(list(ds._meta[col].keys()))]
             # get the variable argument to check
             v_index = all_args.index(variable)
             var = kwargs.get(variable, args[v_index])
@@ -144,16 +149,19 @@ def verify(variables=None, categorical=None, text_keys=None, axis=None, is_str=N
             func = dec(func)
         return func(*args, **kwargs)
 
-    if categorical and not isinstance(categorical, list): categorical = [categorical]
+    if categorical and not isinstance(categorical, list): categorical = [
+        categorical]
     if text_keys and not isinstance(text_keys, list): text_keys = [text_keys]
     if is_str and not isinstance(is_str, list): is_str = [is_str]
 
     return _deco
 
+
 def modify(to_list=None):
     """
     Decorator to modify arguments.
     """
+
     @decorator
     def _to_list(func, *args, **kwargs):
         all_args = getargspec(func)[0]

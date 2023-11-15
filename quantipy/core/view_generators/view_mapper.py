@@ -49,7 +49,7 @@ class ViewMapper(OrderedDict):
 
             # Set the method into the deserialized view
             method_as_string = marshal.loads(
-                method_as_bytes)  # Returns method as string
+                    method_as_bytes)  # Returns method as string
             self[view_name]['method'] = FunctionType(code=method_as_string,
                                                      globals=globals(),
                                                      name=view_name)
@@ -67,7 +67,7 @@ class ViewMapper(OrderedDict):
                 method = view['method']
                 setitem_dict[view_name] = {
                     'method': marshal.dumps(method.__code__), 'kwargs': kwargs
-                    }
+                }
 
         return (class_type, tuple(arguments), setitem_dict, None, None)
 
@@ -175,7 +175,7 @@ class ViewMapper(OrderedDict):
                         "Some of the view keys you attempted to extract using 'subset' "
                         "were not found in this ViewMapper instance. "
                         "You requested: %s, found: %s" % (
-                        views, list(self.keys()))
+                            views, list(self.keys()))
                 )
         subset = self.copy()
         for view in list(subset.keys()):
@@ -334,8 +334,8 @@ class ViewMapper(OrderedDict):
     # Private
     def __print_exception_message__(self, message, link, name):
         print(
-            "Error generating View: '{name}', x: '{x}', y: '{y}'. Error : '{message}'.\n".format(
-                name=name, x=link.x, y=link.y, message=message))
+                "Error generating View: '{name}', x: '{x}', y: '{y}'. Error : '{message}'.\n".format(
+                        name=name, x=link.x, y=link.y, message=message))
 
     # "proxy" methods. The core class doesn't know any view methods but this method can be extended.
     def __init_custom_methods__(self):

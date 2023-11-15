@@ -16,7 +16,6 @@ except ImportError:
 
 
 class _Format(dict):
-
     __attributes__ = _ATTRIBUTES
     __slots__ = __attributes__
 
@@ -33,7 +32,6 @@ class _Format(dict):
 
 
 class _ExcelFormats(object):
-
     __default_attributes__ = tuple(_DEFAULT_ATTRIBUTES.keys())
     __slots__ = __default_attributes__ + ('default_attributes',)
 
@@ -74,6 +72,7 @@ class _ExcelFormats(object):
                 if attr in kwargs:
                     return kwargs[attr]
         return '#'
+
 
 class ExcelFormats(_ExcelFormats):
 

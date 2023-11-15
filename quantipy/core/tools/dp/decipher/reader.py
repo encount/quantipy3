@@ -1,4 +1,3 @@
-
 import copy
 import itertools
 import re
@@ -41,7 +40,7 @@ def manage_decipher_quota_variables(meta, data, quotas):
     for qt, qtable in enumerate(['vqtable', 'voqtable']):
         if quotas[qtable]:
             for key, item in sorted(quotas[qtable].items()):
-                
+
                 # Create column meta
                 meta['columns'][key] = {
                     'type': 'delimited set',
@@ -49,18 +48,18 @@ def manage_decipher_quota_variables(meta, data, quotas):
                     'values': [
                         {'value': int(q), 'text': {text_key: quota['title']}}
                         for q, quota in enumerate(item, start=1)
-                    ]       
+                    ]
                 }
                 cols = [i['label'] for i in item]
                 # Convert dichotomous to delimited
                 meta, data[key] = delimited_from_dichotomous(
-                    meta, data[cols], key
-                )            
+                        meta, data[cols], key
+                )
                 # Remove dichotomous columns from meta
-                for col in cols: del meta['columns'][col]                         
+                for col in cols: del meta['columns'][col]
                 # Remove dichotomous columns from data
                 data.drop(cols, axis=1, inplace=True)
-        
+
         meta['sets'][quota_types[qt]] = {
             'text': {text_key: '%s columns' % (quota_types[qt])},
             'items': [
@@ -114,15 +113,14 @@ def get_vgroups(variables):
         List of unique vgroups found in variables
     """
 
-
-    vgroups = []  
+    vgroups = []
     for var in variables:
         if not var['vgroup'] in vgroups:
             vgroups.append(var['vgroup'])
-    
+
     return vgroups
-    
-    
+
+
 def get_vgroup_variables(vgroups, variables):
     """ Returns a list of variable lists belonging to each vgroup
     provided in vgroups.
@@ -142,7 +140,7 @@ def get_vgroup_variables(vgroups, variables):
         List of lists of variable objects, positionally matched to their
         vgroup in the vgroups list
     """
-    
+
     vgroup_variables = [
         [
             var
@@ -151,7 +149,7 @@ def get_vgroup_variables(vgroups, variables):
         ]
         for vgroup in vgroups
     ]
-    
+
     return vgroup_variables
 
 
@@ -191,7 +189,7 @@ def get_vgroup_types(vgroups, variables):
             print("vgroup '%s' has mixed types: %s" % (
                 vgroup, vgroup_types[vgroup]
             ))
-    
+
     return vgroup_types
 
 
@@ -224,11 +222,11 @@ def delimited_from_dichotomous(meta, df, name, sniff_single=False):
     series: pandas.series
         The converted series
     """
-    
-    if sniff_single and df.shape[1]==1:
+
+    if sniff_single and df.shape[1] == 1:
         # The set has only 1 possible response
         # Convert to single
-        series = df.iloc[:,0].replace(0, np.NaN)
+        series = df.iloc[:, 0].replace(0, np.NaN)
         # Replace data file set item
         old_set_item = 'columns@{}'.format(series.name)
         new_set_item = 'columns@{}'.format(name)
@@ -240,8 +238,8 @@ def delimited_from_dichotomous(meta, df, name, sniff_single=False):
         # Update type in meta
         meta['columns'][name]['type'] = 'single'
         return meta, series
-    
-    elif sniff_single and all([v<=1 for v in df.sum(axis=1)]):
+
+    elif sniff_single and all([v <= 1 for v in df.sum(axis=1)]):
         # The set values are mutually exclusive  
         # Convert to single
         df = df.copy()
@@ -264,10 +262,11 @@ def delimited_from_dichotomous(meta, df, name, sniff_single=False):
         # Update type in meta
         meta['columns'][name]['type'] = 'single'
         return meta, series
-    
+
     else:
         series = condense_dichotomous_set(
-            df, values_from_labels=True, values_regex='^.+r([0-9]+)[c0-9]*$')
+                df, values_from_labels=True,
+                values_regex='^.+r([0-9]+)[c0-9]*$')
         series.name = name
         # Replace data file set item
         old_set_item = 'columns@{}'.format(df.columns[0])
@@ -277,7 +276,7 @@ def delimited_from_dichotomous(meta, df, name, sniff_single=False):
         for col in df.columns:
             old_set_item = 'columns@{}'.format(col)
             meta['sets']['data file']['items'].remove(old_set_item)
-        
+
         return meta, series
 
 
@@ -312,65 +311,64 @@ def condense_dichotomous_set(df, values_from_labels=True, sniff_single=False,
             if values_regex is None:
                 val = col.split('_')[-1]
             else:
-                
+
                 try:
                     val = get_delimited_value(col, v, as_str=True)
                 except AttributeError:
                     raise AttributeError(
-                        "Your values_regex may have failed to find a match"
-                        " using re.match('{}', '{}')".format(
-                            values_regex, col))
+                            "Your values_regex may have failed to find a match"
+                            " using re.match('{}', '{}')".format(
+                                    values_regex, col))
         else:
             val = str(val)
         # Convert to categorical set
         df_str[col].replace(
-            {
-                'nan': 'nan', 
-                '{}.0'.format(no): 'nan',
-                '{}'.format(no): 'nan'
-            }, 
-            inplace=True
+                {
+                    'nan': 'nan',
+                    '{}.0'.format(no): 'nan',
+                    '{}'.format(no): 'nan'
+                },
+                inplace=True
         )
         df_str[col].replace(
-            {
-                '{}'.format(yes): val, 
-                '{}.0'.format(yes): val
-            }, 
-            inplace=True
+                {
+                    '{}'.format(yes): val,
+                    '{}.0'.format(yes): val
+                },
+                inplace=True
         )
     # Concatenate the rows
     series = df_str.apply(
-        lambda x: ';'.join([
-            val 
-            for val in x.tolist() 
-            if val != 'nan'
-        ]),
-        axis=1
+            lambda x: ';'.join([
+                val
+                for val in x.tolist()
+                if val != 'nan'
+            ]),
+            axis=1
     )
-    
+
     # Add trailing delimiter
     series = series + ';'
-    
+
     # Use NaNs to represent emtpy
     series.replace(
-        {';': np.NaN}, 
-        inplace=True
+            {';': np.NaN},
+            inplace=True
     )
-    
-    if df.dropna().size==0:
+
+    if df.dropna().size == 0:
         # No responses are known, return filled with NaN
         return series
-    
-    if sniff_single and df.sum(axis=1).max()==1:
+
+    if sniff_single and df.sum(axis=1).max() == 1:
         # Convert to float
-        series = series.str.replace(';','').astype('float')
+        series = series.str.replace(';', '').astype('float')
         return series
-    
+
     return series
 
 
 def get_delimited_value(raw_value, i, as_str=False):
-    
     matches = re.match('^.+r([0-9]*).*$', raw_value)
     if not matches is None:
         val = matches.groups()[0]
@@ -383,33 +381,32 @@ def get_delimited_value(raw_value, i, as_str=False):
             val = 995
         else:
             val = i
-    
+
     if as_str:
         val = str(val)
-        
+
     return val
 
 
 def get_delimited_values(raw_values, as_str=False):
-    
     values = []
     for i, val in enumerate(raw_values, start=1):
         v = get_delimited_value(val, i, as_str)
         if v in values:
             raise ValueError(
-                "The conversion of the multiple-choice"
-                " variable '{}' must be partly inferred"
-                " due to non-numeric category values"
-                " in the Decipher metadata. In this case"
-                " the value '{}' has been asked for"
-                " twice. To prevent silent errors in the"
-                " conversion this error has been raised.")
+                    "The conversion of the multiple-choice"
+                    " variable '{}' must be partly inferred"
+                    " due to non-numeric category values"
+                    " in the Decipher metadata. In this case"
+                    " the value '{}' has been asked for"
+                    " twice. To prevent silent errors in the"
+                    " conversion this error has been raised.")
         else:
             values.append(v)
-    
+
     return values
-    
-    
+
+
 def make_delimited_set(meta, data, question):
     """ Given the question object, converts the Decipher multiple type
     from dichotomous to delimited, updating the meta document
@@ -441,57 +438,58 @@ def make_delimited_set(meta, data, question):
         List of lists of variable objects, positionally matched to their
         vgroup in the vgroups list
     """
-    
+
     text_key = meta['lib']['default text']
 
     # Find the number of variable groups in the set
     vgroups = get_vgroups(question['variables'])
-    
+
     # Determine if the question is a compound multi
     # in which case special rules apply because the
     # vgroups are organized around the grid structure
     # rather than the multiple choice structure
-#     compound_multi = not re.match('^.+([r|c][0-9]+)$', vgroups[0]) is None
+    #     compound_multi = not re.match('^.+([r|c][0-9]+)$', vgroups[0]) is None
     rowwise_compound_multi = not re.match('^.+(r[0-9]+)$', vgroups[0]) is None
     colwise_compound_multi = not re.match('^.+(c[0-9]+)$', vgroups[0]) is None
-    
+
     # Get the variable type for each vgroup
     vgroup_types = get_vgroup_types(vgroups, question['variables'])
-    
+
     # For each variable group, get its members
     vgroup_variables = get_vgroup_variables(vgroups, question['variables'])
-    
+
     if rowwise_compound_multi:
         # This is a multi-choice array that is stored in single-row grids
-        
+
         # Find the row values (excluding any open-ended rows in the group)
         rs = [
-            re.match('^.+(r[0-9]+).*$', g).groups()[0] 
-            for g in vgroups 
+            re.match('^.+(r[0-9]+).*$', g).groups()[0]
+            for g in vgroups
             if not g.endswith('oe')]
         # Find the column values
         cs = [
-            re.match('^.+(c[0-9]+)$', v['label']).groups()[0] 
+            re.match('^.+(c[0-9]+)$', v['label']).groups()[0]
             for v in vgroup_variables[0]]
-        
+
         # Find the grid, row and column labels
         rowTitles = [vgv[0]['rowTitle'] for vgv in vgroup_variables]
         colTitles = [v['colTitle'] for v in vgroup_variables[0]]
         qtitle = vgroup_variables[0][0]['qtitle']
         # Find the broad name of the entire group
-        qname = vgroups[0][:len(rs[0])*-1]
-        
+        qname = vgroups[0][:len(rs[0]) * -1]
+
         # Arrange the data columns that make up this broad group
-        cols = ['{}{}'.format(qname, ''.join(i[::-1])) for i in itertools.product(cs, rs)]
+        cols = ['{}{}'.format(qname, ''.join(i[::-1])) for i in
+                itertools.product(cs, rs)]
         cgroups = {c: [col for col in cols if col.endswith(c)] for c in cs}
         # Generate a values object for the array
         raw_values = [r.split('r')[-1] for r in rs]
         ds_values = get_delimited_values(raw_values, as_str=False)
         values = [
-            {'value': val, 'text': {text_key: rowTitle}} 
+            {'value': val, 'text': {text_key: rowTitle}}
             for val, rowTitle in zip(ds_values, rowTitles)]
         meta['lib']['values'][qname] = values
-        
+
         # Generate the new column meta (since this data
         # is originally stored as single-response dichotomous
         # grids they need to be reconstructed to columns
@@ -504,7 +502,7 @@ def make_delimited_set(meta, data, question):
                 'type': 'delimited set',
                 'text': {
                     text_key: '%s - %s' % (
-                        colTitle, 
+                        colTitle,
                         qtitle
                     )
                 },
@@ -512,9 +510,9 @@ def make_delimited_set(meta, data, question):
             }
             # Convert dichotomous to delimited
             meta, data[col_name] = delimited_from_dichotomous(
-                meta, data[cgroup_cols], col_name
+                    meta, data[cgroup_cols], col_name
             )
-            
+
         # Create the array mask
         mask = meta['masks'][qname] = {
             'type': 'array',
@@ -522,57 +520,60 @@ def make_delimited_set(meta, data, question):
             'text': {text_key: qtitle},
             'items': [{
                 'source': 'columns@{}'.format(
-                    '{}{}'.format(qname, c)),
-                'text': {text_key: colTitles[i]}}
+                        '{}{}'.format(qname, c)),
+                'text': {text_key: colTitles[i]}
+            }
                 for i, c in enumerate(cs)],
-            'values': values_mapper}
-        
+            'values': values_mapper
+        }
+
         # Remove dichotomous columns from meta
-        for col in cols: del meta['columns'][col]            
+        for col in cols: del meta['columns'][col]
         # Remove dichotomous columns from data
         data.drop(cols, axis=1, inplace=True)
-    
+
     else:
         # Create a delimited set from each variable group
         for vgroup, vars in zip(vgroups, vgroup_variables):
-            
+
             if not vgroup_types[vgroup] == 'multiple':
                 # It's possible the question is a combination of multiple
                 # and another type, in which case the non-multiple
                 # parts of it need to be left as they are
                 continue
-            
+
             rmatches = re.match('^.+(r[0-9]+)$', vgroup)
             cmatches = re.match('^.+(c[0-9]+)$', vgroup)
-            
+
             if not rmatches is None:
                 # This should never happen, because it is a
                 # compound multi which has been dealt with above
                 raise TypeError(
-                    "Unexpected compound multi found: {}.".format(vgroup))
-                
+                        "Unexpected compound multi found: {}.".format(vgroup))
+
             else:
-    #             print 'type 3', vgroup
+                #             print 'type 3', vgroup
                 raw_values = [var['label'] for var in vars]
                 ds_values = get_delimited_values(raw_values, as_str=False)
                 values = [
                     {
-                        'value': val, 
-                        'text': {text_key: var['rowTitle']}} 
+                        'value': val,
+                        'text': {text_key: var['rowTitle']}
+                    }
                     for var, val in zip(vars, ds_values)]
-            
+
             # Create column meta
             meta['columns'][vgroup] = {
                 'type': 'delimited set',
                 'text': {
                     text_key: '%s - %s' % (
-                        vars[0]['colTitle'], 
+                        vars[0]['colTitle'],
                         vars[0]['qtitle']
                     )
                 },
                 'values': values
             }
-            
+
             # Get dichotomous set column names
             # Ignore non-'multiple'-type parts
             # of the set (Decipher Question
@@ -580,39 +581,39 @@ def make_delimited_set(meta, data, question):
             # for compound-type Questions, which
             # are similar to a Quantipy set)
             cols = [
-                v['label'] 
-                for v in vars 
-                if v['type']=='multiple'
+                v['label']
+                for v in vars
+                if v['type'] == 'multiple'
             ]
             # Convert dichotomous to delimited
             meta, data[vgroup] = delimited_from_dichotomous(
-                meta, data[cols], vgroup
+                    meta, data[cols], vgroup
             )
             # Remove dichotomous columns from meta
-            for col in cols: del meta['columns'][col]            
+            for col in cols: del meta['columns'][col]
             # Remove dichotomous columns from data
             data.drop(cols, axis=1, inplace=True)
-        
+
         if colwise_compound_multi:
             # This is a multi-choice array that is stored in single-column grids
-        
+
             # Find the row values (excluding any open-ended rows in the group)
             rs = [
-                re.match('^.+(r[0-9]+).*$', v['label']).groups()[0] 
+                re.match('^.+(r[0-9]+).*$', v['label']).groups()[0]
                 for v in vgroup_variables[0]
                 if not v['label'].endswith('oe')]
             # Find the column values
             cs = [
                 re.match('^.+(c[0-9]+)$', g).groups()[0]
                 for g in vgroups]
-            
+
             # Find the grid, row and column labels
             rowTitles = [v['rowTitle'] for v in vgroup_variables[0]]
             colTitles = [vgv[0]['colTitle'] for vgv in vgroup_variables]
-            qtitle = vgroup_variables[0][0]['qtitle']            
+            qtitle = vgroup_variables[0][0]['qtitle']
             # Find the broad name of the entire group
-            qname = vgroups[0][:len(cs[0])*-1]
-        
+            qname = vgroups[0][:len(cs[0]) * -1]
+
             # Create the array mask
             values_mapper = 'lib@values@{}'.format(qname)
             mask = meta['masks'][qname] = {
@@ -621,11 +622,13 @@ def make_delimited_set(meta, data, question):
                 'text': {text_key: qtitle},
                 'items': [{
                     'source': 'columns@{}'.format(
-                        '{}{}'.format(qname, c)),
-                    'text': {text_key: colTitles[i]}}
+                            '{}{}'.format(qname, c)),
+                    'text': {text_key: colTitles[i]}
+                }
                     for i, c in enumerate(cs)],
-                'values': values_mapper}
-            
+                'values': values_mapper
+            }
+
             values = meta['columns']['{}{}'.format(qname, cs[0])]['values'][:]
             meta['lib']['values'][qname] = values
             for c in cs:
@@ -634,8 +637,8 @@ def make_delimited_set(meta, data, question):
 
     return meta, data, vgroups, vgroup_variables
 
-                        
-def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'): 
+
+def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
     """ Converts the given Decipher data (which must have been exported
     in tab-delimited format) to Quantipy-ready meta and data.
     
@@ -669,7 +672,7 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
     meta = start_meta(text_key=text_key)
 
     quotas = {
-        'vqtable': {}, 
+        'vqtable': {},
         'voqtable': {}
     }
 
@@ -683,13 +686,13 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
 
     # Create generator for compound questions
     compound_questions = [
-        question 
-        for question in dmeta['questions'] 
+        question
+        for question in dmeta['questions']
         if len(question['variables']) > 1]
-    
+
     # Get basic variables
     for var in dmeta['variables']:
-        
+
         # Collect quota variables
         # These will be dealt with later
         for qtable in ['vqtable', 'voqtable']:
@@ -698,21 +701,21 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
                     quotas[qtable][var['vgroup']] = []
                 quotas[qtable][var['vgroup']].append(var)
                 continue
-        
+
         # Start the column meta for the current variable
         var_name = var['label']
         column = meta['columns'][var_name] = {
             'type': types_map[var['type']],
             'text': {text_key: var['title']}
         }
-        
+
         # Add meta-mapped path for current column to the 'data file' set
         # object so that the original order of the variables is known
         set_item = 'columns@%s' % (var_name)
         if not set_item in meta['sets']['data file']['items']:
             meta['sets']['data file']['items'].append(set_item)
-        
-        if var['type']=='single':
+
+        if var['type'] == 'single':
             # Get the response values
             column['values'] = get_decipher_values(var['values'], text_key)
 
@@ -720,46 +723,46 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
     # sets)
     for question in compound_questions:
 
-        if question['type']=='multiple':
+        if question['type'] == 'multiple':
 
             # Construct delimited set
             meta, data, vgroups, vgroup_variables = make_delimited_set(
-                meta, data, question
+                    meta, data, question
             )
-            
+
             # If there's only 1 vgroup then this is a basic multiple-
             # choice question and doesn't require construction as an
             # array or set
-            if len(vgroups)==1:
+            if len(vgroups) == 1:
                 continue
 
         else:
             # vgroups indicate how many groups of discrete variables sit
             # in the question
-            
+
             # Find the number of variable groups in the set
-            vgroups = get_vgroups(question['variables'])        
-            
+            vgroups = get_vgroups(question['variables'])
+
             # For each variable group, get its members
             vgroup_variables = get_vgroup_variables(
-                vgroups, question['variables']
+                    vgroups, question['variables']
             )
-        
+
         # vgroup_types is used to keep track of the types used in the
         # variable group. This will help us identify mixed-type
         # question groups which are not arrays.            
         vgroup_types = get_vgroup_types(vgroups, question['variables'])
         unique_vgroup_types = set(vgroup_types.values())
-        
+
         # Note if the vgroups use more than one variable type
         mixed_types = len(unique_vgroup_types) > 1
-        
+
         if mixed_types:
             # A set should be creted to bind mixed-type variables 
             # together
 
             vgroup = vgroups[0]
-            
+
             # Create the set
             mask = meta['sets'][vgroup] = {
                 'item type': 'mixed',
@@ -768,7 +771,7 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
                     'columns@%s' % (var['label'])
                     for var in question['variables']
                 ]
-            }        
+            }
 
         if 'multiple' in list(vgroup_types.values()):
             # This is a multiple grid
@@ -788,7 +791,7 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
             else:
                 vgroups = [new_vgroup_match.group(0)]
                 vgroup_types[vgroups[0]] = 'multiple'
-        
+
         # Extract only the vgroups that contain multiple variables
         # so that an array mask can be created for each of them
         array_vgroups = [
@@ -796,16 +799,16 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
             for vgroup, vars in zip(vgroups, vgroup_variables)
             if len(vars) > 1
         ]
-        
+
         # If there are any array-like groups of variables inside the
         # question, add an array mask/s accordingly
         for vgroup, vars in array_vgroups:
-        
+
             if vgroup in meta['masks']:
                 # This was a multiple-choice grid and has
                 # already been converted
                 continue
-        
+
             # It's possible the vgroup is in the 'data file' set
             # and needs to be replaced with the name of the group's
             # component vars. This happens with compound questions
@@ -815,27 +818,30 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
             if mapped_vgroup in df_items:
                 mapped_vars = [('columns@%s' % v['label']) for v in vars]
                 idx = meta['sets']['data file']['items'].index(mapped_vgroup)
-                df_items = df_items[:idx] + mapped_vars + df_items[idx+1:]
+                df_items = df_items[:idx] + mapped_vars + df_items[idx + 1:]
                 meta['sets']['data file']['items'] = df_items
-                    
+
             # Create the array mask
             mask = meta['masks'][vgroup] = {
                 'type': 'array',
                 'item type': types_map[vgroup_types[vgroup]],
                 'text': {text_key: (
                     '{} - {}'.format(
-                        vars[0]['rowTitle'], 
-                        question['qtitle']
+                            vars[0]['rowTitle'],
+                            question['qtitle']
                     )
                     if vgroup_types[vgroup] in ['number', 'float', 'text']
                     else question['qtitle']
-                )},
+                )
+                },
                 'items': [{
                     'source': 'columns@{}'.format(var['label']),
-                    'text': {text_key: var['rowTitle']}}
+                    'text': {text_key: var['rowTitle']}
+                }
                     for var in vars
-                ]}
-    
+                ]
+            }
+
             if vgroup_types[vgroup] in ['single', 'multiple']:
                 # Create lib values entry
                 values_mapper = 'lib@values@%s' % (vgroup)
@@ -845,7 +851,7 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
                 elif vgroup_types[vgroup] == 'multiple':
                     values = copy.deepcopy(meta['columns'][vars[0]]['values'])
                 meta['lib']['values'][vgroup] = values
-                
+
                 # Use meta-mapped values reference for single or 
                 # multiple array variables
                 for item in mask['items']:
@@ -853,7 +859,7 @@ def quantipy_from_decipher(decipher_meta, decipher_data, text_key='main'):
                     if col in meta['columns']:
                         if 'values' in meta['columns'][col]:
                             meta['columns'][col]['values'] = values_mapper
-    
+
     # Construct quota columns (meta+data)
     meta, data = manage_decipher_quota_variables(meta, data, quotas)
 

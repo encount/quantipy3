@@ -2,9 +2,6 @@ from operator import eq, ge, gt, le, lt, ne
 
 import pandas as pd
 from pandas.core.index import Index
-from pandas.util.version import Version
-
-from quantipy.dependency_versions import __pandas_version_parsed__
 
 __op_symbol__ = {lt: '<', le: '<=', eq: '', ne: '!=', ge: '>=', gt: '>'}
 

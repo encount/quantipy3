@@ -6,15 +6,17 @@ from .helpers import int_or_float
 from .languages_file import languages
 
 
-def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en-GB'):
+def quantipy_from_forsta(self, meta_json, data_json, verbose=False,
+                         text_key='en-GB'):
     types_translations = {
         'numeric': 'float',
         'text': 'string',
         'singleChoice': 'single',
-        'multiChoice': 'delimited set' 
+        'multiChoice': 'delimited set'
     }
     to_qp_format = {}
     to_forsta_format = {}
+
     def create_subvar_meta(parsed_meta, subvar, values=False):
         parent_key = 'masks@' + parsed_meta['name']
         name = subvar['source'].replace('columns@', '')
@@ -26,7 +28,8 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
         }
         if values:
             subvar_obj['values'] = 'lib@values@' + parsed_meta['name']
-        if parsed_meta.get('type') == 'array' and parsed_meta.get('subtype') == 'single':
+        if parsed_meta.get('type') == 'array' and parsed_meta.get(
+                'subtype') == 'single':
             subvar_obj['properties'] = {'created': True}
         return subvar_obj
 
@@ -57,25 +60,29 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                 else:
                     if var_type == 'rating' or var_type == 'singleChoice':
                         source = "columns@{variable_name}[{{{variable_name}_{field}}}]" \
-                            .format(variable_name=variable['name'], field=field['code'])
+                            .format(variable_name=variable['name'],
+                                    field=field['code'])
                     else:
                         source = "columns@{variable_name}_{field}" \
-                            .format(variable_name=variable['name'], field=field['code'])
-                    language_code = field['texts'][0].get('languageId') if field.get("texts") else None
+                            .format(variable_name=variable['name'],
+                                    field=field['code'])
+                    language_code = field['texts'][0].get(
+                        'languageId') if field.get("texts") else None
                     language_text = {}
                     if language_code:
-                        language_text[languages[language_code]] = field['texts'][0]['text']
+                        language_text[languages[language_code]] = \
+                        field['texts'][0]['text']
                 item_props = {
                     'source': source,
                     'text': language_text
                 }
                 if var_type != 'ranking' and var_type != 'rating' and var_type != 'singleChoice':
-                   item_props['properties'] = {}
+                    item_props['properties'] = {}
                 children_array.append(item_props)
         return children_array
-        
 
-    def get_main_info(variable_meta, var_type, has_nodes=False, is_child=False, complex_grid=False):
+    def get_main_info(variable_meta, var_type, has_nodes=False, is_child=False,
+                      complex_grid=False):
         should_add_code_mapping = False
 
         def add_code_mapping(var_name, options):
@@ -94,7 +101,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
             self._code_mapping = {
                 'to_qp_format': to_qp_format,
                 'to_forsta_format': to_forsta_format
-                }
+            }
             return encode
 
         def get_options(variable, var_type, is_child, has_nodes):
@@ -102,6 +109,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
             if variable is None:
                 return None
             col_values_arr = []
+
             def get_nodes_children(value):
                 node_obj = {}
                 node_obj['text'] = {}
@@ -109,7 +117,9 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     forsta_texts = value.get('texts')[0]
                     language_id = forsta_texts.get('languageId')
                     if language_id:
-                        node_obj['text'] = { languages[language_id]: forsta_texts.get('text') }
+                        node_obj['text'] = {
+                            languages[language_id]: forsta_texts.get('text')
+                            }
                 except (TypeError, KeyError):
                     pass
                 node_obj['value'] = value.get('code')
@@ -122,13 +132,15 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
 
             for idx, value in enumerate(variable):
                 if has_nodes:
-                    get_nodes_children(value) 
+                    get_nodes_children(value)
                 else:
                     loopReference = value.get('loopReference')
-                    if(loopReference and var_type == 'single'):
-                        filtered_loop_ref = filter(lambda x: x['name']  == loopReference, children_vars) 
+                    if (loopReference and var_type == 'single'):
+                        filtered_loop_ref = filter(
+                            lambda x: x['name'] == loopReference, children_vars)
                         child_var = list(filtered_loop_ref)
-                        col_values_val = get_main_info(child_var[0], var_type, is_child=True)
+                        col_values_val = get_main_info(child_var[0], var_type,
+                                                       is_child=True)
                     else:
                         try:
                             col_values_val = int(value["code"])
@@ -139,7 +151,9 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     values_dict = {"value": col_values_val}
                     if value.get("texts"):
                         language_code = value["texts"][0]["languageId"]
-                        values_dict["text"] = { languages[language_code]: value["texts"][0]["text"]}
+                        values_dict["text"] = {
+                            languages[language_code]: value["texts"][0]["text"]
+                            }
 
                     if value.get('score'):
                         values_dict["factor"] = int(value.get('score'))
@@ -170,7 +184,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
         if forsta_var_type != 'rating' and not is_single_grid_var:
             variable_obj['parent'] = {}
         if var_type != 'float' and var_type != 'int' and var_type != 'single' and forsta_var_type != 'rating' and not is_single_grid_var:
-           variable_obj['properties'] = {}
+            variable_obj['properties'] = {}
         if var_type == 'array':
             variable_obj['items'] = get_grid_items(variable)
             if forsta_var_type == 'numeric':
@@ -180,38 +194,53 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                 variable_obj['subtype'] = 'string'
             if forsta_var_type == 'rating' or forsta_var_type == 'singleChoice':
                 variable_obj['subtype'] = 'single'
-                lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
+                lib['values'][variable['name']] = get_options(options, var_type,
+                                                              is_child,
+                                                              has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
             if forsta_var_type == 'ranking':
                 variable_obj['subtype'] = 'int'
-                lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
+                lib['values'][variable['name']] = get_options(options, var_type,
+                                                              is_child,
+                                                              has_nodes)
                 variable_obj['values'] = 'lib@values@' + variable['name']
             if forsta_var_type == 'multiGrid':
                 variable_obj['subtype'] = 'delimited set'
                 if complex_grid:
-                    lib['values'][variable['name']] = get_options(options, var_type, is_child, has_nodes)
+                    lib['values'][variable['name']] = get_options(options,
+                                                                  var_type,
+                                                                  is_child,
+                                                                  has_nodes)
                     variable_obj['values'] = 'lib@values@' + variable['name']
 
         if var_type != 'float' and var_type != 'int' and var_type != 'array' and var_type != 'string' and var_type != 'date':
-            variable_obj['values'] = get_options(options, var_type, is_child, has_nodes)
+            variable_obj['values'] = get_options(options, var_type, is_child,
+                                                 has_nodes)
             if var_type == 'single' and should_add_code_mapping:
-                variable_obj['code_mapping'] = add_code_mapping(variable['name'], options)
+                variable_obj['code_mapping'] = add_code_mapping(
+                        variable['name'], options)
         if variable.get('titles'):
             language_code = variable['titles'][0].get("languageId")
             if language_code:
-                variable_obj['text'] = { languages[language_code]: variable['titles'][0]["text"] }
+                variable_obj['text'] = {
+                    languages[language_code]: variable['titles'][0]["text"]
+                    }
         else:
             if variable.get('texts'):
                 language_code = variable['texts'][0]["languageId"]
-                variable_obj['text'] = { languages[language_code]: variable['texts'][0]["text"] }
+                variable_obj['text'] = {
+                    languages[language_code]: variable['texts'][0]["text"]
+                    }
             else:
-                variable_obj['text'] = { global_language: "" }
+                variable_obj['text'] = {global_language: ""}
         if is_child:
             variable_obj.update({
                 'texts': variable_meta.get('texts'),
-                'variables': [get_main_info(var_meta, types_translations[var_meta['variableType']]) for var_meta in variable_meta.get('variables')]
+                'variables': [get_main_info(var_meta, types_translations[
+                    var_meta['variableType']]) for var_meta in
+                              variable_meta.get('variables')]
             })
-        
+
         return variable_obj
 
     def reformat_loop_data(loop_var, loop_of_loop=None):
@@ -222,13 +251,16 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     for k, v in value.items():
                         if loop_of_loop is None:
                             if k != loop_var:
-                                k = '{loop_var}_{k}'.format(loop_var=loop_var, k=k)
+                                k = '{loop_var}_{k}'.format(loop_var=loop_var,
+                                                            k=k)
                         else:
                             if k != loop_of_loop:
-                                k = '{loop_var}_{k}'.format(loop_var=loop_var, k=k)
+                                k = '{loop_var}_{k}'.format(loop_var=loop_var,
+                                                            k=k)
                             else:
                                 k = loop_var
-                        k = '{k}_{string_idx}'.format(k=k, string_idx=str(idx + 1))
+                        k = '{k}_{string_idx}'.format(k=k,
+                                                      string_idx=str(idx + 1))
                         data[k] = v
             except KeyError:
                 pass
@@ -242,38 +274,47 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
         if has_parent:
             if has_parent in multigrid_vars:
                 language_code = variable.get('texts')[0].get('languageId')
-                language_text = { 'text': {} }
+                language_text = {'text': {}}
                 if language_code:
-                    language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
+                    language_text['text'] = {
+                        languages[language_code]: variable['texts'][0]['text']
+                        }
                 multigrid_vars[has_parent]['fields'].append(
-                    {
-                        'code': variable['name'],
-                        'texts': [language_text]
-                    })
+                        {
+                            'code': variable['name'],
+                            'texts': [language_text]
+                        })
             elif has_parent in grid3d_vars:
                 language_code = variable.get('titles')[0].get('languageId')
-                language_text = { 'text': {} }
+                language_text = {'text': {}}
                 if language_code:
-                    language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
+                    language_text['text'] = {
+                        languages[language_code]: variable['titles'][0]['text']
+                        }
                 grid3d_vars[has_parent]['fields'].append({
-                        'code': variable['name'],
-                        'texts': [language_text]
-                    })
+                    'code': variable['name'],
+                    'texts': [language_text]
+                })
             else:
                 try:
-                    filtered_parent_iter = filter(lambda x: x['name'] == has_parent, vars_arr)
+                    filtered_parent_iter = filter(
+                        lambda x: x['name'] == has_parent, vars_arr)
                     filtered_parent = next(filtered_parent_iter)
                 except StopIteration:
                     filtered_parent = {}
                 if filtered_parent.get('variableType') == 'multiGrid':
                     if has_parent not in multigrid_vars:
                         try:
-                            language_code = variable.get('texts')[0].get('languageId')
+                            language_code = variable.get('texts')[0].get(
+                                'languageId')
                         except TypeError:
                             language_code = None
-                        language_text = { 'text': {} }
+                        language_text = {'text': {}}
                         if language_code:
-                            language_text['text'] = { languages[language_code]: variable['texts'][0]['text'] }
+                            language_text['text'] = {
+                                languages[language_code]: variable['texts'][0][
+                                    'text']
+                                }
                         multigrid_vars[has_parent] = {
                             'name': has_parent,
                             'variableType': filtered_parent['variableType'],
@@ -287,12 +328,16 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                 if filtered_parent.get('variableType') == 'grid3D':
                     if has_parent not in grid3d_vars:
                         try:
-                            language_code = variable.get('titles')[0].get('languageId')
+                            language_code = variable.get('titles')[0].get(
+                                'languageId')
                         except TypeError:
                             language_code = None
-                        language_text = { 'text': {} }
+                        language_text = {'text': {}}
                         if language_code:
-                            language_text['text'] = { languages[language_code]: variable['titles'][0]['text'] }
+                            language_text['text'] = {
+                                languages[language_code]: variable['titles'][0][
+                                    'text']
+                                }
                         grid3d_vars[has_parent] = {
                             'name': has_parent,
                             'variableType': filtered_parent['variableType'],
@@ -302,7 +347,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                                 'code': variable['name'],
                                 'texts': [language_text]
                             }]
-                        }    
+                        }
 
         if forsta_var_type == 'singleChoice':
             has_nodes = False
@@ -310,16 +355,21 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
             if variable.get('nodes'):
                 has_nodes = True
 
-            if variable.get("isCompound") and variable.get("fields") and variable.get("options"):
+            if variable.get("isCompound") and variable.get(
+                    "fields") and variable.get("options"):
                 parsed_meta = get_main_info(variable, 'array')
                 masks_output[variable['name']] = parsed_meta
                 fill_items_arr(parsed_meta)
                 single_children_arr = []
                 for subvar in parsed_meta['items']:
-                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
-                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar,
+                                                            True)
+                    columns_output[
+                        parsed_subvar_meta['name']] = parsed_subvar_meta
                     single_children_arr.append(parsed_subvar_meta['name'])
-                grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+                grid_vars.append({'parent': variable['name'],
+                                  'children': single_children_arr
+                                  })
 
             else:
                 if is_loop:
@@ -331,26 +381,33 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     lol_root_names = []
                     for idx, opt in enumerate(variable['options']):
                         variable['name'] = root_name + '_' + opt['code']
-                        columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                        columns_output[variable['name']] = get_main_info(
+                            variable, 'single', has_nodes=has_nodes)
                         for lc_idx, loop_child in enumerate(loop_children):
                             if idx == 0:
                                 lc_root_names.append(loop_child['name'])
-                            loop_child['name'] = root_name + '_' + lc_root_names[lc_idx] + '_' + opt['code']
+                            loop_child['name'] = root_name + '_' + \
+                                                 lc_root_names[lc_idx] + '_' + \
+                                                 opt['code']
                             parse_forsta_types(loop_child)
                             loop_child['name'] = lc_root_names[lc_idx]
                         for lol_idx, loop in enumerate(loop_of_loop):
                             if idx == 0:
                                 lol_root_names.append(loop['name'])
-                            loop['name'] = root_name + '_' + lol_root_names[lol_idx] + '_' + opt['code']
+                            loop['name'] = root_name + '_' + lol_root_names[
+                                lol_idx] + '_' + opt['code']
                             parse_forsta_types(loop, lol_root_names[lol_idx])
                             loop['name'] = lol_root_names[lol_idx]
 
                 else:
-                    columns_output[variable['name']] = get_main_info(variable, 'single', has_nodes=has_nodes)
+                    columns_output[variable['name']] = get_main_info(variable,
+                                                                     'single',
+                                                                     has_nodes=has_nodes)
                     single_vars.append(variable['name'])
         if forsta_var_type == 'multiChoice':
             delimited_set_vars.append(variable['name'])
-            columns_output[variable['name']] = get_main_info(variable, 'delimited set')
+            columns_output[variable['name']] = get_main_info(variable,
+                                                             'delimited set')
         if forsta_var_type == 'dateTime':
             columns_output[variable['name']] = get_main_info(variable, 'date')
         if forsta_var_type == 'numeric':
@@ -361,12 +418,16 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                 numeric_children_arr = []
                 for subvar in parsed_meta['items']:
                     parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
-                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    columns_output[
+                        parsed_subvar_meta['name']] = parsed_subvar_meta
                     numeric_children_arr.append(parsed_subvar_meta['name'])
-                grid_vars.append({'parent': variable['name'], 'children': numeric_children_arr})
+                grid_vars.append({'parent': variable['name'],
+                                  'children': numeric_children_arr
+                                  })
             else:
                 numeric_type = int_or_float(variable)
-                columns_output[variable['name']] = get_main_info(variable, numeric_type)
+                columns_output[variable['name']] = get_main_info(variable,
+                                                                 numeric_type)
         if forsta_var_type == 'text':
             if variable.get('fields'):
                 parsed_meta = get_main_info(variable, 'array')
@@ -375,11 +436,15 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                 text_children_arr = []
                 for subvar in parsed_meta['items']:
                     parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
-                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    columns_output[
+                        parsed_subvar_meta['name']] = parsed_subvar_meta
                     text_children_arr.append(parsed_subvar_meta['name'])
-                grid_vars.append({'parent': variable['name'], 'children': text_children_arr})
+                grid_vars.append({'parent': variable['name'],
+                                  'children': text_children_arr
+                                  })
             else:
-                columns_output[variable['name']] = get_main_info(variable, 'string')
+                columns_output[variable['name']] = get_main_info(variable,
+                                                                 'string')
         if forsta_var_type == 'rating':
             if variable.get('isCompound'):
                 parsed_meta = get_main_info(variable, 'array')
@@ -387,23 +452,30 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                 fill_items_arr(parsed_meta)
                 single_children_arr = []
                 for subvar in parsed_meta['items']:
-                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
-                    columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
+                    parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar,
+                                                            True)
+                    columns_output[
+                        parsed_subvar_meta['name']] = parsed_subvar_meta
                     single_children_arr.append(parsed_subvar_meta['name'])
-                grid_vars.append({'parent': variable['name'], 'children': single_children_arr})
+                grid_vars.append({'parent': variable['name'],
+                                  'children': single_children_arr
+                                  })
             else:
                 single_vars.append(variable['name'])
-                columns_output[variable['name']] = get_main_info(variable, 'single')
+                columns_output[variable['name']] = get_main_info(variable,
+                                                                 'single')
         if forsta_var_type == 'ranking':
             parsed_meta = get_main_info(variable, 'array')
             masks_output[variable['name']] = parsed_meta
             fill_items_arr(parsed_meta)
             int_children_arr = []
             for subvar in parsed_meta['items']:
-                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar, True)
+                parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar,
+                                                        True)
                 columns_output[parsed_subvar_meta['name']] = parsed_subvar_meta
                 int_children_arr.append(parsed_subvar_meta['name'])
-            grid_vars.append({'parent': variable['name'], 'children': int_children_arr})
+            grid_vars.append(
+                    {'parent': variable['name'], 'children': int_children_arr})
         if forsta_var_type == 'multiGrid':
             if variable['name'] not in multigrid_vars:
                 multigrid_vars[variable['name']] = {
@@ -449,7 +521,8 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
             sub_data_array.append(v)
         data_array.append(sub_data_array)
 
-    global_language_code = meta_parsed.get("languages")[0].get("confirmitLanguageId")
+    global_language_code = meta_parsed.get("languages")[0].get(
+        "confirmitLanguageId")
     global_language = languages[global_language_code]
     lib = {"default text": global_language, "values": {}}
     sets = {}
@@ -473,7 +546,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
 
     for variable in vars_arr:
         parse_forsta_types(variable)
-    
+
     for k, v in multigrid_vars.items():
         parsed_meta = get_main_info(v, 'array', complex_grid=True)
         masks_output[v['name']] = parsed_meta
@@ -481,11 +554,12 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
         multigrid_children_arr = []
         for subvar in parsed_meta['items']:
             parsed_subvar_meta = create_subvar_meta(parsed_meta, subvar)
-            columns_output[parsed_subvar_meta['name']]['parent'] = parsed_subvar_meta['parent']
+            columns_output[parsed_subvar_meta['name']]['parent'] = \
+            parsed_subvar_meta['parent']
             multigrid_children_arr.append(parsed_subvar_meta['name'])
 
     sets['data file'] = {
-        "text": { global_language: "Variable order in source file" },
+        "text": {global_language: "Variable order in source file"},
         "items": columns_array
     }
     info = {
@@ -516,7 +590,7 @@ def quantipy_from_forsta(self, meta_json, data_json, verbose=False, text_key='en
                     for k, v in old_values.items():
                         data[nav['parent'] + '_' + k] = v
                 except AttributeError:
-                   data[nav['parent']] = old_values 
+                    data[nav['parent']] = old_values
         for single in single_vars:
             if data.get(single):
                 try:

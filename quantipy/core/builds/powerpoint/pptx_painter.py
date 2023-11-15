@@ -4,7 +4,6 @@
 @author: Majeed.sahebzadha
 '''
 
-
 import copy
 import time
 from collections import OrderedDict
@@ -36,6 +35,7 @@ thisdir = path.split(__file__)[0]
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+
 def chain_generator(cluster):
     '''
     Generate chains
@@ -49,8 +49,10 @@ def chain_generator(cluster):
     for chain_name in list(cluster.keys()):
         yield cluster[chain_name]
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def chain_has_weighted_views(chain):
     '''
@@ -70,8 +72,10 @@ def chain_has_weighted_views(chain):
             return True
     return False
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def get_grid_el_label(df):
     '''
@@ -87,19 +91,21 @@ def get_grid_el_label(df):
     if ' - ' in grid_el_label:
         label = grid_el_label.split(' - ')[-1].strip()
     elif '. ' in grid_el_label:
-        label = grid_el_label.split('. ',1)[-1].strip()
+        label = grid_el_label.split('. ', 1)[-1].strip()
     else:
         label = 'Label missing'
     return label
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+
 def df_meta_filter(
-    df,
-    meta,
-    conditions,
-    index_key=None):
+        df,
+        meta,
+        conditions,
+        index_key=None):
     '''
     Selects rows based on multiple binary conditions -True/False
 
@@ -141,9 +147,11 @@ def df_meta_filter(
             key_names = index_key
 
         # replace names with labels (note in the future, use text first then labels)
-        if len(key_names)>1:
+        if len(key_names) > 1:
             # use label and overlap those by text which are not empty string
-            idx = meta.loc[df.index]['label'].where(meta.loc[df.index]['text']=='', meta.loc[df.index]['text'].values)
+            idx = meta.loc[df.index]['label'].where(
+                meta.loc[df.index]['text'] == '',
+                meta.loc[df.index]['text'].values)
         else:
             idx = meta.loc[df.index].set_index(key_names).index
 
@@ -156,8 +164,10 @@ def df_meta_filter(
         # empty df
         return pd.DataFrame()
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def gen_meta_df(painted_df, qp_view):
     '''
@@ -186,7 +196,7 @@ def gen_meta_df(painted_df, qp_view):
     df_meta['label'] = painted_df.index
 
     # distinguish between net and expanded
-    net_bools=[]
+    net_bools = []
     for row in df_meta.index:
         if qp_view.is_net():
             v_described = qp_view.describe_block()
@@ -211,8 +221,10 @@ def gen_meta_df(painted_df, qp_view):
 
     return df_meta
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def same_labels(listofdfs):
     '''
@@ -229,8 +241,10 @@ def same_labels(listofdfs):
         if not all(listofdfs[0].index == listofdfs[x].index):
             raise Exception('index labels mismatch')
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def same_num_of_elements(listofdfs):
     '''
@@ -246,8 +260,10 @@ def same_num_of_elements(listofdfs):
         raise Exception('cannot merge elements - uneven '
                         'number of element views.')
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+
 
 def all_same(val_array):
     '''
@@ -262,21 +278,23 @@ def all_same(val_array):
     if type(val_array).__module__ == np.__name__:
         val = val_array.tolist()
         if isinstance(val[0], list):
-            #handle list of lists
+            # handle list of lists
             return all(round(x[0]) == round(val[0][0]) for x in val)
         else:
-            #handle single list
+            # handle single list
             return all(round(x) == round(val[0]) for x in val)
     else:
         raise Exception('This function only takes a numpy array')
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+
 def insert_values_to_labels(
-    add_values_to,
-    take_values_from,
-    index_position=0):
+        add_values_to,
+        take_values_from,
+        index_position=0):
     '''
     Takes two dfs, adds values from a given row from one df and adds
     it to the other dfs column labels.
@@ -292,41 +310,43 @@ def insert_values_to_labels(
     if all(add_values_to.columns == take_values_from.columns):
 
         # pull a given row's values
-        row_vals = take_values_from.ix[[index_position],:].values
+        row_vals = take_values_from.ix[[index_position], :].values
         # flatten the list of values
         row_vals = row_vals.flatten()
         # get column labels
         col_labels = add_values_to.columns
 
         # loop over and add the values to the labels
-        for x,y in zip(col_labels, row_vals):
-            col_name = x + " (n=" + str(int(round(y))) +")"
+        for x, y in zip(col_labels, row_vals):
+            col_name = x + " (n=" + str(int(round(y))) + ")"
             add_values_to.rename(columns={x: col_name}, inplace=True)
 
         return add_values_to
     else:
         raise Exception('Cannot add values to df labels')
 
+
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+
 def PowerPointPainter(
-    path_pptx,
-    meta,
-    cluster,
-    path_pptx_template=None,
-    slide_layout='Blank',
-    text_key=None,
-    force_chart=True,
-    force_crossbreak=None,
-    base_type='weighted',
-    base_repr=None,
-    include_nets=True,
-    shape_properties=None,
-    display_var_names=True,
-    date_range=None,
-    split_busy_dfs=False,
-    verbose=True):
+        path_pptx,
+        meta,
+        cluster,
+        path_pptx_template=None,
+        slide_layout='Blank',
+        text_key=None,
+        force_chart=True,
+        force_crossbreak=None,
+        base_type='weighted',
+        base_repr=None,
+        include_nets=True,
+        shape_properties=None,
+        display_var_names=True,
+        date_range=None,
+        split_busy_dfs=False,
+        verbose=True):
     '''
     Builds PowerPoint file (PPTX) from cluster, list of clusters, or
     dictionary of clusters.
@@ -405,7 +425,8 @@ def PowerPointPainter(
         'copied_from': '',
         'center_header': '',
         'right_footer': '',
-        'title_footer': ''}
+        'title_footer': ''
+    }
 
     spec = meta['sets'].get('spec', False)
 
@@ -421,8 +442,8 @@ def PowerPointPainter(
 
     if not path_pptx_template:
         path_pptx_template = path.join(
-            thisdir,
-            'templates\default_template.pptx')
+                thisdir,
+                'templates\default_template.pptx')
 
     # get the default text key if none provided
     if text_key is None:
@@ -431,43 +452,52 @@ def PowerPointPainter(
     # default shape properties (minimum level, only shape dimensions)
     # if none provided
     if shape_properties is None:
-         shape_properties = {
+        shape_properties = {
             'header_shape': {
                 'left': 284400,
                 'top': 1007999,
                 'width': 8582400,
-                'height': 468000},
+                'height': 468000
+            },
             'chart_shape': {
                 'bar': {
                     'left': 284400,
                     'top': 1475999,
                     'width': 8582400,
-                    'height': 4140000},
+                    'height': 4140000
+                },
                 'stacked_bar': {
                     'left': 284400,
                     'top': 1475999,
                     'width': 8582400,
-                    'height': 4140000},
+                    'height': 4140000
+                },
                 'column': {
                     'left': 284400,
                     'top': 1475999,
                     'width': 8582400,
-                    'height': 4140000},
+                    'height': 4140000
+                },
                 'pie': {
                     'left': 284400,
                     'top': 1475999,
                     'width': 8582400,
-                    'height': 4140000},
+                    'height': 4140000
+                },
                 'line': {
                     'left': 284400,
                     'top': 1475999,
                     'width': 8582400,
-                    'height': 4140000}},
+                    'height': 4140000
+                }
+            },
             'footer_shape': {
                 'left': 284400,
                 'top': 5652000,
                 'width': 8582400,
-                'height': 396000}}
+                'height': 396000
+            }
+        }
 
     ############################################################################
     ############################################################################
@@ -504,18 +534,18 @@ def PowerPointPainter(
 
         # Get Client and Topic tag from meta    
         if isinstance(spec, dict):
-            topic = "{}".format(spec.get('topic', ""))        
-            client = "{}".format(spec.get('name', ""))            
+            topic = "{}".format(spec.get('topic', ""))
+            client = "{}".format(spec.get('name', ""))
         else:
-            topic = ""        
-            client = ""                    
-        
-        ############################################################################
+            topic = ""
+            client = ""
+
+            ############################################################################
         # frontpage title ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ############################################################################
 
-        title_shape=shape_properties['title_shape']
-        client_date_shape=shape_properties['client_date_shape']
+        title_shape = shape_properties['title_shape']
+        client_date_shape = shape_properties['client_date_shape']
 
         if title_shape['addtext_frontpage']:
 
@@ -527,7 +557,8 @@ def PowerPointPainter(
 
             for shape in prs.slides[0].shapes:
                 if shape.name == title_shape['shape_name']:
-                    shape.text = client_date_shape['t_d_text'].format(client,date_range)
+                    shape.text = client_date_shape['t_d_text'].format(client,
+                                                                      date_range)
 
         ############################################################################
         # X ORIENTATION CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -563,25 +594,29 @@ def PowerPointPainter(
                 net_setup = shape_properties.get('net_setup', False)
                 if not include_nets:
                     chartdata_conditions.update({'is_net': 'False'})
-                    chartdata_conditions_grid = copy.deepcopy(chartdata_conditions)
+                    chartdata_conditions_grid = copy.deepcopy(
+                        chartdata_conditions)
                 elif include_nets == True:
                     if net_setup:
                         chartdata_conditions.update({'is_net': 'False'})
-                        chartdata_conditions_grid = copy.deepcopy(chartdata_conditions)
+                        chartdata_conditions_grid = copy.deepcopy(
+                            chartdata_conditions)
                     else:
-                        chartdata_conditions_grid = copy.deepcopy(chartdata_conditions)
-                #elif include_net == 'partly':
+                        chartdata_conditions_grid = copy.deepcopy(
+                            chartdata_conditions)
+                # elif include_net == 'partly':
                 else:
-                    chartdata_conditions_grid = copy.deepcopy(chartdata_conditions)
+                    chartdata_conditions_grid = copy.deepcopy(
+                        chartdata_conditions)
                     chartdata_conditions_grid.update({'is_net': 'False'})
 
-
-                #---------------------------------------------------------------
+                # ---------------------------------------------------------------
                 # table selection conditions for footer/base shape
                 base_conditions = OrderedDict([
                     ('is_base', 'True'),
                     ('short_name', 'cbase'),
-                    ('is_weighted', 'True' if base_type == 'weighted' else 'False')])
+                    ('is_weighted',
+                     'True' if base_type == 'weighted' else 'False')])
 
                 '----PULL METADATA DETAILS -------------------------------------'
 
@@ -591,20 +626,32 @@ def PowerPointPainter(
                 else:
                     if downbreak in meta['columns']:
                         if 'properties' in meta['columns'][downbreak]:
-                            meta_props = meta['columns'][downbreak]['properties']
+                            meta_props = meta['columns'][downbreak][
+                                'properties']
                         else:
                             meta_props = []
                     else:
                         meta_props = []
 
-                if text_key['x'] in list(meta['columns'][downbreak]['text'].keys()):
-                    question_label = meta['columns'][downbreak]['text'][text_key['x']]
+                if text_key['x'] in list(
+                        meta['columns'][downbreak]['text'].keys()):
+                    question_label = meta['columns'][downbreak]['text'][
+                        text_key['x']]
                 else:
-                    question_label = list(meta['columns'][downbreak]['text'].values())[0]
-                chart_type = meta_props['chart_type'] if 'chart_type' in meta_props else default_props['chart_type']
-                layout_type = meta_props['chart_layout'] if 'chart_layout' in meta_props else default_props['chart_layout']
-                sort_order = meta_props['sort_order'] if 'sort_order' in meta_props else default_props['sort_order']
-                fixed_categories = meta_props['fixed_categories'] if 'fixed_categories' in meta_props else default_props['fixed_categories']
+                    question_label = \
+                    list(meta['columns'][downbreak]['text'].values())[0]
+                chart_type = meta_props[
+                    'chart_type'] if 'chart_type' in meta_props else \
+                default_props['chart_type']
+                layout_type = meta_props[
+                    'chart_layout'] if 'chart_layout' in meta_props else \
+                default_props['chart_layout']
+                sort_order = meta_props[
+                    'sort_order'] if 'sort_order' in meta_props else \
+                default_props['sort_order']
+                fixed_categories = meta_props[
+                    'fixed_categories'] if 'fixed_categories' in meta_props else \
+                default_props['fixed_categories']
                 if fixed_categories:
                     fixed_values = [int(x['value']) for x in fixed_categories]
                     values = loc_values = meta['columns'][downbreak]['values']
@@ -618,29 +665,41 @@ def PowerPointPainter(
                         for item in values
                         if item['value'] in fixed_values
                     ]
-                slide_title_text = meta_props['slide_title'] if 'slide_title' in meta_props else default_props['slide_title_text']
-                copied_from = meta_props['copied_from'] if 'copied_from' in meta_props else default_props['copied_from']
-                base_description = meta_props['base_text'] if 'base_text' in meta_props else default_props['base_description']
+                slide_title_text = meta_props[
+                    'slide_title'] if 'slide_title' in meta_props else \
+                default_props['slide_title_text']
+                copied_from = meta_props[
+                    'copied_from'] if 'copied_from' in meta_props else \
+                default_props['copied_from']
+                base_description = meta_props[
+                    'base_text'] if 'base_text' in meta_props else \
+                default_props['base_description']
 
                 '----IF GRID THEN-----------------------------------------------'
 
                 # loop over items in masks
                 for grid in meta['masks']:
                     for x in range(0, len(meta['masks'][grid]['items'])):
-                        gridname = meta['masks'][grid]['items'][x]['source'].split('columns@')[-1]
+                        gridname = \
+                        meta['masks'][grid]['items'][x]['source'].split(
+                            'columns@')[-1]
                         if downbreak == gridname:
 
-                            if text_key['x'] in list(meta['masks'][grid]['text'].keys()):
-                                grid_question_label = meta['masks'][grid]['text'][text_key['x']]
+                            if text_key['x'] in list(
+                                    meta['masks'][grid]['text'].keys()):
+                                grid_question_label = \
+                                meta['masks'][grid]['text'][text_key['x']]
                             else:
-                                grid_question_label = list(meta['masks'][grid]['text'].values())[0]
+                                grid_question_label = \
+                                list(meta['masks'][grid]['text'].values())[0]
 
                             # check if grid is in grid container, if it's not then continue
                             if not grid in grid_container:
                                 grid_container += [grid]
                                 remaining_elements = [
                                     grid_element['source'].split('@')[1]
-                                    for grid_element in meta['masks'][grid]['items'][0:]]
+                                    for grid_element in
+                                    meta['masks'][grid]['items'][0:]]
 
                                 '----GROUP GRID-CHAIN VIEWS-------------------------------------'
 
@@ -649,27 +708,37 @@ def PowerPointPainter(
                                 for grid_element_name in remaining_elements:
                                     grid_chain = cluster[grid_element_name]
 
-                                    #prepare grid element labels
-                                    grid_el_label = meta['columns'][grid_element_name]['text'][text_key['x']]
+                                    # prepare grid element labels
+                                    grid_el_label = \
+                                    meta['columns'][grid_element_name]['text'][
+                                        text_key['x']]
 
-                                    if grid_el_label.startswith(grid_question_label):
-                                        grid_el_label = grid_el_label.split(grid_question_label)[-1].strip()
+                                    if grid_el_label.startswith(
+                                            grid_question_label):
+                                        grid_el_label = grid_el_label.split(
+                                            grid_question_label)[-1].strip()
                                         if grid_el_label.startswith('- '):
                                             grid_el_label = grid_el_label[2:]
 
                                     # use weighted freq views if available
-                                    has_weighted_views = chain_has_weighted_views(grid_chain)
+                                    has_weighted_views = chain_has_weighted_views(
+                                        grid_chain)
 
-                                    #if the conditions for base and chartdata's "is_weighted" key
-                                    #is True but there are no weighted views in the chain then use
-                                    #unweighted views
+                                    # if the conditions for base and chartdata's "is_weighted" key
+                                    # is True but there are no weighted views in the chain then use
+                                    # unweighted views
                                     if not has_weighted_views:
-                                        if chartdata_conditions['is_weighted']=='True':
-                                            chartdata_conditions['is_weighted'] = 'False'
-                                            chartdata_conditions_grid['is_weighted'] = 'False'
-                                            #an unweighted chart can only have unweighted base
-                                            if base_conditions['is_weighted']=='True':
-                                                base_conditions['is_weighted'] = 'False'
+                                        if chartdata_conditions[
+                                            'is_weighted'] == 'True':
+                                            chartdata_conditions[
+                                                'is_weighted'] = 'False'
+                                            chartdata_conditions_grid[
+                                                'is_weighted'] = 'False'
+                                            # an unweighted chart can only have unweighted base
+                                            if base_conditions[
+                                                'is_weighted'] == 'True':
+                                                base_conditions[
+                                                    'is_weighted'] = 'False'
 
                                     views_on_chain = []
                                     meta_on_g_chain = []
@@ -680,15 +749,19 @@ def PowerPointPainter(
                                         fk = grid_chain.filter
 
                                         # only pull '@' based views as these will be concatenated together
-                                        view = grid_chain[dk][fk][grid_element_name]['@'][v]
+                                        view = \
+                                        grid_chain[dk][fk][grid_element_name][
+                                            '@'][v]
 
                                         view.translate_metric(
-                                            text_key['x'][0],
-                                            set_value='meta')
+                                                text_key['x'][0],
+                                                set_value='meta')
 
-                                        trans_var_name = '{}x@'.format(grid_chain.name)
+                                        trans_var_name = '{}x@'.format(
+                                            grid_chain.name)
                                         if not trans_var_name in translated_views:
-                                            translated_views.append(trans_var_name)
+                                            translated_views.append(
+                                                trans_var_name)
 
                                         # paint view
                                         df = paint_view(meta, view)
@@ -702,14 +775,16 @@ def PowerPointPainter(
 
                                     # this var will be overwritten but its okay for now.
                                     grped_g_meta = pd.concat(
-                                        meta_on_g_chain,
-                                        axis=0)
+                                            meta_on_g_chain,
+                                            axis=0)
 
                                     # concat all the views together on a single chain
                                     mdf = pd.concat(views_on_chain, axis=0)
                                     mdf.rename(
-                                        columns={mdf.columns[0]: grid_el_label},
-                                        inplace=True)
+                                            columns={
+                                                mdf.columns[0]: grid_el_label
+                                                },
+                                            inplace=True)
                                     grouped_grid_views.append(mdf)
 
                                 '----CONCAT AND PREPARE GRID-CHAIN VIEWS------------------------'
@@ -721,7 +796,8 @@ def PowerPointPainter(
                                 same_labels(grouped_grid_views)
 
                                 # concat all grid chains in grouped_grid_views together
-                                merged_grid_df = pd.concat(grouped_grid_views, axis=1)
+                                merged_grid_df = pd.concat(grouped_grid_views,
+                                                           axis=1)
                                 merged_grid_df = merged_grid_df.fillna(0.0)
 
                                 slide_num += 1
@@ -731,34 +807,35 @@ def PowerPointPainter(
                                         'Adding a 100% STACKED BAR CHART '
                                         'for {qname} cut by '
                                         'Total{war_msg}'.format(
-                                            indent='',
-                                            num=slide_num,
-                                            qname=grid,
-                                            war_msg='')))
+                                                indent='',
+                                                num=slide_num,
+                                                qname=grid,
+                                                war_msg='')))
 
-                                #extract df for net
+                                # extract df for net
                                 if net_setup:
-                                    net_setup_stacked_bar = net_setup.get('stacked_bar', False)
+                                    net_setup_stacked_bar = net_setup.get(
+                                        'stacked_bar', False)
                                     if net_setup_stacked_bar:
                                         df_grid_table_net = df_meta_filter(
-                                            merged_grid_df,
-                                            grped_g_meta,
-                                            {'is_net' : 'True'},
-                                            index_key='label')
-                                            
-                                #extract df for chart
-                                df_grid_table = df_meta_filter(
-                                    merged_grid_df,
-                                    grped_g_meta,
-                                    chartdata_conditions_grid,
-                                    index_key='label')
+                                                merged_grid_df,
+                                                grped_g_meta,
+                                                {'is_net': 'True'},
+                                                index_key='label')
 
-                                #extract df for base
+                                # extract df for chart
+                                df_grid_table = df_meta_filter(
+                                        merged_grid_df,
+                                        grped_g_meta,
+                                        chartdata_conditions_grid,
+                                        index_key='label')
+
+                                # extract df for base
                                 df_grid_base = df_meta_filter(
-                                    merged_grid_df,
-                                    grped_g_meta,
-                                    base_conditions,
-                                    index_key='text')
+                                        merged_grid_df,
+                                        grped_g_meta,
+                                        base_conditions,
+                                        index_key='text')
 
                                 if not df_grid_table.empty:
 
@@ -766,28 +843,30 @@ def PowerPointPainter(
                                     # then add the values to the grids column labels
                                     if not all_same(df_grid_base.values[0]):
                                         df_grid_table = insert_values_to_labels(
-                                            df_grid_table,
-                                            df_grid_base,
-                                            index_position=0)
+                                                df_grid_table,
+                                                df_grid_base,
+                                                index_position=0)
                                         if base_description:
-                                            #remove the word "Base:" from the description
-                                            description = base_description.split(': ')[-1]
-                                            #grab the label for base from the df
+                                            # remove the word "Base:" from the description
+                                            description = \
+                                            base_description.split(': ')[-1]
+                                            # grab the label for base from the df
                                             base_label = df_grid_base.index[0]
-                                            #put them together
+                                            # put them together
                                             base_text = '{}: {}'.format(
-                                                base_label,
-                                                description)
+                                                    base_label,
+                                                    description)
                                         else:
                                             base_text = ''
                                     else:
                                         base_text = get_base(
-                                            df_grid_base,
-                                            base_description,
-                                            True)
+                                                df_grid_base,
+                                                base_description,
+                                                True)
 
                                     if base_repr and ('Base' in base_text):
-                                        base_text = base_text.replace('Base', base_repr)
+                                        base_text = base_text.replace('Base',
+                                                                      base_repr)
 
                                     # get question label
                                     if display_var_names:
@@ -796,22 +875,26 @@ def PowerPointPainter(
                                         else:
                                             grid_label = grid
                                         grid_question_label = '{}. {}'.format(
-                                            grid_label,
-                                            strip_html_tags(grid_question_label))
+                                                grid_label,
+                                                strip_html_tags(
+                                                    grid_question_label))
 
                                     # format table values
-                                    df_grid_table = np.round(df_grid_table/100, 4)
+                                    df_grid_table = np.round(
+                                        df_grid_table / 100, 4)
 
                                     '----ADDPEND SLIDE TO PRES--------------------------------------'
 
                                     if isinstance(slide_layout, int):
-                                        slide_layout_obj = prs.slide_layouts[slide_layout]
+                                        slide_layout_obj = prs.slide_layouts[
+                                            slide_layout]
                                     else:
                                         slide_layout_obj = return_slide_layout_by_name(
-                                            prs,
-                                            slide_layout)
+                                                prs,
+                                                slide_layout)
 
-                                    slide = prs.slides.add_slide(slide_layout_obj)
+                                    slide = prs.slides.add_slide(
+                                        slide_layout_obj)
 
                                     '----ADD SHAPES TO SLIDE----------------------------------------'
 
@@ -819,60 +902,84 @@ def PowerPointPainter(
                                     if title_shape['addtext']:
 
                                         for shape in slide.placeholders:
-                                            if shape.name == title_shape['shape_name']:
+                                            if shape.name == title_shape[
+                                                'shape_name']:
                                                 shape.text = topic
 
                                     ''' header shape '''
                                     sub_title_shp = add_textbox(
-                                        slide,
-                                        text=grid_question_label,
-                                        **(shape_properties['header_shape']
-                                            if shape_properties else {}))
+                                            slide,
+                                            text=grid_question_label,
+                                            **(shape_properties['header_shape']
+                                               if shape_properties else {}))
 
                                     ''' net table '''
                                     if include_nets and net_setup:
-                                        save_width = shape_properties['chart_shape']['stacked_bar']['width']
+                                        save_width = \
+                                        shape_properties['chart_shape'][
+                                            'stacked_bar']['width']
                                         if net_setup_stacked_bar['show_table']:
                                             if not df_grid_table_net.empty:
-                                                df_grid_table_net = round_df_cells(df_grid_table_net,
-                                                                                   net_setup_stacked_bar['table_decimals'])
-                                                if net_setup_stacked_bar['add_percent_sign']:
-                                                    df_grid_table_net = df_grid_table_net.astype(str) + '%'
-                                                cols = len(df_grid_table_net.T.columns)
-                                                shapes=shape_properties['chart_shape']['stacked_bar']
-                                                shapes['legend_position']='bottom'
-                                                shapes['width'] -= net_setup_stacked_bar['table_column_width'] * cols
+                                                df_grid_table_net = round_df_cells(
+                                                    df_grid_table_net,
+                                                    net_setup_stacked_bar[
+                                                        'table_decimals'])
+                                                if net_setup_stacked_bar[
+                                                    'add_percent_sign']:
+                                                    df_grid_table_net = df_grid_table_net.astype(
+                                                        str) + '%'
+                                                cols = len(
+                                                    df_grid_table_net.T.columns)
+                                                shapes = \
+                                                shape_properties['chart_shape'][
+                                                    'stacked_bar']
+                                                shapes[
+                                                    'legend_position'] = 'bottom'
+                                                shapes['width'] -= \
+                                                net_setup_stacked_bar[
+                                                    'table_column_width'] * cols
                                                 # Set net table size and position
                                                 height = shapes['height']
                                                 top = shapes['top']
-                                                left = shapes['left'] + shapes['width']
-                                                width = net_setup_stacked_bar['table_column_width']
-                                                net_table = add_net(slide, df_grid_table_net.T, height=height, width=width, top=top, left=left)                                            
-                                            
+                                                left = shapes['left'] + shapes[
+                                                    'width']
+                                                width = net_setup_stacked_bar[
+                                                    'table_column_width']
+                                                net_table = add_net(slide,
+                                                                    df_grid_table_net.T,
+                                                                    height=height,
+                                                                    width=width,
+                                                                    top=top,
+                                                                    left=left)
+
                                     ''' chart shape '''
                                     chart_shp = chart_selector(
-                                        slide,
-                                        df_grid_table,
-                                        chart_type='stacked_bar',
-                                        **(shape_properties['chart_shape']['stacked_bar']
-                                            if shape_properties else {}))
+                                            slide,
+                                            df_grid_table,
+                                            chart_type='stacked_bar',
+                                            **(shape_properties['chart_shape'][
+                                                   'stacked_bar']
+                                               if shape_properties else {}))
 
                                     if include_nets and net_setup:
-                                        shape_properties['chart_shape']['stacked_bar']['width'] = save_width
-                                            
+                                        shape_properties['chart_shape'][
+                                            'stacked_bar']['width'] = save_width
+
                                     ''' footer shape '''
                                     if base_text:
                                         base_text_shp = add_textbox(
-                                            slide,
-                                            text=base_text,
-                                            **(shape_properties['footer_shape']
-                                                if shape_properties else {}))
+                                                slide,
+                                                text=base_text,
+                                                **(shape_properties[
+                                                       'footer_shape']
+                                                   if shape_properties else {}))
 
                 '----IF NOT GRID THEN-------------------------------------------'
 
                 if 'crossbreak' in meta_props:
                     if meta_props['crossbreak'] != '@':
-                        target_crossbreaks = default_props['crossbreak'] + meta_props['crossbreak'].split(',')
+                        target_crossbreaks = default_props['crossbreak'] + \
+                                             meta_props['crossbreak'].split(',')
                     else:
                         target_crossbreaks = meta_props['crossbreak'].split(',')
                 else:
@@ -889,7 +996,7 @@ def PowerPointPainter(
                         # if "is_weighted" is True but there's no weighted views
                         # use unweighted views
                         if not has_weighted_views:
-                            if chartdata_conditions['is_weighted']=='True':
+                            if chartdata_conditions['is_weighted'] == 'True':
                                 chartdata_conditions['is_weighted'] = 'False'
                                 # an unweighted chart can only have unweighted base
                                 if base_conditions['is_weighted'] == 'True':
@@ -905,13 +1012,13 @@ def PowerPointPainter(
                             view = chain[dk][fk][downbreak][crossbreak][v]
 
                             trans_var_name = '{}x{}'.format(
-                                downbreak,
-                                crossbreak)
+                                    downbreak,
+                                    crossbreak)
 
                             if trans_var_name not in translated_views:
                                 view.translate_metric(
-                                    text_key['x'][0],
-                                    set_value='meta')
+                                        text_key['x'][0],
+                                        set_value='meta')
 
                             # paint view
                             df = paint_view(meta, view)
@@ -931,119 +1038,129 @@ def PowerPointPainter(
 
                         # replace '@' with 'Total'
                         grped_df = rename_label(
-                            grped_df,
-                            '@',
-                            'Total',
-                            orientation='Top')
+                                grped_df,
+                                '@',
+                                'Total',
+                                orientation='Top')
 
                         # extract df for net
                         if net_setup:
                             df_table_net = df_meta_filter(
-                            grped_df,
-                            grped_meta,
-                            {'is_net': 'True'},
-                            index_key='label')
+                                    grped_df,
+                                    grped_meta,
+                                    {'is_net': 'True'},
+                                    index_key='label')
                             # standardise table values
-                            df_table_net = np.round(df_table_net.fillna(0.0) / 100, 4)
-                            
-                        #extract df for chart
-                        df_table = df_meta_filter(
-                            grped_df,
-                            grped_meta,
-                            chartdata_conditions,
-                            index_key='label')
+                            df_table_net = np.round(
+                                df_table_net.fillna(0.0) / 100, 4)
 
-                        #extract df for base
+                        # extract df for chart
+                        df_table = df_meta_filter(
+                                grped_df,
+                                grped_meta,
+                                chartdata_conditions,
+                                index_key='label')
+
+                        # extract df for base
                         df_base = df_meta_filter(
-                            grped_df,
-                            grped_meta,
-                            base_conditions,
-                            index_key='text')
+                                grped_df,
+                                grped_meta,
+                                base_conditions,
+                                index_key='text')
 
                         if not df_table.empty:
 
                             # append nets to fixed categories
-                            for x, item in enumerate(grped_meta['is_net'].tolist()):
+                            for x, item in enumerate(
+                                    grped_meta['is_net'].tolist()):
                                 if item == 'True':
-                                    if fixed_categories!=[]:
-                                        fixed_categories.append(grped_meta['label'].tolist()[x])
+                                    if fixed_categories != []:
+                                        fixed_categories.append(
+                                                grped_meta['label'].tolist()[x])
                                     else:
-                                        fixed_categories = [grped_meta['label'].tolist()[x]]
+                                        fixed_categories = [
+                                            grped_meta['label'].tolist()[x]]
 
                             # sort df whilst excluding fixed cats
                             if sort_order == 'ascending':
                                 df_table = auto_sort(
-                                    df=df_table,
-                                    fixed_categories=fixed_categories,
-                                    column_position=0,
-                                    ascend=True)
+                                        df=df_table,
+                                        fixed_categories=fixed_categories,
+                                        column_position=0,
+                                        ascend=True)
                             elif sort_order == 'descending':
                                 df_table = auto_sort(
-                                    df=df_table,
-                                    fixed_categories=fixed_categories,
-                                    column_position=0,
-                                    ascend=False)
+                                        df=df_table,
+                                        fixed_categories=fixed_categories,
+                                        column_position=0,
+                                        ascend=False)
 
                             # if not all the values in the grid's df are the same
                             # then add the values to the grids column labels
                             if not all_same(df_base.values):
                                 df_table = insert_values_to_labels(
-                                    df_table,
-                                    df_base,
-                                    index_position=0)
+                                        df_table,
+                                        df_base,
+                                        index_position=0)
                                 base_text = base_description
                             else:
                                 if not df_base.empty:
                                     base_text = get_base(
-                                        df_base,
-                                        base_description,
-                                        False)
+                                            df_base,
+                                            base_description,
+                                            False)
                                 else:
-                                    raise Exception('Base dataframe empty for "{}".'.format(downbreak))
+                                    raise Exception(
+                                        'Base dataframe empty for "{}".'.format(
+                                            downbreak))
 
                             if base_repr and ('Base' in base_text):
                                 base_text = base_text.replace('Base', base_repr)
 
                             # standardise table values
-                            df_table = np.round(df_table.fillna(0.0)/100, 4)
+                            df_table = np.round(df_table.fillna(0.0) / 100, 4)
 
                             # get question label
                             if display_var_names:
-                                if shape_properties['short_grid_name'] and '_grid' in downbreak:
-                                    downbreak_label = downbreak.partition('{')[2].partition('}')[0]
+                                if shape_properties[
+                                    'short_grid_name'] and '_grid' in downbreak:
+                                    downbreak_label = \
+                                    downbreak.partition('{')[2].partition('}')[
+                                        0]
                                 else:
                                     downbreak_label = downbreak
                                 question_label = '{}. {}'.format(
-                                    downbreak_label,
-                                    strip_html_tags(question_label))
-
+                                        downbreak_label,
+                                        strip_html_tags(question_label))
 
                             # handle incorrect chart type assignment
                             if len(df_table.index) > 15 and chart_type == 'pie':
-                                chart_type='bar'
+                                chart_type = 'bar'
 
                             '----SPLIT DFS & LOOP OVER THEM---------------------------------'
 
                             if split_busy_dfs:
                                 # split large dataframes
                                 collection_of_dfs = df_splitter(
-                                    df_table,
-                                    min_rows=5,
-                                    max_rows=15)
+                                        df_table,
+                                        min_rows=5,
+                                        max_rows=15)
                             else:
                                 # dont split large/busy dataframes
                                 collection_of_dfs = [df_table]
 
-                            for i, df_table_slice in enumerate(collection_of_dfs):
+                            for i, df_table_slice in enumerate(
+                                    collection_of_dfs):
 
                                 '----ADDPEND SLIDE TO PRES--------------------------------------'
 
                                 if isinstance(slide_layout, int):
-                                    slide_layout_obj = prs.slide_layouts[slide_layout]
+                                    slide_layout_obj = prs.slide_layouts[
+                                        slide_layout]
                                 else:
                                     slide_layout_obj = return_slide_layout_by_name(
-                                        prs,
-                                        slide_layout)
+                                            prs,
+                                            slide_layout)
 
                                 slide = prs.slides.add_slide(slide_layout_obj)
 
@@ -1053,23 +1170,24 @@ def PowerPointPainter(
                                 if title_shape['addtext']:
 
                                     for shape in slide.placeholders:
-                                        if shape.name == title_shape['shape_name']:
+                                        if shape.name == title_shape[
+                                            'shape_name']:
                                             shape.text = topic
 
                                 ''' title shape '''
                                 if i > 0:
                                     cont_question_label = '{} (continued {})'.format(
-                                        question_label,
-                                        i+1)
+                                            question_label,
+                                            i + 1)
                                 else:
                                     cont_question_label = question_label
 
                                 ''' header shape '''
                                 sub_title_shp = add_textbox(
-                                    slide,
-                                    text=cont_question_label,
-                                    **(shape_properties['header_shape']
-                                        if shape_properties else {}))
+                                        slide,
+                                        text=cont_question_label,
+                                        **(shape_properties['header_shape']
+                                           if shape_properties else {}))
 
                                 ''' chart shape '''
                                 numofcols = len(df_table_slice.columns)
@@ -1087,36 +1205,47 @@ def PowerPointPainter(
                                 else:
                                     legend_switch = True
 
-                                if 'has_legend' in shape_properties['chart_shape'][chart_type]:
-                                    shape_properties['chart_shape'][chart_type]['has_legend'] = legend_switch
+                                if 'has_legend' in \
+                                        shape_properties['chart_shape'][
+                                            chart_type]:
+                                    shape_properties['chart_shape'][chart_type][
+                                        'has_legend'] = legend_switch
 
                                 # Net settings
                                 if include_nets and net_setup:
                                     net_setup = net_setup.get(chart_type, False)
-                                    if not net_setup == False and net_setup['show_nets']:
+                                    if not net_setup == False and net_setup[
+                                        'show_nets']:
                                         if len(collection_of_dfs) == 1:
                                             if not df_table_net.empty:
                                                 if net_setup['separator']:
                                                     df_table_slice = df_table_slice.T
-                                                    df_table_slice.insert(len(df_table_slice.columns), 'net_separator', 1.01)
+                                                    df_table_slice.insert(
+                                                        len(df_table_slice.columns),
+                                                        'net_separator', 1.01)
                                                     df_table_slice = df_table_slice.T
-                                                #df_table_slice.loc[len(df_table_slice)]=0
-                                                df_table_slice = pd.concat([df_table_slice, df_table_net])
-                                                shape_properties['chart_shape']['bar']['separator_color'] = net_setup['separator_color']                                    
-                                    
+                                                # df_table_slice.loc[len(df_table_slice)]=0
+                                                df_table_slice = pd.concat(
+                                                        [df_table_slice,
+                                                         df_table_net])
+                                                shape_properties['chart_shape'][
+                                                    'bar']['separator_color'] = \
+                                                net_setup['separator_color']
+
                                 chart = chart_selector(
-                                    slide,
-                                    df_table_slice,
-                                    chart_type=chart_type,
-                                     **(shape_properties['chart_shape'][chart_type]
-                                        if shape_properties else {}))
-                                
+                                        slide,
+                                        df_table_slice,
+                                        chart_type=chart_type,
+                                        **(shape_properties['chart_shape'][
+                                               chart_type]
+                                           if shape_properties else {}))
+
                                 ''' footer shape '''
                                 base_text_shp = add_textbox(
-                                    slide,
-                                    text=base_text,
-                                    **(shape_properties['footer_shape']
-                                        if shape_properties else {}))
+                                        slide,
+                                        text=base_text,
+                                        **(shape_properties['footer_shape']
+                                           if shape_properties else {}))
 
                                 slide_num += 1
                                 if verbose:
@@ -1126,12 +1255,13 @@ def PowerPointPainter(
                                         'CHART for {question_name} '
                                         'cut by {crossbreak_name} '
                                         '{x}'.format(
-                                            indent='',
-                                            slide_number=slide_num,
-                                            chart_name=chart_type.upper().strip(),
-                                            question_name=downbreak,
-                                            crossbreak_name='Total' if crossbreak == '@' else crossbreak,
-                                            x='(cont ('+str(i)+'))' if i > 0 else '')))
+                                                indent='',
+                                                slide_number=slide_num,
+                                                chart_name=chart_type.upper().strip(),
+                                                question_name=downbreak,
+                                                crossbreak_name='Total' if crossbreak == '@' else crossbreak,
+                                                x='(cont (' + str(
+                                                    i) + '))' if i > 0 else '')))
 
                         else:
                             if verbose:
@@ -1139,9 +1269,9 @@ def PowerPointPainter(
                                     '\n{indent:>5}***Skipping {question_name}, '
                                     'no views match your conditions: '
                                     '{conditions}'.format(
-                                        indent='',
-                                        question_name=downbreak,
-                                        conditions=chartdata_conditions)))
+                                            indent='',
+                                            question_name=downbreak,
+                                            conditions=chartdata_conditions)))
 
             prs.save('{}.pptx'.format(path_pptx))
             print('Created: {}.pptx\n'.format(path_pptx))
@@ -1151,13 +1281,12 @@ def PowerPointPainter(
         ############################################################################
 
         if orientation == 'y':
-
             # raise error is cluster is y orientated
             raise TypeError('y orientation not supported yet')
 
-    #-------------------------------------------------------------------------
-    #-------------------------------------------------------------------------
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     if verbose:
         pptx_elapsed_time = time.time() - pptx_start_time
@@ -1165,6 +1294,6 @@ def PowerPointPainter(
             '\n{indent:>2}Presentation saved, '
             'time elapsed: {time:.2f} seconds\n'
             '\n{line}'.format(
-                indent='',
-                time=pptx_elapsed_time,
-                line= '_' * 80)))
+                    indent='',
+                    time=pptx_elapsed_time,
+                    line='_' * 80)))

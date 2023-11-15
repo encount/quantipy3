@@ -25,34 +25,35 @@ def view_meta(link, viewdf, weight, method_name, method_type,
         datatype = 'array'
     # Structure view meta information in regular dict format
     viewmeta = {
-                'agg':
-                {
-                 'datatype': datatype,
-                 'viewtype': method_type,
-                 'is_weighted': True if weight is not None else False,
-                 'weights': weight,
-                 'method': method_name,
-                 'name': name,
-                 'fullname': fullname,
-                 'text': text,
-                 'groups': groups,
-                 },
-                'x':
-                {
-                 'name': link.x,
-                 'is_multi': True if xtype in mc else False,
-                 'is_nested': True if ">" in link.x else False
-                 },
-                'y':
-                {
-                 'name': link.y,
-                 'is_multi': True if ytype in mc else False,
-                 'is_nested': True if ">" in link.y else False
-                 },
-                'shape': viewdf.shape
-                }
-    
+        'agg':
+            {
+                'datatype': datatype,
+                'viewtype': method_type,
+                'is_weighted': True if weight is not None else False,
+                'weights': weight,
+                'method': method_name,
+                'name': name,
+                'fullname': fullname,
+                'text': text,
+                'groups': groups,
+            },
+        'x':
+            {
+                'name': link.x,
+                'is_multi': True if xtype in mc else False,
+                'is_nested': True if ">" in link.x else False
+            },
+        'y':
+            {
+                'name': link.y,
+                'is_multi': True if ytype in mc else False,
+                'is_nested': True if ">" in link.y else False
+            },
+        'shape': viewdf.shape
+    }
+
     return viewmeta
+
 
 def default_meta(link, view_df, dtypes, weights=None):
     '''
@@ -84,7 +85,8 @@ def default_meta(link, view_df, dtypes, weights=None):
     default_meta : dict (nested)
     '''
 
-    if dtypes[0] in ['single', 'dichotomous set', 'categorical set', 'delimited set']:
+    if dtypes[0] in ['single', 'dichotomous set', 'categorical set',
+                     'delimited set']:
         datatype = 'categorical'
         method = 'default'
     elif dtypes[0] in ['float', 'int']:
@@ -98,29 +100,35 @@ def default_meta(link, view_df, dtypes, weights=None):
         method = 'default'
 
     default_meta = {
-                    'agg': {'method': 'default',
-                            'name': 'default',
-                            'datatype': datatype,
-                            'viewtype': 'quantipy.DefaultView',
-                            'is_weighted': True if not weights is None else False,
-                            'weights': weights
-                            },
-                    'x': {
-                        'name': link.x,
-                        'is_multi': True if dtypes[0] in ['dichotomous set', 'categorical set', 'delimited set'] and not link.x == '@' else False,
-                        'is_nested': True if ">" in link.x else False,
-                        },
-                    'y': {
-                        'name': link.y,
-                        'is_multi': True if dtypes[1] in ['dichotomous set', 'categorical set', 'delimited set'] and not link.y == '@' else False,
-                        'is_nested': True if ">" in link.y else False
-                        },
-                    'shape' : view_df.shape
-                    }
+        'agg': {'method': 'default',
+                'name': 'default',
+                'datatype': datatype,
+                'viewtype': 'quantipy.DefaultView',
+                'is_weighted': True if not weights is None else False,
+                'weights': weights
+                },
+        'x': {
+            'name': link.x,
+            'is_multi': True if dtypes[0] in ['dichotomous set',
+                                              'categorical set',
+                                              'delimited set'] and not link.x == '@' else False,
+            'is_nested': True if ">" in link.x else False,
+        },
+        'y': {
+            'name': link.y,
+            'is_multi': True if dtypes[1] in ['dichotomous set',
+                                              'categorical set',
+                                              'delimited set'] and not link.y == '@' else False,
+            'is_nested': True if ">" in link.y else False
+        },
+        'shape': view_df.shape
+    }
 
     return default_meta
 
-def update_view_meta(view_df, meta, method_name, method_type, name, fullname, text='', groups=None):
+
+def update_view_meta(view_df, meta, method_name, method_type, name, fullname,
+                     text='', groups=None):
     '''
     Updates the view meta information based on the selected view methods
     used in the QuantipyViews class from core.view_generators.view_maps.
@@ -151,6 +159,7 @@ def update_view_meta(view_df, meta, method_name, method_type, name, fullname, te
 
     return meta
 
+
 def full_num_stat_text(stat, text=''):
     '''
     Creates the full text (=label) meta for num_stats() view aggregations.
@@ -176,12 +185,13 @@ def full_num_stat_text(stat, text=''):
         'stddev': 'Std. dev.',
         'var': 'Sample variance',
         'varcoeff': 'Coefficient of variation'
-        }
+    }
 
     if text == '':
         return stat_labs[stat]
     else:
         return '%s %s' % (stat_labs[stat], text)
+
 
 def full_multivariate_text(stat, text=''):
     '''
@@ -190,12 +200,13 @@ def full_multivariate_text(stat, text=''):
     stat_labs = {
         'cov': 'Covariance',
         'corr': 'Correlation coefficient'
-        }
+    }
 
     if text == '':
         return stat_labs[stat]
     else:
         return '%s %s' % (stat_labs[stat], text)
+
 
 def set_num_stats_meta(exclude, rescale, meta):
     '''
@@ -219,7 +230,5 @@ def set_num_stats_meta(exclude, rescale, meta):
     '''
     meta['x']['exclude'] = exclude
     meta['x']['rescale'] = rescale
-        
-    return None
 
-    
+    return None

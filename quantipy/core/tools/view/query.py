@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from pandas.util.version import Version
 
 import quantipy as qp
 from quantipy.core.helpers.functions import (
@@ -75,7 +74,7 @@ def set_fullname(pos, method_name, relation, rel_to, weights, view_name):
         relation = ''
 
     return '%s|%s|%s|%s|%s|%s' % (
-    pos, method_name, relation, rel_to, weights, view_name)
+        pos, method_name, relation, rel_to, weights, view_name)
 
 
 def get_std_kwargs(kwargs_dict):

@@ -4,7 +4,6 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from pandas.util.version import Version
 
 import quantipy as qp
 from quantipy.core.helpers.functions import (cpickle_copy, emulate_meta,
@@ -909,7 +908,7 @@ def recode_from_index_mapper(meta, series, index_mapper, append):
         ## Remove potential duplicate values
         if series.dropna().empty:
             warn_msg = 'Could not recode {}, found empty data column dependency!'.format(
-                org_name)
+                    org_name)
             warnings.warn(warn_msg)
             return series
         ds = series.str.get_dummies(';')
@@ -1033,7 +1032,7 @@ def recode(meta, data, target, mapper, default=None, append=False,
             initialize_is_string = True
             if not initialize in meta['columns']:
                 raise ValueError(
-                    "'%s' not found in meta['columns']." % (target))
+                        "'%s' not found in meta['columns']." % (target))
         elif not np.isnan(initialize):
             raise ValueError(
                     "The value for 'initialize' must either be"

@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import warnings
 
 import quantipy as qp
@@ -17,9 +17,10 @@ class QuantipyViews(ViewMapper):
     View methods are used to generate various numerical or categorical data
     aggregations. Their behaviour is controlled via ``kwargs``.
     """
+
     def __init_known_methods__(self):
         super(QuantipyViews, self).__init_known_methods__()
-        self.known_methods['default']= {
+        self.known_methods['default'] = {
             'method': 'default',
             'kwargs': {
                 'text': ''
@@ -46,7 +47,8 @@ class QuantipyViews(ViewMapper):
             'kwargs': {
                 'text': 'Base',
                 'axis': 'y',
-                'condition': 'y'            }
+                'condition': 'y'
+            }
         }
         self.known_methods['ebase'] = {
             'method': 'frequency',
@@ -201,7 +203,8 @@ class QuantipyViews(ViewMapper):
                     view_df = q.summarize().result
                     view_df.drop((link.x, 'All'), axis=0, inplace=True)
                 elif x_type in string:
-                    view_df = tools.view.agg.make_default_str_view(data, x=link.x)
+                    view_df = tools.view.agg.make_default_str_view(data,
+                                                                   x=link.x)
             elif link.x == '@':
                 if y_type in categorical:
                     view_df = q.count().result
@@ -212,7 +215,7 @@ class QuantipyViews(ViewMapper):
                 if x_type in categorical and y_type in categorizable:
                     view_df = q.count().result
                 elif x_type in numeric and y_type in categorizable:
-                    view_df =  q.summarize().result
+                    view_df = q.summarize().result
                     view_df.drop((link.x, 'All'), axis=0, inplace=True)
                     view_df.drop((link.y, 'All'), axis=1, inplace=True)
             notation = view.notation('default', ':')
@@ -304,7 +307,8 @@ class QuantipyViews(ViewMapper):
                 elif rel_to_kind[1] == 'y':
                     per_cell = False
             try:
-                link['x|f|:||{}|counts'.format(weights)]._kwargs['rebased'] = True
+                link['x|f|:||{}|counts'.format(weights)]._kwargs[
+                    'rebased'] = True
             except:
                 pass
         # ====================================================================
@@ -325,16 +329,19 @@ class QuantipyViews(ViewMapper):
                 view.dataframe = leveled.lvldf
             elif logic is not None:
                 try:
-                    q.group(groups=logic, axis=axis, expand=expand, complete=complete)
+                    q.group(groups=logic, axis=axis, expand=expand,
+                            complete=complete)
                 except NotImplementedError as e:
                     warnings.warn('NotImplementedError: {}'.format(e))
                     return None
                 q.count(axis=None, as_df=False, margin=False)
-                condition = view.spec_condition(link, q.logical_conditions, expand)
+                condition = view.spec_condition(link, q.logical_conditions,
+                                                expand)
             else:
                 eff = True if name == 'ebase' else False
                 raw = True if name in ['counts_sum', 'c%_sum'] else False
-                cum_sum = True if name in ['counts_cumsum', 'c%_cumsum'] else False
+                cum_sum = True if name in ['counts_cumsum',
+                                           'c%_cumsum'] else False
                 if cum_sum: axis = None
                 if eff: axis = 'x'
                 q.count(axis=axis, raw_sum=raw, effective=eff, cum_sum=cum_sum,
@@ -349,7 +356,8 @@ class QuantipyViews(ViewMapper):
             if calc is not None:
                 calc_only = kwargs.get('calc_only', False)
                 q.calc(calc, axis, result_only=calc_only)
-            if calc is not None or name in ['counts_sum', 'c%_sum', 'counts_cumsum', 'c%_cumsum']:
+            if calc is not None or name in ['counts_sum', 'c%_sum',
+                                            'counts_cumsum', 'c%_cumsum']:
                 method_nota = 'f.c:f'
             else:
                 method_nota = 'f'
@@ -527,9 +535,11 @@ class QuantipyViews(ViewMapper):
                                     cwi_filter=True)
                 view_df = test.run()
                 notation = view.notation('t.{}.{}.{}{}'.format(metric, mimic,
-                                     '{:.2f}'.format(test.level)[2:],
-                                     '+@' if test_total else ''),
-                                     condition)
+                                                               '{:.2f}'.format(
+                                                                   test.level)[
+                                                               2:],
+                                                               '+@' if test_total else ''),
+                                         condition)
                 view.dataframe = view_df
                 view._notation = notation
                 link[notation] = view
@@ -569,23 +579,23 @@ class QuantipyViews(ViewMapper):
             text
         """
         w = weights if weights is not None else ''
-        view_name_list = cache.get_obj(get+'_view_names', w+'_names')
+        view_name_list = cache.get_obj(get + '_view_names', w + '_names')
         if view_name_list is None:
             # this change works, but it looks worrying, this line used to be
-            #allviews = stack.describe(columns='view').index.tolist()
+            # allviews = stack.describe(columns='view').index.tolist()
             allviews = stack.describe(index='view').index.tolist()
             if get == 'count':
                 ignorenames = ['cbase', 'rbase', 'ebase', 'counts_sum',
                                'c%_sum', 'cbase_gross']
                 view_name_list = [v for v in allviews
                                   if v.split('|')[1].startswith('f')
-                                  and not v.split('|')[3]=='y'
+                                  and not v.split('|')[3] == 'y'
                                   and not v.split('|')[-1] in ignorenames
                                   and v.split('|')[-2] == w]
             else:
                 view_name_list = [v for v in allviews
                                   if v.split('|')[1] == 'd.mean'
                                   and v.split('|')[-2] == w]
-            cache.set_obj(get+'_view_names', w+'_names', view_name_list)
+            cache.set_obj(get + '_view_names', w + '_names', view_name_list)
 
         return view_name_list

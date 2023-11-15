@@ -10,8 +10,8 @@ from .handlers import WebEditHandler
 def webeditor(obj, host="localhost", port=8000):
     cleanup_tmp_folder()
     url = "http://{host}:{port}/core/srv/tmp/webedit.html".format(
-    	host=host, 
-    	port=port)
+            host=host,
+            port=port)
 
     json_string = json.dumps(obj, sort_keys=True)
     copy_html_template('webedit.html', json_string, "REPLACEJSON")
@@ -23,8 +23,8 @@ def webeditor(obj, host="localhost", port=8000):
 
     try:
         obj = json.loads(
-        	open_tmp_file('obj.json').readline(),
-        	object_pairs_hook=OrderedDict)
+                open_tmp_file('obj.json').readline(),
+                object_pairs_hook=OrderedDict)
     except:
         pass
 

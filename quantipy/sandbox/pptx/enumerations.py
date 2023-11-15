@@ -10,8 +10,8 @@ from pptx.enum.chart import (XL_CHART_TYPE, XL_LABEL_POSITION,
 from pptx.enum.dml import (MSO_FILL, MSO_THEME_COLOR)
 from pptx.enum.text import (MSO_ANCHOR, PP_ALIGN)
 
-#------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 '''
 See: http://python-pptx.readthedocs.io/en/latest/api/enum/index.html
@@ -27,7 +27,7 @@ fill_type_dct = {
     'picture': MSO_FILL.PICTURE,
     'solid': MSO_FILL.SOLID,
     'textured': MSO_FILL.TEXTURED
-    }
+}
 
 # Specifies where the data label is positioned
 data_label_pos_dct = {
@@ -41,7 +41,7 @@ data_label_pos_dct = {
     'mixed': XL_LABEL_POSITION.MIXED,
     'outside_end': XL_LABEL_POSITION.OUTSIDE_END,
     'right': XL_LABEL_POSITION.RIGHT
-    }
+}
 
 # Specifies the position of the legend on a chart
 legend_pos_dct = {
@@ -51,7 +51,7 @@ legend_pos_dct = {
     'left': XL_LEGEND_POSITION.LEFT,
     'right': XL_LEGEND_POSITION.RIGHT,
     'top': XL_LEGEND_POSITION.TOP
-    }
+}
 
 # Specifies the position of tick-mark labels on a chart axis
 tick_label_pos_dct = {
@@ -59,15 +59,15 @@ tick_label_pos_dct = {
     'low': XL_TICK_LABEL_POSITION.LOW,
     'next_to_axis': XL_TICK_LABEL_POSITION.NEXT_TO_AXIS,
     'none': XL_TICK_LABEL_POSITION.NONE
-    }
+}
 
 # Specifies a type of axis tick for a chart.
 tick_mark_pos_dct = {
-    'cross': XL_TICK_MARK.CROSS,            #Tick mark crosses the axis
-    'inside': XL_TICK_MARK.INSIDE,          #Tick mark appears inside the axis
-    'none': XL_TICK_MARK.NONE,              #No tick mark
-    'outside': XL_TICK_MARK.OUTSIDE         #Tick mark appears outside the axis
-    }
+    'cross': XL_TICK_MARK.CROSS,  # Tick mark crosses the axis
+    'inside': XL_TICK_MARK.INSIDE,  # Tick mark appears inside the axis
+    'none': XL_TICK_MARK.NONE,  # No tick mark
+    'outside': XL_TICK_MARK.OUTSIDE  # Tick mark appears outside the axis
+}
 
 # Specifies the vertical alignment of text in a text frame
 vertical_alignment_pos_dct = {
@@ -75,7 +75,7 @@ vertical_alignment_pos_dct = {
     'middle': MSO_ANCHOR.MIDDLE,
     'bottom': MSO_ANCHOR.BOTTOM,
     'mixed': MSO_ANCHOR.MIXED
-    }
+}
 
 # Specifies the horizontal alignment for one or more paragraphs
 paragraph_alignment_pos_dct = {
@@ -87,7 +87,7 @@ paragraph_alignment_pos_dct = {
     'right': PP_ALIGN.RIGHT,
     'thai_distribute': PP_ALIGN.THAI_DISTRIBUTE,
     'mixed': PP_ALIGN.MIXED
-    }
+}
 
 # Indicates the Office theme color, one of those shown in the color gallery on the formatting ribbon
 theme_color_index_dct = {
@@ -109,7 +109,7 @@ theme_color_index_dct = {
     'text_1': MSO_THEME_COLOR.TEXT_1,
     'text_2': MSO_THEME_COLOR.TEXT_2,
     'mixed': MSO_THEME_COLOR.MIXED
-    }
+}
 
 # Specifies the type of a chart
 chart_type_dct = {
@@ -142,4 +142,4 @@ chart_type_dct = {
     'xy_scatter_smooth_no_markers': XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS,
     'bubble': XL_CHART_TYPE.BUBBLE,
     'bubble_three_d_effect': XL_CHART_TYPE.BUBBLE_THREE_D_EFFECT
-    }
+}

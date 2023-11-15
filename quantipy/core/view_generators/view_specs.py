@@ -5,7 +5,6 @@ from itertools import chain
 from operator import add, mul, sub, truediv as div
 
 import pandas as pd
-from pandas.util.version import Version
 
 from quantipy.core.tools.qp_decorators import modify
 from quantipy.dependency_versions import __pandas_version_parsed__

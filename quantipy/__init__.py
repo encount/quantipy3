@@ -9,7 +9,6 @@ from quantipy.core.builds.excel.excel_painter import ExcelPainter
 from quantipy.core.builds.powerpoint.pptx_painter import PowerPointPainter
 from quantipy.core.chain import Chain
 from quantipy.core.cluster import Cluster
-
 from quantipy.core.helpers.functions import parrot
 from quantipy.core.link import Link
 from quantipy.core.options import OPTIONS, set_option

@@ -25,114 +25,133 @@ QTYPES = {
 def tab(tabs):
     return '' if tabs == 0 else '\t' * tabs
 
+
 def AddProp(prop, content):
     add = 'MDM.{}.Add("{}")'.format(prop, content.replace(' ', ''))
     return add
+
 
 def SetCurrent(prop, content):
     cur = 'MDM.{}.Current = "{}"'.format(prop, content)
     return cur
 
+
 def Dim(*args):
     text = 'Dim {}'.format(
-        ', '.join(*args))
+            ', '.join(*args))
     return text
+
 
 def SetMDM():
     text = 'Set MDM = CreateObject("MDM.Document")'
     return text
 
+
 def section_break(n):
-    text = "\n'{}".format('#'*n)
+    text = "\n'{}".format('#' * n)
     return text
+
 
 def comment(tabs, text):
     text = "{t}' {tx}".format(
-        t=tab(tabs),
-        tx=text)
+            t=tab(tabs),
+            tx=text)
     return text
+
 
 def CreateVariable(tabs, name):
     text = '{t}Set newVar = MDM.CreateVariable("{n}")'.format(
-        t=tab(tabs),
-        n=name)
+            t=tab(tabs),
+            n=name)
     return text
+
 
 def DataType(tabs, parent, dtype):
     text = '{t}{p}.DataType = {dt}'.format(
-        t=tab(tabs),
-        p=parent,
-        dt=dtype)
+            t=tab(tabs),
+            p=parent,
+            dt=dtype)
     return text
+
 
 def MaxValue(tabs, parent, mval):
     text = '{t}{p}.MaxValue = {mv}'.format(
-        t=tab(tabs),
-        p=parent,
-        mv=mval)
+            t=tab(tabs),
+            p=parent,
+            mv=mval)
     return text
+
 
 def CreateElement(tabs, name):
     text = '{t}Set newElement = MDM.CreateElement("{n}")'.format(
-        t=tab(tabs),
-        n=name)
+            t=tab(tabs),
+            n=name)
     return text
+
 
 def ElementType(tabs):
     text = '{t}newElement.Type = 0'.format(
-        t=tab(tabs))
+            t=tab(tabs))
     return text
+
 
 def ElementExpression(tabs, expression):
     text = '{t}newElement.Expression = {e}'.format(
-        t=tab(tabs),
-        e=expression)
+            t=tab(tabs),
+            e=expression)
     return text
+
 
 def AddLabel(tabs, element, labeltype, language, text):
     text = '{ta}{e}.Labels["{lt}"].Text["Analysis"]["{l}"] = "{t}"'.format(
-        ta=tab(tabs),
-        e=element,
-        lt = labeltype.replace(' ', ''),
-        l = language,
-        t = text)
+            ta=tab(tabs),
+            e=element,
+            lt=labeltype.replace(' ', ''),
+            l=language,
+            t=text)
     return text
+
 
 def AddElement(tabs, parent, child):
     text = '{t}{p}.Elements.Add({c})'.format(
-        t=tab(tabs),
-        p=parent,
-        c=child)
+            t=tab(tabs),
+            p=parent,
+            c=child)
     return text
+
 
 def AddField(tabs, parent, child):
     text = '{t}{p}.Fields.Add({c})'.format(
-        t=tab(tabs),
-        p=parent,
-        c=child)
+            t=tab(tabs),
+            p=parent,
+            c=child)
     return text
+
 
 def CreateGrid(tabs, name):
     text = '{t}Set newGrid = MDM.CreateGrid("{n}")'.format(
-        t=tab(tabs),
-        n=name)
+            t=tab(tabs),
+            n=name)
     return text
+
 
 def MDMSave(tabs, path_mdd):
     text = '{t}MDM.Save("{p}")'.format(
-        t=tab(tabs),
-        p=path_mdd)
+            t=tab(tabs),
+            p=path_mdd)
     return text
+
 
 def _dedupe_datafile_items_set(items_list, keep_first=False):
     # NOTE:
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # reverse and re-reverse because I need the last (!) deduped items
     # for correct order
     items_list = list(reversed(items_list))
     items_list_deduped = {}
     return reversed([items_list_deduped.setdefault(i, i) for i in items_list
                      if i not in items_list_deduped])
+
 
 def create_mdd(meta, data, path_mrs, path_mdd, text_key, run):
     mrs = [Dim(['MDM', 'newVar', 'newElement', 'newGrid']),
@@ -174,6 +193,7 @@ def create_mdd(meta, data, path_mrs, path_mdd, text_key, run):
     with open(path_mrs, 'w') as f:
         f.write(mrs)
 
+
 def get_categories_mrs(meta, vtype, vvalues, child, child_name, text_key):
     if is_mapped_meta(vvalues):
         vvalues = get_mapped_meta(meta, vvalues)
@@ -198,6 +218,7 @@ def get_categories_mrs(meta, vtype, vvalues, child, child_name, text_key):
         ltype += labels.incl_labeltypes
     return var_code, list(set(lang)), list(set(ltype))
 
+
 def get_lab_mrs(tab, element, dimlabels):
     lab_mrs = []
     for dimlabel in dimlabels.labels:
@@ -206,6 +227,7 @@ def get_lab_mrs(tab, element, dimlabels):
         text = dimlabel.text
         lab_mrs.append(AddLabel(tab, element, lt, lang, text))
     return '\n'.join(lab_mrs)
+
 
 def col_to_mrs(meta, col, text_key):
     column = meta['columns'][col]
@@ -237,6 +259,7 @@ def col_to_mrs(meta, col, text_key):
     col_code.append(AddField(0, 'MDM', 'newVar'))
 
     return col_code, lang, ltype
+
 
 def mask_to_mrs(meta, name, text_key):
     mask = meta['masks'][name]
@@ -294,6 +317,7 @@ def mask_to_mrs(meta, name, text_key):
 
     return mask_code, lang, ltype
 
+
 def create_ddf(master_input, path_dms, CRLF):
     dms_dummy_path = os.path.dirname(__file__)
     dms = open(os.path.join(dms_dummy_path, '_create_ddf.dms'), 'r')
@@ -303,11 +327,12 @@ def create_ddf(master_input, path_dms, CRLF):
     ]
     full_dms = header + [line.replace('\n', '') for line in dms]
     # NOTE:
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # dropping the second "line" which is an invisible line-break char
     del full_dms[2]
     with open(path_dms, 'w') as f:
         f.write('\n'.join(full_dms))
+
 
 def _paired_empty_csv(meta, data):
     """
@@ -329,6 +354,7 @@ def _paired_empty_csv(meta, data):
     empty_csv[paired_cols] = np.NaN
     return empty_csv
 
+
 def _datastore_csv(meta, data, columns):
     """
     """
@@ -342,7 +368,7 @@ def _datastore_csv(meta, data, columns):
             datastore[col].replace(np.NaN, 'NULL', inplace=True)
             try:
                 # Note:
-                #-------------------------------------------------------------
+                # -------------------------------------------------------------
                 # I am converting to int32 (if possible) to prevent type
                 # conflicts
                 datastore[col] = datastore[col].astype('int32')
@@ -357,8 +383,10 @@ def _datastore_csv(meta, data, columns):
 
     return datastore
 
+
 def _extract_grid_element_name(gridslice):
     return gridslice.split('.')[0].split('[{')[-1].replace('}]', '')
+
 
 def get_case_data_inputs(meta, data, path_paired_csv, path_datastore):
     """
@@ -367,7 +395,7 @@ def get_case_data_inputs(meta, data, path_paired_csv, path_datastore):
     paired_cols = empty_csv.columns
     datastore_csv = _datastore_csv(meta, data, paired_cols)
     # NOTE:
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # This check for consistency between the paired/empty csv, the datastore
     # and the mdd columns (derived from the qp data file items set) is central
     # and should be moved into a method/happen in one place...
@@ -381,6 +409,7 @@ def get_case_data_inputs(meta, data, path_paired_csv, path_datastore):
     empty_csv.to_csv(path_paired_csv, index=False, sep='\t')
     datastore_csv.to_csv(path_datastore, index=False)
 
+
 def replace_comma_in_string(string):
     """
     """
@@ -388,12 +417,14 @@ def replace_comma_in_string(string):
     s = s.apply(lambda x: str(x).replace(',', '>_>_>'))
     return s
 
+
 def remove_newlines_in_string(string):
     """
     """
     s = string.copy()
     s = s.apply(lambda x: str(x).replace('\r\n', '').replace('\n', ''))
     return s
+
 
 def convert_categorical(categorical):
     """
@@ -406,18 +437,19 @@ def convert_categorical(categorical):
         resp_prefix = categorical.name + 'a'
     if not cat.dtype == 'object':
         cat = cat.apply(lambda x:
-                        '{}{}'.format(resp_prefix, 
+                        '{}{}'.format(resp_prefix,
                                       int(x) if int(x) > -1 else
                                       'minus{}'.format(-1 * int(x)))
                         if not np.isnan(x) else np.NaN)
     else:
         cat = cat.apply(lambda x: str(x).split(';')[:-1])
-        cat = cat.apply(lambda x: ['{}{}'.format(resp_prefix, 
+        cat = cat.apply(lambda x: ['{}{}'.format(resp_prefix,
                                                  code.replace('-', 'minus'))
                                    for code in x])
         cat = cat.apply(lambda x: str(x).replace('[', '').replace(']', ''))
         cat = cat.apply(lambda x: x.replace("'", '').replace(', ', ';'))
     return cat
+
 
 def dimensions_from_quantipy(meta, data, path_mdd, path_ddf, text_key=None,
                              CRLF="CR", run=True, clean_up=True):
@@ -432,7 +464,7 @@ def dimensions_from_quantipy(meta, data, path_mdd, path_ddf, text_key=None,
 
     """
     name = path_mdd.split('/')[-1].split('.')[0]
-    path =  '/'.join(path_mdd.split('/')[:-1])
+    path = '/'.join(path_mdd.split('/')[:-1])
     if '/' in path_mdd: path = path + '/'
     path_mrs = '{}create_mdd [{}].mrs'.format(path, name)
     path_dms = '{}create_ddf [{}].dms'.format(path, name)

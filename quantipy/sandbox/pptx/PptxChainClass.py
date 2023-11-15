@@ -47,6 +47,7 @@ def float2String(input, ndigits=0):
         output = output[0]
     return output
 
+
 def uniquify(l):
     """
     Return the given list without duplicates, retaining order.
@@ -110,7 +111,10 @@ def as_numeric(df):
     """
 
     if not df.values.dtype in ['float64', 'int64']:
-        data = [[float(str(value).replace(',','.').replace('%','').replace('-','0').replace('*','0')) for value in values] for values in df.values]
+        data = [[float(
+            str(value).replace(',', '.').replace('%', '').replace('-',
+                                                                  '0').replace(
+                '*', '0')) for value in values] for values in df.values]
         df = pd.DataFrame(data, index=df.index, columns=df.columns)
     return df.copy()
 
@@ -163,8 +167,9 @@ def get_indexes_from_list(lst, find, exact=True):
     if exact == True:
         return [index for index, value in enumerate(lst) if value == find]
     else:
-        if isinstance(find,list):
-            return [index for index, value in enumerate(lst) if set(find).intersection(set(value))]
+        if isinstance(find, list):
+            return [index for index, value in enumerate(lst) if
+                    set(find).intersection(set(value))]
         else:
             return [index for index, value in enumerate(lst) if find in value]
 
@@ -189,7 +194,7 @@ def auto_charttype(df, array_style, max_pie_elms=MAX_PIE_ELMS):
         One of charttypes ('bar_clustered', 'bar_stacked_100', 'pie')
 
     """
-    if array_style == -1: # Not array summary
+    if array_style == -1:  # Not array summary
         chart_type = 'bar_clustered'
         if len(df.index.get_level_values(-1)) <= max_pie_elms:
             if len(df.columns.get_level_values(-1)) == 1:
@@ -241,7 +246,8 @@ def fill_index_labels(df):
     _0, _1 = list(zip(*df.index.values.tolist()))
     _1new = fill_gaps(_1)
     dfnew = df.copy()
-    dfnew.index = pd.MultiIndex.from_tuples(list(zip(_0, _1new)), names=df.index.names)
+    dfnew.index = pd.MultiIndex.from_tuples(list(zip(_0, _1new)),
+                                            names=df.index.names)
     return dfnew
 
 
@@ -259,10 +265,10 @@ def fill_column_values(df, icol=0):
     pandas.DataFrame
     """
 
-    v = df.iloc[:,icol].fillna('').values.tolist()
+    v = df.iloc[:, icol].fillna('').values.tolist()
     vnew = fill_gaps(v)
-    dfnew = df.copy() # type: pd.DataFrame
-    dfnew.iloc[:,icol] = vnew
+    dfnew = df.copy()  # type: pd.DataFrame
+    dfnew.iloc[:, icol] = vnew
     return dfnew
 
 
@@ -288,7 +294,7 @@ class PptxDataFrame(object):
 
         self.array_style = array_style
         self.cell_items = cell_types
-        self.df = dataframe # type: pd.DataFrame
+        self.df = dataframe  # type: pd.DataFrame
         self.__frames = []
 
     def __call__(self):
@@ -323,19 +329,25 @@ class PptxDataFrame(object):
         df = df.fillna('')
 
         # Percent type cells
-        pct_indexes = get_indexes_from_list(self.cell_items, PCT_TYPES, exact=False)
+        pct_indexes = get_indexes_from_list(self.cell_items, PCT_TYPES,
+                                            exact=False)
         df.iloc[:, pct_indexes] *= 100
-        df.iloc[:, pct_indexes] = df.iloc[:, pct_indexes].round(decimals=pct_decimals)
+        df.iloc[:, pct_indexes] = df.iloc[:, pct_indexes].round(
+            decimals=pct_decimals)
 
         # Not percent type cells
-        not_pct_indexes = get_indexes_from_list(self.cell_items, NOT_PCT_TYPES, exact=False)
-        df.iloc[:, not_pct_indexes] = df.iloc[:, not_pct_indexes].round(decimals=decimals)
+        not_pct_indexes = get_indexes_from_list(self.cell_items, NOT_PCT_TYPES,
+                                                exact=False)
+        df.iloc[:, not_pct_indexes] = df.iloc[:, not_pct_indexes].round(
+            decimals=decimals)
 
         df = df.astype('str')
 
         if pct_decimals == 0 or decimals == 0:
-            pct_columns = df.columns[pct_indexes].tolist() if pct_decimals == 0 else []
-            not_pct_columns = df.columns[not_pct_indexes].tolist() if decimals == 0 else []
+            pct_columns = df.columns[
+                pct_indexes].tolist() if pct_decimals == 0 else []
+            not_pct_columns = df.columns[
+                not_pct_indexes].tolist() if decimals == 0 else []
             columns = pct_columns + not_pct_columns
             df[columns] = df[columns].replace('\.0', '', regex=True)
 
@@ -365,11 +377,11 @@ class PptxDataFrame(object):
         """
 
         if self.array_style == -1:
-            df_copy=self.df.iloc[categories]
+            df_copy = self.df.iloc[categories]
         else:
-            df_copy = self.df.iloc[:,categories]
+            df_copy = self.df.iloc[:, categories]
 
-        pptx_df_copy = PptxDataFrame(df_copy,self.cell_items,self.array_style)
+        pptx_df_copy = PptxDataFrame(df_copy, self.cell_items, self.array_style)
         pptx_df_copy.cell_items = [self.cell_items[i] for i in categories]
 
         return pptx_df_copy
@@ -395,7 +407,6 @@ class PptxDataFrame(object):
 
         """
         return self.get('net')
-
 
     def get_cpct(self):
         """
@@ -439,7 +450,8 @@ class PptxDataFrame(object):
         row_list : list
 
         """
-        row_list = get_indexes_from_list(self.cell_items, 'is_propstest', exact=False)
+        row_list = get_indexes_from_list(self.cell_items, 'is_propstest',
+                                         exact=False)
         return row_list
 
     def _get_stats_index(self):
@@ -451,7 +463,8 @@ class PptxDataFrame(object):
         row_list : list
 
         """
-        row_list = get_indexes_from_list(self.cell_items, 'is_stat', exact=False)
+        row_list = get_indexes_from_list(self.cell_items, 'is_stat',
+                                         exact=False)
         return row_list
 
     def _get_cpct_index(self):
@@ -465,9 +478,13 @@ class PptxDataFrame(object):
 
         """
 
-        row_list = get_indexes_from_list(self.cell_items, 'is_c_pct', exact=False)
-        dont_want = get_indexes_from_list(self.cell_items, ['is_net', 'net', 'is_c_pct_sum'], exact=False)
-        not_net = get_indexes_from_list(self.cell_items, ['normal', 'expanded'], exact=False)
+        row_list = get_indexes_from_list(self.cell_items, 'is_c_pct',
+                                         exact=False)
+        dont_want = get_indexes_from_list(self.cell_items,
+                                          ['is_net', 'net', 'is_c_pct_sum'],
+                                          exact=False)
+        not_net = get_indexes_from_list(self.cell_items, ['normal', 'expanded'],
+                                        exact=False)
 
         for x in dont_want:
             if x in row_list and x not in not_net:
@@ -486,9 +503,12 @@ class PptxDataFrame(object):
 
         """
 
-        row_list = get_indexes_from_list(self.cell_items, ['is_net', 'net'], exact=False)
+        row_list = get_indexes_from_list(self.cell_items, ['is_net', 'net'],
+                                         exact=False)
         dont_want = get_indexes_from_list(self.cell_items,
-                                          ['is_propstest', 'calc', 'normal', 'is_c_pct_sum', 'is_counts', 'expanded'],
+                                          ['is_propstest', 'calc', 'normal',
+                                           'is_c_pct_sum', 'is_counts',
+                                           'expanded'],
                                           exact=False)
 
         for x in dont_want:
@@ -508,8 +528,10 @@ class PptxDataFrame(object):
 
         """
 
-        row_list = get_indexes_from_list(self.cell_items, ['is_mean'], exact=False)
-        dont_want = get_indexes_from_list(self.cell_items, ['is_meanstest'], exact=False)
+        row_list = get_indexes_from_list(self.cell_items, ['is_mean'],
+                                         exact=False)
+        dont_want = get_indexes_from_list(self.cell_items, ['is_meanstest'],
+                                          exact=False)
 
         for x in dont_want:
             if x in row_list:
@@ -547,7 +569,8 @@ class PptxDataFrame(object):
                       'test': self._get_propstest_index,
                       'tests': self._get_propstest_index,
                       'stats': self._get_stats_index,
-                      'stat': self._get_stats_index}
+                      'stat': self._get_stats_index
+                      }
         # TODO Add methods for 'stddev', 'min', 'max', 'median', 't_means'
         available_cell_types = set(method_map.keys())
         if isinstance(cell_types, str):
@@ -555,7 +578,9 @@ class PptxDataFrame(object):
             cell_types = cell_types.split(',')
         value_test = set(cell_types).difference(available_cell_types)
         if value_test:
-            raise ValueError("Cell type: {} is not an available cell type. \n Available cell types are {}".format(cell_types, available_cell_types))
+            raise ValueError(
+                "Cell type: {} is not an available cell type. \n Available cell types are {}".format(
+                    cell_types, available_cell_types))
 
         cell_types_list = []
 
@@ -591,11 +616,12 @@ class PptxChain(object):
 
     """
 
-    def __init__(self, chain, is_varname_in_qtext=True, crossbreak=None, base_type='weighted', decimals=2, verbose=True):
+    def __init__(self, chain, is_varname_in_qtext=True, crossbreak=None,
+                 base_type='weighted', decimals=2, verbose=True):
 
         self._chart_type = None
-        self._sig_test = None # type: list # is updated by ._select_crossbreak()
-        self.crossbreak_qtext = None # type: str # is updated by ._select_crossbreak()
+        self._sig_test = None  # type: list # is updated by ._select_crossbreak()
+        self.crossbreak_qtext = None  # type: str # is updated by ._select_crossbreak()
         self.verbose = verbose
         self._decimals = decimals
         self._chain = chain
@@ -608,19 +634,25 @@ class PptxChain(object):
         self.source = chain.source
         self._var_name_in_qtext = is_varname_in_qtext
         self.array_style = chain.array_style
-        self.is_grid_summary = True if chain.array_style in [0,1] else False
-        self.crossbreak = self._check_crossbreaks(crossbreak) if crossbreak else [BASE_COL]
+        self.is_grid_summary = True if chain.array_style in [0, 1] else False
+        self.crossbreak = self._check_crossbreaks(
+            crossbreak) if crossbreak else [BASE_COL]
         self.x_key_short_name = self._get_short_question_name()
-        self.chain_df = self._select_crossbreak() # type: pd.DataFrame
+        self.chain_df = self._select_crossbreak()  # type: pd.DataFrame
         self.xbase_indexes = self._base_indexes()
-        self.xbase_labels = ["Base"] if self.xbase_indexes is None else [x[0] for x in self.xbase_indexes]
+        self.xbase_labels = ["Base"] if self.xbase_indexes is None else [x[0]
+                                                                         for x
+                                                                         in
+                                                                         self.xbase_indexes]
         self.xbase_count = ""
         self.xbase_label = ""
         self.xbase_index = 0
         self.ybases = None
         self.select_base(base_type=base_type)
         self.base_description = "" if chain.base_descriptions is None else chain.base_descriptions
-        if self.base_description[0:6].lower() == "base: ": self.base_description = self.base_description[6:]
+        if self.base_description[
+           0:6].lower() == "base: ": self.base_description = self.base_description[
+                                                             6:]
         self._base_text = None
         self.question_text = self.get_question_text(include_varname=False)
         self.chart_df = self.prepare_dataframe()
@@ -661,15 +693,18 @@ class PptxChain(object):
 
         # Assume that all items in the list of sig tests has same length
         check_list = [len(x) for x in _sig_test]
-        assert check_list.count(check_list[0]) == len(check_list), 'List of sig test results is not uniform'
+        assert check_list.count(check_list[0]) == len(
+            check_list), 'List of sig test results is not uniform'
 
-        self._sig_test = [list(zip(*_sig_test))[i] for i in range(len(_sig_test[0]))]
+        self._sig_test = [list(zip(*_sig_test))[i] for i in
+                          range(len(_sig_test[0]))]
         return self._sig_test
 
     @property
     def chart_type(self):
         if self._chart_type is None:
-            self._chart_type = auto_charttype(self.chart_df.get('pct,net').df, self.array_style)
+            self._chart_type = auto_charttype(self.chart_df.get('pct,net').df,
+                                              self.array_style)
 
         return self._chart_type
 
@@ -695,35 +730,38 @@ class PptxChain(object):
         cell_contents = self._chain.describe()
         if self.array_style == 0:
             row = min([k for k, va in list(cell_contents.items())
-                              if any(pct in v for v in va for pct in PCT_TYPES)])
+                       if any(pct in v for v in va for pct in PCT_TYPES)])
             cell_contents = cell_contents[row]
 
         # Find base rows
         bases = get_indexes_from_list(cell_contents, BASE_ROW, exact=False)
-        skip = get_indexes_from_list(cell_contents, ['is_c_base_gross'], exact=False)
+        skip = get_indexes_from_list(cell_contents, ['is_c_base_gross'],
+                                     exact=False)
         base_indexes = [idx for idx in bases if not idx in skip] or bases
 
         # Show error if no base elements found
         if not base_indexes:
-            #msg = "No 'Base' element found, base size will be set to None"
-            #warnings.warn(msg)
+            # msg = "No 'Base' element found, base size will be set to None"
+            # warnings.warn(msg)
             return None
 
         cell_contents = [cell_contents[x] for x in base_indexes]
 
         if self.array_style == -1 or self.array_style == 1:
 
-            xlabels = self._chain.dataframe.index.get_level_values(-1)[base_indexes].tolist()
+            xlabels = self._chain.dataframe.index.get_level_values(-1)[
+                base_indexes].tolist()
             base_counts = self._chain.dataframe.iloc[base_indexes, 0]
 
         else:
 
-            xlabels = self._chain.dataframe.columns.get_level_values(-1)[base_indexes].tolist()
+            xlabels = self._chain.dataframe.columns.get_level_values(-1)[
+                base_indexes].tolist()
             base_counts = self._chain.dataframe.iloc[0, base_indexes]
 
         return list(zip(xlabels, base_indexes, cell_contents, base_counts))
 
-    def select_base(self,base_type='weighted'):
+    def select_base(self, base_type='weighted'):
         """
         Uses self.xbase_indexes to set
         self.xbase_label,
@@ -748,16 +786,19 @@ class PptxChain(object):
             return None
 
         if base_type: base_type = base_type.lower()
-        if not base_type in ['unweighted','weighted']:
-            raise TypeError('base_type misspelled, choose weighted or unweighted')
+        if not base_type in ['unweighted', 'weighted']:
+            raise TypeError(
+                'base_type misspelled, choose weighted or unweighted')
 
         cell_contents = [x[2] for x in self.xbase_indexes]
         if base_type == 'weighted':
-            index = [x for x, items in enumerate(cell_contents) if 'is_weighted' in items]
+            index = [x for x, items in enumerate(cell_contents) if
+                     'is_weighted' in items]
         else:
-            index = [x for x, items in enumerate(cell_contents) if not 'is_weighted' in items]
+            index = [x for x, items in enumerate(cell_contents) if
+                     not 'is_weighted' in items]
 
-        if not index: index=[0]
+        if not index: index = [0]
 
         # print "self.xbase_indexes: ", self.xbase_indexes
         total_base = self.xbase_indexes[index[0]][3]
@@ -787,26 +828,29 @@ class PptxChain(object):
 
             # Construct a list of tuples with (base label, base size, test letter)
             base_values = self.chain_df.iloc[base_index, :].values.tolist()
-            base_values = np.around(base_values, decimals=self._decimals).tolist()
+            base_values = np.around(base_values,
+                                    decimals=self._decimals).tolist()
             base_values = float2String(base_values)
             base_labels = list(self.chain_df.columns.get_level_values('Values'))
             if self._chain.sig_levels:
-                base_test   = list(self.chain_df.columns.get_level_values('Test-IDs'))
+                base_test = list(
+                    self.chain_df.columns.get_level_values('Test-IDs'))
                 bases = list(zip(base_labels, base_values, base_test))
             else:
                 bases = list(zip(base_labels, base_values))
 
-        else: # Array summary
+        else:  # Array summary
             # Find base columns
 
             # Construct a list of tuples with (base label, base size)
-            base_values = self.chain_df.T.iloc[base_index,:].values.tolist()
-            base_values = np.around(base_values, decimals=self._decimals).tolist()
+            base_values = self.chain_df.T.iloc[base_index, :].values.tolist()
+            base_values = np.around(base_values,
+                                    decimals=self._decimals).tolist()
             base_values = float2String(base_values)
             base_labels = list(self.chain_df.index.get_level_values(-1))
             bases = list(zip(base_labels, base_values))
 
-        #print ybases
+        # print ybases
         return bases
 
     def _index_map(self):
@@ -829,15 +873,19 @@ class PptxChain(object):
         if self._chain.painted:  # UnPaint if painted
             self._chain.toggle_labels()
         if self._chain.array_style == -1:
-            unpainted_index = self._chain.dataframe.index.get_level_values(-1).tolist()
+            unpainted_index = self._chain.dataframe.index.get_level_values(
+                -1).tolist()
         else:
-            unpainted_index = self._chain.dataframe.columns.get_level_values(-1).tolist()
+            unpainted_index = self._chain.dataframe.columns.get_level_values(
+                -1).tolist()
         if not self._chain.painted:  # Paint if not painted
             self._chain.toggle_labels()
         if self._chain.array_style == -1:
-            painted_index = self._chain.dataframe.index.get_level_values(-1).tolist()
+            painted_index = self._chain.dataframe.index.get_level_values(
+                -1).tolist()
         else:
-            painted_index = self._chain.dataframe.columns.get_level_values(-1).tolist()
+            painted_index = self._chain.dataframe.columns.get_level_values(
+                -1).tolist()
 
         return list(zip(unpainted_index, painted_index))
 
@@ -857,24 +905,29 @@ class PptxChain(object):
 
         if not self.is_grid_summary:
             # Keep only requested columns
-            if self._chain.painted: # UnPaint if painted
+            if self._chain.painted:  # UnPaint if painted
                 self._chain.toggle_labels()
 
-            all_columns = self._chain.dataframe.columns.get_level_values(0).tolist() # retrieve a list of the not painted column values for outer level
+            all_columns = self._chain.dataframe.columns.get_level_values(
+                0).tolist()  # retrieve a list of the not painted column values for outer level
             if self._chain.axes[1].index(BASE_COL) == 0:
-                all_columns[0] = BASE_COL # Need '@' as the outer column label
+                all_columns[0] = BASE_COL  # Need '@' as the outer column label
 
             column_selection = []
             for cb in self.crossbreak:
-                column_selection = column_selection + (get_indexes_from_list(all_columns, cb))
+                column_selection = column_selection + (
+                    get_indexes_from_list(all_columns, cb))
 
-            if not self._chain.painted: # Paint if not painted
+            if not self._chain.painted:  # Paint if not painted
                 self._chain.toggle_labels()
 
-            all_columns = self._chain.dataframe.columns.get_level_values(0).tolist() # retrieve a list of painted column values for outer level
+            all_columns = self._chain.dataframe.columns.get_level_values(
+                0).tolist()  # retrieve a list of painted column values for outer level
 
-            col_qtexts = [all_columns[x] for x in column_selection] # determine painted column values for requested crossbreak
-            self.crossbreak_qtext = uniquify(col_qtexts) # Save q text for crossbreak in class atribute
+            col_qtexts = [all_columns[x] for x in
+                          column_selection]  # determine painted column values for requested crossbreak
+            self.crossbreak_qtext = uniquify(
+                col_qtexts)  # Save q text for crossbreak in class atribute
 
             # Slice the dataframes columns based on requested crossbreaks
             df = self._chain.dataframe.iloc[:, column_selection]
@@ -887,9 +940,10 @@ class PptxChain(object):
                 cell_contents = self._chain.describe()
                 rows = [k for k, va in list(cell_contents.items())
                         if any(pct in v for v in va for pct in PCT_TYPES)]
-                df_filled = fill_index_labels(fill_column_values(self._chain.dataframe))
+                df_filled = fill_index_labels(
+                    fill_column_values(self._chain.dataframe))
                 df = df_filled.iloc[rows, :]
-                #for index in base_indexes:
+                # for index in base_indexes:
                 #    base_values = self.chain.dataframe.iloc[rows_bad, index].values
                 #    base_column = self.chain.dataframe.columns[index]
                 #    df.loc[:,[base_column]] = base_values
@@ -910,7 +964,7 @@ class PptxChain(object):
 
         """
         if not hasattr(self, "_ybase_values"):
-            self._ybase_values=[x[1] for x in self.ybases]
+            self._ybase_values = [x[1] for x in self.ybases]
         return self._ybase_values
 
     @property
@@ -924,7 +978,7 @@ class PptxChain(object):
 
         """
         if not hasattr(self, "_ybase_value_labels"):
-            self._ybase_value_labels=[x[0] for x in self.ybases]
+            self._ybase_value_labels = [x[0] for x in self.ybases]
         return self._ybase_value_labels
 
     @property
@@ -942,10 +996,11 @@ class PptxChain(object):
             if self.is_grid_summary:
                 self._ybase_test_labels = None
                 return None
-            self._ybase_test_labels=[x[2] for x in self.ybases]
+            self._ybase_test_labels = [x[2] for x in self.ybases]
         return self._ybase_test_labels
 
-    def add_test_letter_to_column_labels(self, sep=" ", prefix=None, circumfix='()'):
+    def add_test_letter_to_column_labels(self, sep=" ", prefix=None,
+                                         circumfix='()'):
         """
         Adds test letter to dataframe column labels.
 
@@ -970,7 +1025,8 @@ class PptxChain(object):
             circumfix = list(('',) * 2)
         else:
             if not isinstance(circumfix, str) or len(circumfix) != 2:
-                raise TypeError("Parameter circumfix needs a string with length 2")
+                raise TypeError(
+                    "Parameter circumfix needs a string with length 2")
             circumfix = list(circumfix)
 
         str_parameters = ['sep', 'prefix']
@@ -988,11 +1044,15 @@ class PptxChain(object):
             # Edit labels
             new_labels_list = {}
             for x, y in zip(column_labels, self.ybase_test_labels):
-                new_labels_list.update({x: x + (sep or '') + circumfix[0] + (prefix or '') + y + circumfix[1]})
+                new_labels_list.update({x: x + (sep or '') + circumfix[0] + (
+                            prefix or '') + y + circumfix[1]
+                                        })
 
             self.chain_df = self.chain_df.rename(columns=new_labels_list)
 
-    def place_vals_in_labels(self, base_position=0, orientation='side', values=None, sep=" ", prefix="n=", circumfix="()", setup='if_differs'):
+    def place_vals_in_labels(self, base_position=0, orientation='side',
+                             values=None, sep=" ", prefix="n=", circumfix="()",
+                             setup='if_differs'):
         """
         Takes values from input list and adds them to self.chain_df's categories,
         Meaning rows if grid summary, otherwise columns.
@@ -1021,14 +1081,15 @@ class PptxChain(object):
             Changes self.chain_df
 
         """
-        if setup=='never': return
+        if setup == 'never': return
 
         # Checking input
         if circumfix is None:
             circumfix = list(('',) * 2)
         else:
             if not isinstance(circumfix, str) or len(circumfix) != 2:
-                raise TypeError("Parameter circumfix needs a string with length 2")
+                raise TypeError(
+                    "Parameter circumfix needs a string with length 2")
             circumfix = list(circumfix)
 
         str_parameters = ['sep', 'prefix', 'orientation', 'setup']
@@ -1038,14 +1099,18 @@ class PptxChain(object):
 
         valid_orientation = ['side', 'column']
         if orientation not in valid_orientation:
-            raise ValueError("Parameter orientation must be either of {}".format(valid_orientation))
+            raise ValueError(
+                "Parameter orientation must be either of {}".format(
+                    valid_orientation))
 
-        valid_setup  = ['always', 'if_differs', 'never']
+        valid_setup = ['always', 'if_differs', 'never']
         if setup not in valid_setup:
-            raise ValueError("Parameter setup must be either of {}".format(valid_setup))
+            raise ValueError(
+                "Parameter setup must be either of {}".format(valid_setup))
 
         if self.is_grid_summary:
-            if (len(uniquify(self.ybase_values))>1 and setup=='if_differs') or setup=='always':
+            if (len(uniquify(
+                    self.ybase_values)) > 1 and setup == 'if_differs') or setup == 'always':
 
                 # grab row labels
                 index_labels = self.chain_df.index.get_level_values(-1)
@@ -1053,7 +1118,9 @@ class PptxChain(object):
                 # Edit labels
                 new_labels_list = {}
                 for x, y in zip(index_labels, values):
-                    new_labels_list.update({x: x + (sep or '') + circumfix[0]+ (prefix or '') + str(y) + circumfix[1]})
+                    new_labels_list.update({x: x + (sep or '') + circumfix[
+                        0] + (prefix or '') + str(y) + circumfix[1]
+                                            })
 
                 self.chain_df = self.chain_df.rename(index=new_labels_list)
                 self.vals_in_labels = True
@@ -1066,15 +1133,19 @@ class PptxChain(object):
             # Edit labels
             new_labels_list = {}
             for x, y in zip(index_labels, values):
-                new_labels_list.update({x: x + (sep or '') + circumfix[0] + (prefix or '') + str(y) + circumfix[1]})
+                new_labels_list.update({x: x + (sep or '') + circumfix[0] + (
+                            prefix or '') + str(y) + circumfix[1]
+                                        })
 
             # Saving column index for level 'Question' in case it accidentially gets renamed
-            index_level_values = self.chain_df.columns.get_level_values('Question')
+            index_level_values = self.chain_df.columns.get_level_values(
+                'Question')
 
             self.chain_df = self.chain_df.rename(columns=new_labels_list)
 
             # Returning column index for level 'Question' in case it got renamed
-            self.chain_df.columns.set_levels(index_level_values, level='Question', inplace=True)
+            self.chain_df.columns.set_levels(index_level_values,
+                                             level='Question', inplace=True)
 
             self.vals_in_labels = True
 
@@ -1086,7 +1157,9 @@ class PptxChain(object):
     def base_text(self, base_text):
         self._base_text = base_text
 
-    def set_base_text(self, base_value_circumfix="()", base_label_suf=":", base_description_suf=" - ", base_value_label_sep=", ", base_label=None):
+    def set_base_text(self, base_value_circumfix="()", base_label_suf=":",
+                      base_description_suf=" - ", base_value_label_sep=", ",
+                      base_label=None):
         """
         Returns the full base text made up of base_label, base_description and ybases, with some delimiters.
         Setup is "base_label + base_description + base_value"
@@ -1114,11 +1187,14 @@ class PptxChain(object):
         if base_value_circumfix is None:
             base_value_circumfix = list(('',) * 2)
         else:
-            if not isinstance(base_value_circumfix, str) or len(base_value_circumfix) != 2:
-                raise TypeError("Parameter base_value_circumfix needs a string with length 2")
+            if not isinstance(base_value_circumfix, str) or len(
+                    base_value_circumfix) != 2:
+                raise TypeError(
+                    "Parameter base_value_circumfix needs a string with length 2")
             base_value_circumfix = list(base_value_circumfix)
 
-        str_parameters = ['base_label_suf', 'base_description_suf', 'base_value_label_sep', 'base_label']
+        str_parameters = ['base_label_suf', 'base_description_suf',
+                          'base_value_label_sep', 'base_label']
         for i in str_parameters:
             if not isinstance(eval(i), (str, type(None))):
                 raise TypeError("Parameter {} must be a string".format(i))
@@ -1128,7 +1204,7 @@ class PptxChain(object):
             base_label = self.xbase_label
 
         if self.base_description:
-            base_label = "{}{}".format(base_label,base_label_suf or '')
+            base_label = "{}{}".format(base_label, base_label_suf or '')
         else:
             base_label = "{}".format(base_label)
 
@@ -1136,15 +1212,18 @@ class PptxChain(object):
         if self.xbase_indexes:
             base_values = self.ybase_values[:]
             for index, base in enumerate(base_values):
-                base_values[index] = "{}{}{}".format(base_value_circumfix[0], base, base_value_circumfix[1])
+                base_values[index] = "{}{}{}".format(base_value_circumfix[0],
+                                                     base,
+                                                     base_value_circumfix[1])
         else:
-            base_values=[""]
+            base_values = [""]
 
         # Base_description
         base_description = ""
         if self.base_description:
-            if len(self.ybases) > 1 and not self.vals_in_labels and self.array_style==-1:
-                base_description = "{}{}".format(self.base_description, base_description_suf or '')
+            if len(self.ybases) > 1 and not self.vals_in_labels and self.array_style == -1:
+                base_description = "{}{}".format(self.base_description,
+                                                 base_description_suf or '')
             else:
                 base_description = "{} ".format(self.base_description)
 
@@ -1157,13 +1236,20 @@ class PptxChain(object):
         if len(base_values) > 1:
             if not self.vals_in_labels:
                 if self.xbase_indexes:
-                    for index, label in enumerate(zip(base_value_labels, base_values)):
-                        base_value_text="{}{}{} {}".format(base_value_text, base_value_label_sep, label[0], label[1])
-                    base_value_text = base_value_text[len(base_value_label_sep):]
+                    for index, label in enumerate(
+                            zip(base_value_labels, base_values)):
+                        base_value_text = "{}{}{} {}".format(base_value_text,
+                                                             base_value_label_sep,
+                                                             label[0], label[1])
+                    base_value_text = base_value_text[
+                                      len(base_value_label_sep):]
                 else:
                     for index, label in enumerate(base_value_labels):
-                        base_value_text="{}{}{}".format(base_value_text, base_value_label_sep, label)
-                    base_value_text = base_value_text[len(base_value_label_sep):]
+                        base_value_text = "{}{}{}".format(base_value_text,
+                                                          base_value_label_sep,
+                                                          label)
+                    base_value_text = base_value_text[
+                                      len(base_value_label_sep):]
             else:
                 if not self.is_grid_summary:
                     base_value_text = "({})".format(self.xbase_count)
@@ -1172,18 +1258,21 @@ class PptxChain(object):
         if not self.is_grid_summary:
             if len(self.ybases) == 1:
                 if base_description:
-                    base_text = "{} {}{}".format(base_label,base_description,base_values[0])
+                    base_text = "{} {}{}".format(base_label, base_description,
+                                                 base_values[0])
                 else:
                     base_text = "{} {}".format(base_label, base_values[0])
             else:
                 if base_description:
-                    base_text = "{} {}{}".format(base_label,base_description,base_value_text)
+                    base_text = "{} {}{}".format(base_label, base_description,
+                                                 base_value_text)
                 else:
-                    base_text = "{} {}".format(base_label,base_value_text)
-        else: # Grid summary
+                    base_text = "{} {}".format(base_label, base_value_text)
+        else:  # Grid summary
             if len(uniquify(self.ybase_values)) == 1:
                 if base_description:
-                    base_text = "{} {}{}".format(base_label,base_description,base_values[0])
+                    base_text = "{} {}{}".format(base_label, base_description,
+                                                 base_values[0])
                 else:
                     base_text = "{} {}".format(base_label, base_values[0])
             else:
@@ -1217,12 +1306,13 @@ class PptxChain(object):
                 if cb not in self._chain.axes[1]:
                     crossbreaks.remove(cb)
                     if self.verbose:
-                        msg = 'Requested crossbreak: \'{}\' is not found for chain \'{}\' and will be ignored'.format(cb, chain.name)
+                        msg = 'Requested crossbreak: \'{}\' is not found for chain \'{}\' and will be ignored'.format(
+                            cb, chain.name)
                         warnings.warn(msg)
             if crossbreaks == []: crossbreaks = None
         else:
-            pass # just ignore checking if Grid Summary
-            #crossbreaks = None
+            pass  # just ignore checking if Grid Summary
+            # crossbreaks = None
 
         return uniquify(crossbreaks) if crossbreaks is not None else [BASE_COL]
 
@@ -1236,19 +1326,20 @@ class PptxChain(object):
         str
 
         """
-        if not self.is_grid_summary: # Not grid summary
-            if self.is_mask_item: # Is grid slice
+        if not self.is_grid_summary:  # Not grid summary
+            if self.is_mask_item:  # Is grid slice
                 pattern = '(?<=\[\{).*(?=\}\])'
                 result_list = re.findall(pattern, self.x_key_name)
                 if result_list:
-                    return result_list[0] # TODO Hmm what if grid has more than one level
+                    return result_list[
+                        0]  # TODO Hmm what if grid has more than one level
                 else:
                     return self.x_key_name
 
-            else: # Not grid slice
+            else:  # Not grid slice
                 return self.x_key_name
 
-        else: # Is grid summary
+        else:  # Is grid summary
             find_period = self.x_key_name.find('.')
             if find_period > -1:
                 return self.x_key_name[:find_period]
@@ -1286,7 +1377,8 @@ class PptxChain(object):
 
         # Add variable name to question text if requested
         if include_varname:
-            question_text = '{}. {}'.format(self.x_key_short_name, question_text)
+            question_text = '{}. {}'.format(self.x_key_short_name,
+                                            question_text)
 
         # Remove consecutive line breaks and spaces
         question_text = re.sub('\n+', '\n', question_text)
@@ -1318,9 +1410,11 @@ class PptxChain(object):
                 meta = self._chain._meta
                 cols = meta['columns']
                 masks = meta['masks']
-                parent = list(cols[self.x_key_name]['parent'].keys())[0].split('@')[-1]
+                parent = \
+                list(cols[self.x_key_name]['parent'].keys())[0].split('@')[-1]
                 m_text = masks[parent]['text']
-                text = m_text.get('x edit', m_text).get(meta['lib']['default text'])
+                text = m_text.get('x edit', m_text).get(
+                        meta['lib']['default text'])
                 if not text.strip() in question_text:
                     question_text = '{} - {}'.format(text, question_text)
 
@@ -1344,7 +1438,8 @@ class PptxChain(object):
         # Strip HTML TODO Is 'Strip HTML' at all nessecary?
 
         # Check that the dataframe is numeric
-        all_numeric = all(df.applymap(lambda x: isinstance(x, (int, float)))) == True
+        all_numeric = all(
+            df.applymap(lambda x: isinstance(x, (int, float)))) == True
         if not all_numeric:
             df = as_numeric(df)
 
@@ -1353,7 +1448,8 @@ class PptxChain(object):
         cell_contents = self._chain.describe()
         if self.is_grid_summary:
             colpct_row = min([k for k, va in list(cell_contents.items())
-                              if any(pct in v for v in va for pct in PCT_TYPES)])
+                              if
+                              any(pct in v for v in va for pct in PCT_TYPES)])
             cell_contents = cell_contents[colpct_row]
 
         for i, row in enumerate(cell_contents):

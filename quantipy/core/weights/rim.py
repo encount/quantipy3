@@ -1,4 +1,3 @@
-
 import re
 import warnings
 
@@ -59,7 +58,8 @@ class Rim:
         self.groups[self._DEFAULT_NAME][self._FILTER_DEF] = None
         self.groups[self._DEFAULT_NAME][self._FILTER_DEF_ORG] = None
         self.groups[self._DEFAULT_NAME][self._FILTER_VARS] = []
-        self.groups[self._DEFAULT_NAME][self._TARGETS] = self._empty_target_list()
+        self.groups[self._DEFAULT_NAME][
+            self._TARGETS] = self._empty_target_list()
         self.groups[self._DEFAULT_NAME][self._TARGETS_INDEX] = None
         self.groups[self._DEFAULT_NAME][self._ITERATIONS_] = None
 
@@ -80,10 +80,11 @@ class Rim:
         """
         if not isinstance(targets, list): targets = [targets]
         gn = self._DEFAULT_NAME if group_name is None else group_name
-        if group_name is not None and self._DEFAULT_NAME in list(self.groups.keys()):
+        if group_name is not None and self._DEFAULT_NAME in list(
+                self.groups.keys()):
             self.groups[gn] = self.groups.pop(self._DEFAULT_NAME)
 
-        mul_targets_err = 'Multiple weight targets must be given as list of dicts,\n'\
+        mul_targets_err = 'Multiple weight targets must be given as list of dicts,\n' \
                           'input is {}'.format(type(targets))
 
         target_map_err = 'Weight targets must be given as dicts of dict:\n' \
@@ -92,14 +93,14 @@ class Rim:
             raise TypeError(mul_targets_err)
 
         for target in targets:
-            if not isinstance(target, dict) or not isinstance(list(target.values())[0], dict):
+            if not isinstance(target, dict) or not isinstance(
+                    list(target.values())[0], dict):
                 raise TypeError(target_map_err)
-        self.groups[gn][self._TARGETS]  = {}
+        self.groups[gn][self._TARGETS] = {}
         for target in targets:
             if not list(target.keys())[0] in self.target_cols:
                 self.target_cols.append(list(target.keys())[0])
             self.groups[gn][self._TARGETS] = targets
-
 
     def add_group(self, name=None, filter_def=None, targets=None):
         """
@@ -152,14 +153,16 @@ class Rim:
             try:
                 if filter_def is not None:
                     self.groups[group]['report']['summary']['Total: weighted'] = \
-                    self._df.query(filter_def)[self._weight_name()].sum()
-                    self.groups[group]['report']['summary']['Total: unweighted'] = \
-                    self._df.query(filter_def)[self._weight_name()].count()
+                        self._df.query(filter_def)[self._weight_name()].sum()
+                    self.groups[group]['report']['summary'][
+                        'Total: unweighted'] = \
+                        self._df.query(filter_def)[self._weight_name()].count()
                 else:
                     self.groups[group]['report']['summary']['Total: weighted'] = \
-                    self._df[self._weight_name()].sum()
-                    self.groups[group]['report']['summary']['Total: unweighted'] = \
-                    self._df[self._weight_name()].count()
+                        self._df[self._weight_name()].sum()
+                    self.groups[group]['report']['summary'][
+                        'Total: unweighted'] = \
+                        self._df[self._weight_name()].count()
             except Exception as e:
                 warn = 'Could not properly adjust Totals in report!'
                 warnings.warn(warn)
@@ -173,7 +176,7 @@ class Rim:
             rake = Rake(wdf,
                         self.groups[group][self._TARGETS],
                         self._weight_name(),
-                        max_iterations = self.max_iterations,
+                        max_iterations=self.max_iterations,
                         _use_cap=self._use_cap(),
                         cap=self.cap,
                         anesrake_cap_correction=self.anesrake_cap_correction)
@@ -184,7 +187,8 @@ class Rim:
         for group in self.groups:
             if self.groups[group][self._FILTER_DEF] is not None:
                 invalid_idx.extend(
-                    self._df.query(self.groups[group][self._FILTER_DEF]).index)
+                        self._df.query(
+                                self.groups[group][self._FILTER_DEF]).index)
         if invalid_idx:
             filter_idx = [idx for idx in self._df.index
                           if idx not in invalid_idx]
@@ -202,31 +206,30 @@ class Rim:
         self._df[weight_var] = self._df[weight_var] / scale_factor
         self._df[weight_var].replace(0.00, 1.00, inplace=True)
 
-
     def _adjust_groups(self):
         adj_w_vec = pd.Series()
         for group in self.groups:
-            w_vec = self._df.query(self.groups[group][self._FILTER_DEF])[self._weight_name()]
+            w_vec = self._df.query(self.groups[group][self._FILTER_DEF])[
+                self._weight_name()]
             if self.total > 0:
                 ratio = float(self._group_targets[group]) * w_vec
                 scale_factor = len(w_vec.index) / float(self.total)
                 ratio = ratio / scale_factor
-                #self.groups[group]['report']['summary']['Total: weighted'] = ratio.sum()
+                # self.groups[group]['report']['summary']['Total: weighted'] = ratio.sum()
             else:
                 valid_counts = self._df[self._weight_name()].count()
                 ratio = float(self._group_targets[group]) * w_vec
                 scale_factor = len(w_vec.index) / float(valid_counts)
                 ratio = ratio / scale_factor
-                #self.groups[group]['report']['summary']['Total: weighted'] = ratio.sum()
+                # self.groups[group]['report']['summary']['Total: weighted'] = ratio.sum()
             adj_w_vec = adj_w_vec.append(ratio).dropna()
         self._df[self._weight_name()] = adj_w_vec
-
 
     def _get_group_filter_cols(self, filter_def):
         filter_cols = []
         if filter_def is not None:
             for colname in self._df.columns:
-                if re.search(r"\b"+colname+r"\b", filter_def):
+                if re.search(r"\b" + colname + r"\b", filter_def):
                     filter_cols.append(colname)
         return filter_cols
 
@@ -255,7 +258,8 @@ class Rim:
             columns = self._specific_impute
             columns.update({column: self._impute_method
                             for column in self.target_cols
-                            if column not in list(self._specific_impute.keys())})
+                            if
+                            column not in list(self._specific_impute.keys())})
 
             for column, method in columns.items():
                 if method == "mean":
@@ -263,7 +267,8 @@ class Rim:
                     print(m)
                     self._df[column].fillna(m, inplace=True)
                 elif method == "mode":
-                    self._df[column].fillna(self._df[column].mode()[0], inplace=True)
+                    self._df[column].fillna(self._df[column].mode()[0],
+                                            inplace=True)
 
     def report(self, group=None):
         """
@@ -345,7 +350,7 @@ class Rim:
         None
         """
         if isinstance(group_targets, dict):
-            if all (group_targets[group] < 1 for group in group_targets):
+            if all(group_targets[group] < 1 for group in group_targets):
                 div_by = 1.0
             else:
                 div_by = 100.0
@@ -369,26 +374,26 @@ class Rim:
         Check correct weight variable input proportion lengths and sum of 100.
         """
 
-        some_nans = '*** Warning: Scheme "{0}", group "{1}" ***\n'\
-                    'np.NaN found in weight variables:\n{2}\n'\
+        some_nans = '*** Warning: Scheme "{0}", group "{1}" ***\n' \
+                    'np.NaN found in weight variables:\n{2}\n' \
                     'Please check if weighted results are acceptable!\n'
 
-        len_err_less = '*** Warning: Scheme "{0}", group "{1}" ***\nTargets for variable '\
-                       '"{2}" do not match the number of sample codes.\n{3} codes '\
-                       'expected, {4} codes found: Missing {5} in sample.\n'\
+        len_err_less = '*** Warning: Scheme "{0}", group "{1}" ***\nTargets for variable ' \
+                       '"{2}" do not match the number of sample codes.\n{3} codes ' \
+                       'expected, {4} codes found: Missing {5} in sample.\n' \
                        'Please check sample against scheme!\n'
 
-        len_err_more = '*** Warning: Scheme "{0}", group "{1}" ***\nTargets for variable '\
-                       '"{2}" do not match the number of sample codes.\n{3} codes '\
-                       'expected, {4} codes found: Missing {5} in scheme.\n'\
+        len_err_more = '*** Warning: Scheme "{0}", group "{1}" ***\nTargets for variable ' \
+                       '"{2}" do not match the number of sample codes.\n{3} codes ' \
+                       'expected, {4} codes found: Missing {5} in scheme.\n' \
                        'Please check sample against scheme!\n'
 
-        sum_err = '*** Stopping: Scheme "{0}", group "{1}" ***\nThe targets for '\
+        sum_err = '*** Stopping: Scheme "{0}", group "{1}" ***\nThe targets for ' \
                   'the variable "{2}" do not add up to 100.\nTarget sum is: {3}\n'
 
-        vartype_err = '*** Stopping: Scheme "{0}", group "{1}" ***\n'\
-                      'Variable "{2}" is unsuitable for Weighting.\n'\
-                      'Target variables must be of type integer (convertable) / '\
+        vartype_err = '*** Stopping: Scheme "{0}", group "{1}" ***\n' \
+                      'Variable "{2}" is unsuitable for Weighting.\n' \
+                      'Target variables must be of type integer (convertable) / ' \
                       'single categorical.\n'
 
         for group in self.groups:
@@ -396,20 +401,21 @@ class Rim:
                            self.groups[group][self._TARGETS]]
             if self.groups[group][self._FILTER_DEF]:
                 check_df = self._df.copy().query(
-                    self.groups[group][self._FILTER_DEF]
-                    )
+                        self.groups[group][self._FILTER_DEF]
+                )
             else:
                 check_df = self._df.copy()
             nan_check = check_df[target_vars].isnull().sum()
             if not nan_check.sum() == 0:
                 if verbose:
                     print(UserWarning(some_nans.format(
-                        self.name, group, nan_check)))
+                            self.name, group, nan_check)))
             for target in self.groups[group][self._TARGETS]:
                 target_col = list(target.keys())[0]
                 target_codes = list(target.values())[0].keys()
                 target_props = list(target.values())[0].values()
-                sample_codes = check_df[target_col].value_counts(sort=False).index.tolist()
+                sample_codes = check_df[target_col].value_counts(
+                    sort=False).index.tolist()
 
                 miss_in_sample = [code for code in target_codes
                                   if code not in sample_codes
@@ -419,24 +425,25 @@ class Rim:
                                    if code not in target_codes]
 
                 if self._df[target_col].dtype == 'object':
-                    raise ValueError(vartype_err.format(self.name, group, target_col))
+                    raise ValueError(
+                        vartype_err.format(self.name, group, target_col))
 
                 if miss_in_sample:
                     if verbose:
                         print(UserWarning(len_err_less.format(
-                            self.name, group, target_col, len(target_codes),
-                            len(sample_codes), miss_in_sample)))
+                                self.name, group, target_col, len(target_codes),
+                                len(sample_codes), miss_in_sample)))
 
                 if miss_in_targets:
                     if verbose:
                         print(UserWarning(len_err_more.format(
-                            self.name, group, target_col, len(target_codes),
-                            len(sample_codes), miss_in_targets)))
+                                self.name, group, target_col, len(target_codes),
+                                len(sample_codes), miss_in_targets)))
 
                 if not np.allclose(np.sum(list(target_props)), 100.0):
                     raise ValueError(sum_err.format(self.name, group,
-                                    target_col, np.sum(target_props)))
-
+                                                    target_col,
+                                                    np.sum(target_props)))
 
     def validate(self):
         """
@@ -450,13 +457,14 @@ class Rim:
         """
         df = self._df.copy()[self.target_cols]
         nans = df.isnull().sum()
-        means = np.round(df.mean(),0)
+        means = np.round(df.mean(), 0)
         modes = df.mode().iloc[0]
         medians = np.round(df.median(), 0)
         df = pd.concat([nans, means, modes, medians], axis=1)
         df.columns = ['missing', 'mean', 'mode', 'median']
 
         return df
+
 
 class Rake:
     def __init__(self, dataframe, targets,
@@ -481,19 +489,19 @@ class Rake:
         self.report = {}
         self.iteration_counter = 0  # for the report
 
-        #do we print out extra information
+        # do we print out extra information
         self.verbose = verbose
 
-        #Parse the dataframe
+        # Parse the dataframe
         if isinstance(dataframe, pd.DataFrame):
             self.dataframe = dataframe
         else:
             raise Exception(
-                "Unknown data type (%s). Should be <pandas.DataFrame>.",
-                type(dataframe))
+                    "Unknown data type (%s). Should be <pandas.DataFrame>.",
+                    type(dataframe))
         self.pre_weight = pd.np.ones(len(self.dataframe))
 
-        #Parse the targets
+        # Parse the targets
         self.rowcount = len(self.dataframe)
         col_names = [list(target.keys())[0] for target in targets]
         mappings = [{key: float(value) / 100 * self.rowcount for key, value
@@ -508,7 +516,8 @@ class Rake:
         self.keys_col = self.keys[1:len(self.keys):2]
 
         if pd.np.isnan(self.dataframe[self.weight_column_name]).sum() > 0:
-            raise Exception("Seed weights cannot have missing values, use filter to eliminate missing values or substitute 1 for missing cases.")
+            raise Exception(
+                "Seed weights cannot have missing values, use filter to eliminate missing values or substitute 1 for missing cases.")
         if cap <= 1 and _use_cap:
             raise Exception("Cap may not be less than or equal to 1.")
         if cap < 1.5 and _use_cap:
@@ -522,16 +531,17 @@ class Rake:
             try:
                 df = self.dataframe[(self.dataframe[target_col] == target_code)]
                 index_array = (self.dataframe[target_col] == target_code)
-                data = df[self.weight_column_name] * (target_prop / sum(df[self.weight_column_name]))
+                data = df[self.weight_column_name] * (
+                            target_prop / sum(df[self.weight_column_name]))
                 self.dataframe.loc[index_array, self.weight_column_name] = data
             except:
-               pass
+                pass
 
     def calc_weight_efficiency(self):
-        numerator = 100*sum(self.dataframe[self.weight_column_name] *
-                            self.pre_weight) ** 2
+        numerator = 100 * sum(self.dataframe[self.weight_column_name] *
+                              self.pre_weight) ** 2
         denominator = (sum(self.pre_weight) *
-                       sum(self.pre_weight*
+                       sum(self.pre_weight *
                            self.dataframe[self.weight_column_name] ** 2))
         self.weight_efficiency = numerator / denominator
         return self.weight_efficiency
@@ -549,19 +559,30 @@ class Rake:
                 {"Weight factor ratio": weights.max() / weights.min()}
             ]
 
-            self.report['summary'] = pd.Series(pd.concat([pd.Series(s) for s in r_summary]), name=self.weight_column_name)
+            self.report['summary'] = pd.Series(
+                pd.concat([pd.Series(s) for s in r_summary]),
+                name=self.weight_column_name)
 
             self.report["targets"] = self.targets
 
             # The data is a representation/manipulation of the dataframe
             self.report["data"] = {}
-            self.report["data"]["factor weights"] = self.dataframe.pivot_table(index=self.keys_row, columns=self.keys_col, values=self.weight_column_name, dropna=False, fill_value=0)
+            self.report["data"]["factor weights"] = self.dataframe.pivot_table(
+                index=self.keys_row, columns=self.keys_col,
+                values=self.weight_column_name, dropna=False, fill_value=0)
             self.report["data"]["input"] = {}
-            self.report["data"]["input"]["absolute"] = self.dataframe[self.keys].pivot_table(index=self.keys_row, columns=self.keys_col, aggfunc=len, dropna=False, fill_value=0)
-            self.report["data"]["input"]["relative"] = self.report["data"]["input"]["absolute"] / self.rowcount
+            self.report["data"]["input"]["absolute"] = self.dataframe[
+                self.keys].pivot_table(index=self.keys_row,
+                                       columns=self.keys_col, aggfunc=len,
+                                       dropna=False, fill_value=0)
+            self.report["data"]["input"]["relative"] = \
+            self.report["data"]["input"]["absolute"] / self.rowcount
             self.report["data"]["output"] = {}
-            self.report["data"]["output"]["absolute"] = self.report["data"]["input"]["absolute"] * self.report["data"]["factor weights"]
-            self.report["data"]["output"]["relative"] = self.report["data"]["output"]["absolute"] / self.rowcount
+            self.report["data"]["output"]["absolute"] = \
+            self.report["data"]["input"]["absolute"] * self.report["data"][
+                "factor weights"]
+            self.report["data"]["output"]["relative"] = \
+            self.report["data"]["output"]["absolute"] / self.rowcount
         except MemoryError as e:
             warn = 'OOM: Could not finish writing report...'
             warnings.warn(warn)
@@ -571,7 +592,7 @@ class Rake:
         diff_error = 999999
         diff_error_old = 99999999999
 
-        #cap (this needs more rigorous testings)
+        # cap (this needs more rigorous testings)
         if isinstance(self.cap, (list, tuple)):
             min_cap = self.cap[0]
             max_cap = self.cap[1]
@@ -584,7 +605,7 @@ class Rake:
             if min_cap is not None:
                 min_cap -= 0.0001
 
-        for iteration in range(1, self.max_iterations+1):
+        for iteration in range(1, self.max_iterations + 1):
             old_weights = self.dataframe[self.weight_column_name].copy()
 
             if not diff_error < pct_still * diff_error_old:
@@ -596,27 +617,42 @@ class Rake:
             if self._use_cap:
 
                 if min_cap is None:
-                    while self.dataframe[self.weight_column_name].max() > max_cap:
-                        self.dataframe.loc[self.dataframe[self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
-                        self.dataframe[self.weight_column_name] = self.dataframe[self.weight_column_name]/pd.np.mean(self.dataframe[self.weight_column_name])
+                    while self.dataframe[
+                        self.weight_column_name].max() > max_cap:
+                        self.dataframe.loc[self.dataframe[
+                                               self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
+                        self.dataframe[self.weight_column_name] = \
+                        self.dataframe[self.weight_column_name] / pd.np.mean(
+                                self.dataframe[self.weight_column_name])
                 else:
-                    while (self.dataframe[self.weight_column_name].min() < min_cap) or (self.dataframe[self.weight_column_name].max() > max_cap):
-                        self.dataframe.loc[self.dataframe[self.weight_column_name] < min_cap, self.weight_column_name] = min_cap
-                        self.dataframe.loc[self.dataframe[self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
-                        self.dataframe[self.weight_column_name] = self.dataframe[self.weight_column_name]/pd.np.mean(self.dataframe[self.weight_column_name])
+                    while (self.dataframe[
+                               self.weight_column_name].min() < min_cap) or (
+                            self.dataframe[
+                                self.weight_column_name].max() > max_cap):
+                        self.dataframe.loc[self.dataframe[
+                                               self.weight_column_name] < min_cap, self.weight_column_name] = min_cap
+                        self.dataframe.loc[self.dataframe[
+                                               self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
+                        self.dataframe[self.weight_column_name] = \
+                        self.dataframe[self.weight_column_name] / pd.np.mean(
+                                self.dataframe[self.weight_column_name])
 
             diff_error_old = diff_error
-            diff_error = sum(abs(self.dataframe[self.weight_column_name]-old_weights))
+            diff_error = sum(
+                abs(self.dataframe[self.weight_column_name] - old_weights))
 
         self.iteration_counter = iteration  # for the report
-        self.dataframe[self.weight_column_name].replace(0.00, 1.00, inplace=True)
+        self.dataframe[self.weight_column_name].replace(0.00, 1.00,
+                                                        inplace=True)
 
         if iteration == self.max_iterations:
             print('Convergence did not occur in %s iterations' % iteration)
         else:
             if diff_error > 0.001:
-                print("Raking achieved only partial convergence, please check the results to ensure that sufficient convergence was achieved.")
-                print("No improvement was apparent after %s iterations" % iteration)
+                print(
+                    "Raking achieved only partial convergence, please check the results to ensure that sufficient convergence was achieved.")
+                print(
+                    "No improvement was apparent after %s iterations" % iteration)
             else:
                 if self.verbose:
                     print('Raking converged in %s iterations' % iteration)

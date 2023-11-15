@@ -4,7 +4,6 @@ import warnings
 from collections import OrderedDict
 
 import numpy as np
-from pandas.util.version import Version
 
 import quantipy as qp
 from quantipy.dependency_versions import __pandas_version_parsed__
@@ -83,7 +82,7 @@ class Rules(object):
         return rules
 
     def _get_sort_weight(self, use_weight):
-        var = self.link.y if self.link.x=='@' else self.link.x
+        var = self.link.y if self.link.x == '@' else self.link.x
         try:
             collection = self.meta['columns'][var]
         except:
@@ -190,7 +189,7 @@ class Rules(object):
                 if expanded_net and not self.array_summary:
                     if not sort_on == '@':
                         msg = 'Cannot sort expanded nets on {}.'
-                        raise AttributeError(msg .format(sort_on))
+                        raise AttributeError(msg.format(sort_on))
                     view = self.link_base[col_key]['@'][expanded_net]
                     f = self.sort_expanded_nets(view, rule_axis['sortx'])
                     r_slicer = self._get_rules_slicer(f, rule_axis,
@@ -208,7 +207,8 @@ class Rules(object):
                     f = self._get_net_via_stack(col_key, sort_on)
                 # get df-freq-slice to sort on
                 else:
-                    f = self._get_frequency_via_stack(col_key, axis, self._sort_weight)
+                    f = self._get_frequency_via_stack(col_key, axis,
+                                                      self._sort_weight)
             # get df for hiding + slicing
             else:
                 f = self._get_frequency_via_stack(col_key, axis, None)
@@ -247,7 +247,8 @@ class Rules(object):
     def _get_descriptive_via_stack(self, col, desc='mean'):
         l = self.link_base[col]['@']
         w = self._sort_weight
-        desc_key = [k for k in list(l.keys()) if 'd.{}'.format(desc) in k.split('|')[1]
+        desc_key = [k for k in list(l.keys()) if
+                    'd.{}'.format(desc) in k.split('|')[1]
                     and k.split('|')[-2] == w]
         if not desc_key:
             msg = "No {} view to sort '{}' on found!"
@@ -265,8 +266,8 @@ class Rules(object):
         w = self._sort_weight
         net_no = int(net.split('_')[-1])
         net_key = [k for k in list(l.keys()) if k.split('|')[-1] == 'net'
-                    and len(k.split('|')[2].split(',x')) >= net_no
-                    and k.split('|')[-2] == w]
+                   and len(k.split('|')[2].split(',x')) >= net_no
+                   and k.split('|')[-2] == w]
         if not net_key:
             msg = "No net view to sort '{}' on found!"
             raise RuntimeError(msg.format(col))
@@ -307,7 +308,8 @@ class Rules(object):
         view = exp_net_view
         logic = view._kwargs.get('logic')
         description = view.describe_block()
-        groups['codes'] = [c for c, d in list(description.items()) if d == 'normal']
+        groups['codes'] = [c for c, d in list(description.items()) if
+                           d == 'normal']
         net_names = [v for v, d in list(description.items()) if d == 'net']
         for l in logic:
             new_l = copy.deepcopy(l)
@@ -315,7 +317,8 @@ class Rules(object):
                 if k not in net_names:
                     del new_l[k]
             groups[list(new_l.keys())[0]] = list(new_l.values())[0]
-        groups['codes'] = [c for c, d in list(description.items()) if d == 'normal']
+        groups['codes'] = [c for c, d in list(description.items()) if
+                           d == 'normal']
         return groups
 
     def sort_expanded_nets(self, view, sortx):
@@ -341,13 +344,15 @@ class Rules(object):
         net_groups = self._find_expanded_net_groups(view)
         sort = [(name, v) for v in df.index.get_level_values(1)
                 if (v in net_groups['codes'] or
-                v in list(net_groups.keys())) and not v in fix_codes]
+                    v in list(net_groups.keys())) and not v in fix_codes]
         # sort between groups
         if between:
             if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
-                temp_df = df.loc[sort].sort_values(sort_col, 0, ascending=ascending)
+                temp_df = df.loc[sort].sort_values(sort_col, 0,
+                                                   ascending=ascending)
             else:
-                temp_df = df.loc[sort].sort_index(0, sort_col, ascending=ascending)
+                temp_df = df.loc[sort].sort_index(0, sort_col,
+                                                  ascending=ascending)
         else:
             temp_df = df.loc[sort]
         between_order = temp_df.index.get_level_values(1).tolist()
@@ -367,12 +372,15 @@ class Rules(object):
                 sort = [(name, v) for v in g[1:] if not v in fixed_in_g]
                 if within:
                     if __pandas_version_parsed__ >= pd_df_sort_index_by_deprecated:
-                        temp_df = df.loc[sort].sort_values(sort_col, 0, ascending=ascending)
+                        temp_df = df.loc[sort].sort_values(sort_col, 0,
+                                                           ascending=ascending)
                     else:
-                        temp_df = df.loc[sort].sort_index(0, sort_col, ascending=ascending)
+                        temp_df = df.loc[sort].sort_index(0, sort_col,
+                                                          ascending=ascending)
                 else:
                     temp_df = df.loc[sort]
-                new_idx = [fixed_net_name] + temp_df.index.get_level_values(1).tolist() + fixed_in_g
+                new_idx = [fixed_net_name] + temp_df.index.get_level_values(
+                    1).tolist() + fixed_in_g
                 final_index.extend(new_idx)
                 fix_codes = [c for c in fix_codes if not c in fixed_in_g]
             else:
@@ -436,7 +444,7 @@ class Rules(object):
         # If the index is from a frequency then the rule
         # should be skipped
         try:
-            if df.index.levels[1][0]=='@':
+            if df.index.levels[1][0] == '@':
                 return df
             # Get question names for index and columns from the
             # index/column level 0 values
@@ -473,7 +481,7 @@ class Rules(object):
             else:
                 df_sorted = df.loc[s_sort].sort_index(0, sort_col, ascending)
             s_sort = df_sorted.index.tolist()
-            df = df.loc[s_all+s_sort+s_fixed]
+            df = df.loc[s_all + s_sort + s_fixed]
             return df
         except UnboundLocalError:
             print(('Could not sort on {}'.format(sort_on)))
@@ -503,7 +511,7 @@ class Rules(object):
 
         # If the index is from a frequency then the rule
         # should be skipped
-        if df.index.levels[1][0]=='@':
+        if df.index.levels[1][0] == '@':
             return df
 
         name_x = df.index.levels[0][0]
@@ -537,7 +545,7 @@ class Rules(object):
 
         # If the index is from a frequency then the rule
         # should be skipped
-        if df.index.levels[1][0]=='@':
+        if df.index.levels[1][0] == '@':
             return df
 
         name_x = df.index.levels[0][0]
@@ -569,7 +577,8 @@ class Rules(object):
         exp_net = '}+]' in relation
         array_sum_freqs = array_summary and s_name in ['counts', 'c%', 'r%']
 
-        if (relation.split(":")[0].startswith('x') and not exp_net) or descriptive:
+        if (relation.split(":")[0].startswith(
+                'x') and not exp_net) or descriptive:
             if not array_summary:
                 condensed_x = True
         elif relation.split(":")[1].startswith('y'):
@@ -584,8 +593,9 @@ class Rules(object):
             elif re.search('y:x\[.+', relation) != None:
                 condensed_x = True
 
-        if condensed_x or x=='@': viable_axes.remove('x')
-        if condensed_y or (y=='@' and not array_sum_freqs): viable_axes.remove('y')
+        if condensed_x or x == '@': viable_axes.remove('x')
+        if condensed_y or (
+                y == '@' and not array_sum_freqs): viable_axes.remove('y')
 
         return viable_axes
 
@@ -624,8 +634,8 @@ class Rules(object):
                     else:
                         is_small = True
                         value = value[:-1]
-                if len(value)>0:
-                    if len(value)==1:
+                if len(value) > 0:
+                    if len(value) == 1:
                         value = set(value)
                     else:
                         value = set([int(i) if i.isdigit() else i
@@ -633,7 +643,7 @@ class Rules(object):
                     value = cols.intersection(value)
                     if not value:
                         value = ''
-                    elif len(value)==1:
+                    elif len(value) == 1:
                         value = str(list(value))
                     else:
                         value = str(sorted(list(value)))
@@ -641,13 +651,12 @@ class Rules(object):
                     value = value + '**'
                 elif is_small:
                     value = value + '*'
-                elif len(value)==0:
+                elif len(value) == 0:
                     value = np.NaN
 
                 return value
             else:
                 return value
-
 
         cols = set([int(v) for v in zip(*[c for c in df.columns])[1]])
         df = df.applymap(verify_test_value)

@@ -379,7 +379,7 @@ class Batch(qp.DataSet):
         if levels and self.total:
             if not all(isinstance(l, float) for l in levels):
                 raise TypeError(
-                    'All significance levels must be provided as floats!')
+                        'All significance levels must be provided as floats!')
             levels = sorted(levels)
         else:
             levels = []
@@ -874,13 +874,14 @@ class Batch(qp.DataSet):
         dupes = [v for v in oe if v in break_by]
         if dupes:
             raise ValueError(
-                "'{}' included in oe and break_by.".format("', '".join(dupes)))
+                    "'{}' included in oe and break_by.".format(
+                        "', '".join(dupes)))
 
         def _add_oe(oe, break_by, title, drop_empty, incl_nan, filter_by,
                     overwrite):
             if filter_by:
                 f_name = title if not self.filter else '%s_%s' % (
-                self.filter, title)
+                    self.filter, title)
                 f_name = self._verify_filter_name(f_name, number=True)
                 logic = {'label': title, 'logic': filter_by}
                 if self.filter:
@@ -960,7 +961,7 @@ class Batch(qp.DataSet):
             on = self.unroll(on)
             for x in on:
                 x_ext = self.unroll(
-                    self.extended_yks_per_x.get(x, []) + ext_yks)
+                        self.extended_yks_per_x.get(x, []) + ext_yks)
                 self.extended_yks_per_x.update({x: x_ext})
             self._update()
         return None
@@ -1053,13 +1054,13 @@ class Batch(qp.DataSet):
             raise TypeError("'name' attribute for add_y_on_y must be a str!")
         elif not main_filter in ['extend', 'replace'] or main_filter is None:
             raise ValueError(
-                "'main_filter' must be either 'extend' or 'replace'.")
+                    "'main_filter' must be either 'extend' or 'replace'.")
         if not name in self.y_on_y:
             self.y_on_y.append(name)
         if isinstance(y_filter, str):
             if not self.is_filter(y_filter):
                 raise ValueError(
-                    '{} is not a valid filter var.'.format(y_filter))
+                        '{} is not a valid filter var.'.format(y_filter))
             else:
                 main_filter = 'replace'
         self.y_on_y_filter[name] = (main_filter, y_filter)
@@ -1107,7 +1108,7 @@ class Batch(qp.DataSet):
                             'values']
                     except:
                         hiding = self._get_rules(x).get('dropx', {}).get(
-                            'values', [])
+                                'values', [])
                     for x2 in self.sources(x):
                         if x2 in hiding:
                             continue
@@ -1375,7 +1376,7 @@ class Batch(qp.DataSet):
                 var = oes
             if key == "f":
                 var = batch["filter_names"] + list(
-                    batch["y_filter_map"].values())
+                        batch["y_filter_map"].values())
             if not isinstance(var, list): var = [var]
             for v in var:
                 if v and v in self and v not in vlist:

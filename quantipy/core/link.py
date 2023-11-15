@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import numpy as np
 
 from .view_generators.view_maps import QuantipyViews as View
@@ -9,6 +9,7 @@ class Link(dict):
     The Link object is a subclassed dictionary that generates an instance of
     Pandas.DataFrame for every view method applied
     """
+
     def __init__(self,
                  the_filter,
                  y,

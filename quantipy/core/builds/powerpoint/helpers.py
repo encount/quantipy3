@@ -1,4 +1,3 @@
-
 from __future__ import (
     absolute_import, division, print_function, unicode_literals
 )
@@ -22,7 +21,6 @@ def ChartData_from_DataFrame(df, number_format="0%", xl_number_format='0.00%'):
         for subcat in sub_categories:
             if subcat.label == line[pos]:
                 return subcat
-
 
     cd = CategoryChartData(number_format=number_format)
 
@@ -48,10 +46,10 @@ def ChartData_from_DataFrame(df, number_format="0%", xl_number_format='0.00%'):
 
     for col in df.columns:
         values = [
-            value if value==value else None
+            value if value == value else None
             for value in df[col].values.tolist()
         ]
-        if isinstance(col,tuple):
+        if isinstance(col, tuple):
             series = (" - ".join(col), tuple(values))
         else:
             series = (col, tuple(values))
@@ -143,6 +141,7 @@ def verify_DataFrame_vs_DataFrame(df1, df2):
 
     print((df1.fillna('') == df2.fillna('')))
 
+
 def example_dataframe(hierarchical):
     """
     Return an example Pandas DataFrame.
@@ -150,27 +149,27 @@ def example_dataframe(hierarchical):
 
     if hierarchical:
         idx = pd.MultiIndex.from_tuples((
-                ('USA', 'CA', 'San Francisco'),
-                ('USA', 'CA', 'Los Angeles'),
-                ('USA', 'NY', 'New York'),
-                ('USA', 'NY', 'Albany'),
-                ('CAN', 'AL', 'Calgary'),
-                ('CAN', 'AL', 'Edmunton'),
-                ('CAN', 'ON', 'Toronto'),
-                ('CAN', 'ON', 'Ottawa'),
-            )
+            ('USA', 'CA', 'San Francisco'),
+            ('USA', 'CA', 'Los Angeles'),
+            ('USA', 'NY', 'New York'),
+            ('USA', 'NY', 'Albany'),
+            ('CAN', 'AL', 'Calgary'),
+            ('CAN', 'AL', 'Edmunton'),
+            ('CAN', 'ON', 'Toronto'),
+            ('CAN', 'ON', 'Ottawa'),
+        )
         )
     else:
         idx = pd.Index((
-                'San Francisco',
-                'Los Angeles',
-                'New York',
-                'Albany',
-                'Calgary',
-                'Edmunton',
-                'Toronto',
-                'Ottawa',
-            )
+            'San Francisco',
+            'Los Angeles',
+            'New York',
+            'Albany',
+            'Calgary',
+            'Edmunton',
+            'Toronto',
+            'Ottawa',
+        )
         )
 
     cols = pd.Index(['Series 1', 'Series 2', 'Series 3', 'Series 4'])
@@ -198,12 +197,12 @@ def add_slide_with_chart(prs, cd, title):
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank slide
     x, y, cx, cy = 1524000, 1397000, 6096000, 4064000
     chart = slide.shapes.add_chart(
-        XL_CHART_TYPE.BAR_CLUSTERED,
-        x, y, cx, cy,
-        cd
+            XL_CHART_TYPE.BAR_CLUSTERED,
+            x, y, cx, cy,
+            cd
     ).chart
 
-    txBox = slide.shapes.add_textbox(x, y-1000000, cx, cy)
+    txBox = slide.shapes.add_textbox(x, y - 1000000, cx, cy)
     txBox.text_frame.text = title
 
     return chart

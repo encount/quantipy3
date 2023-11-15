@@ -16,17 +16,17 @@ class WebEditHandler(http.server.SimpleHTTPRequestHandler):
         """ Store the result in a file, shut down the serve and
         then continue the script """
         form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
-                     })
+                fp=self.rfile,
+                headers=self.headers,
+                environ={'REQUEST_METHOD': 'POST',
+                         'CONTENT_TYPE': self.headers['Content-Type'],
+                         })
         for item in form.list:
             print(item.name)
             if item.name == "obj_json":
                 save_string_in_tmp_folder(
-                    data=item.value, 
-                    filename="obj.json")
+                        data=item.value,
+                        filename="obj.json")
                 break
 
         shutdown_server(server_target=self.server)

@@ -39,12 +39,12 @@ def describe(data, x, weights=None):
         if not weights == '@1':
             count = data[weights].sum()
             norm_wvector_coef = 1 if len(data.index) == count else len(
-                data.index) / count
+                    data.index) / count
             w_squared_sum = (data[weights] ** 2).sum()
             eff_count = count ** 2 / w_squared_sum
             mean = data[x].mul(data[weights].mul(norm_wvector_coef)).mean()
             var = data[weights].mul((data[x].sub(mean)) ** 2).sum() / (
-                        data[weights].sum() - 1)
+                    data[weights].sum() - 1)
             try:
                 stddev = math.sqrt(var)
                 if abs(stddev) == 0.00:
@@ -172,7 +172,7 @@ def make_default_num_view(data, x, y=None, weights=None, drop=None,
                 )
                 df.columns = [
                     str(int(y_code)) if float(y_code).is_integer() else str(
-                        y_code)
+                            y_code)
                     for y_code in y_codes
                 ]
 
@@ -1132,7 +1132,7 @@ def _corr(x_inputs, y_inputs):
                                                   return_mean=True)
             means = (xmean, ymean)
             xres.append(round((_covariance(x, y, known_means=means) / (
-                        xstddev * ystddev))[0][0], 6))
+                    xstddev * ystddev))[0][0], 6))
         res.append(xres)
 
     return res
@@ -1393,7 +1393,7 @@ def _calc_se_pooled_means_pairs(stddevs, bases, effbases, overlap_bases,
     denom_pairs = np.array([x + y for x, y in combinations(denom, 2)])
 
     return np.sqrt(
-        (enum_pairs / (denom_pairs)) * (paired_effb_c - paired_ovlp_c))
+            (enum_pairs / (denom_pairs)) * (paired_effb_c - paired_ovlp_c))
 
 
 def _cwi(default, threshold=5):
@@ -2078,7 +2078,8 @@ def _percentile(mat, xdef, ydef, perc=0.5):
                     percs.append((1.0 - excess) * p_k + excess * p_k1)
                 else:
                     percs.append(
-                        (1.0 - excess / w_k1) * p_k + (excess / w_k1) * p_k1)
+                            (1.0 - excess / w_k1) * p_k + (
+                                        excess / w_k1) * p_k1)
 
     return np.array(percs)
 

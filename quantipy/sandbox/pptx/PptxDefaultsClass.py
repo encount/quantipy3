@@ -105,18 +105,18 @@ class PptxDefaults(object):
             self._[shape] is updated
         """
         parameter_map = {'shapes': self._shapes,
-                      'charts': self._charts,
-                      'tables': self._tables,
-                      'textboxes': self._textboxes,
-                      'chart_bar': self._chart_bar,
-                      'chart_bar_stacked100': self._chart_bar_stacked100,
-                      'chart_line': self._chart_line,
-                      'chart_column': self._chart_column,
-                      'chart_pie': self._chart_pie,
-                      'textbox_header': self._textbox_header,
-                      'textbox_footer': self._textbox_footer,
-                      'side_table': self._side_table,
-                      }
+                         'charts': self._charts,
+                         'tables': self._tables,
+                         'textboxes': self._textboxes,
+                         'chart_bar': self._chart_bar,
+                         'chart_bar_stacked100': self._chart_bar_stacked100,
+                         'chart_line': self._chart_line,
+                         'chart_column': self._chart_column,
+                         'chart_pie': self._chart_pie,
+                         'textbox_header': self._textbox_header,
+                         'textbox_footer': self._textbox_footer,
+                         'side_table': self._side_table,
+                         }
 
         available_shapes = list(parameter_map.keys())
         shape = re.sub(' +', '', shape)

@@ -7,6 +7,7 @@ import pandas as pd
 
 pd.set_option('display.encoding', 'utf-8')
 
+
 class View(object):
     def __init__(self, link=None, name=None, kwargs=None):
         kwargs = None if kwargs is None else kwargs.copy()
@@ -32,21 +33,21 @@ class View(object):
             A dictionary that contains global aggregation information.
         """
         viewmeta = {
-                    'agg':
-                    {
-                     'is_weighted': self.is_weighted(),
-                     'weights': self.get_std_params()[3],
-                     'method': self._method(),
-                     'name': self._shortname(),
-                     'fullname': self._notation,
-                     'text': self.get_std_params()[4],
-                     'grp_text_map': self.grp_text_map,
-                     'is_block': self._is_block()
-                     },
-                    'x': self._x,
-                    'y': self._y,
-                    'shape': self.dataframe.shape
-                    }
+            'agg':
+                {
+                    'is_weighted': self.is_weighted(),
+                    'weights': self.get_std_params()[3],
+                    'method': self._method(),
+                    'name': self._shortname(),
+                    'fullname': self._notation,
+                    'text': self.get_std_params()[4],
+                    'grp_text_map': self.grp_text_map,
+                    'is_block': self._is_block()
+                },
+            'x': self._x,
+            'y': self._y,
+            'shape': self.dataframe.shape
+        }
         if self.is_base():
             viewmeta['agg']['add_base_text'] = self.add_base_text
         return viewmeta
@@ -72,11 +73,12 @@ class View(object):
                 is_multi = True if dtype in mc else False
                 is_nested = True if '>' in name else False
                 metas.append(
-                    {'name': name,
-                     'is_multi': is_multi,
-                     'is_nested': is_nested,
-                     'is_array': name in masks}
-                    )
+                        {'name': name,
+                         'is_multi': is_multi,
+                         'is_nested': is_nested,
+                         'is_array': name in masks
+                         }
+                )
         self._x = metas[0]
         self._y = metas[1]
 
@@ -93,7 +95,7 @@ class View(object):
                 else:
                     net_texts.append(None)
                 net_names.extend([key for key in list(l.keys())
-                                   if not key == 'expand'])
+                                  if not key == 'expand'])
             grp_text_map = {name: text
                             for name, text in zip(net_names, net_texts)}
             if calc is not None:
@@ -211,7 +213,7 @@ class View(object):
             self._kwargs.get('rel_to', None),
             self._kwargs.get('weights', None),
             self._kwargs.get('text', '')
-            )
+        )
 
     def get_edit_params(self):
         """
@@ -227,7 +229,7 @@ class View(object):
         calc = copy.deepcopy(self._kwargs.get('calc', None))
         grp_text_map_copy = self.grp_text_map
         if (not logic is None and (isinstance(logic, list) and not
-                isinstance(logic[0], dict)) or isinstance(logic, (dict, tuple))):
+        isinstance(logic[0], dict)) or isinstance(logic, (dict, tuple))):
             logic = [{self.name: logic}]
         self.grp_text_map = self._grp_text_map(logic, calc)
         if not grp_text_map_copy is None:
@@ -239,7 +241,7 @@ class View(object):
             calc,
             self._kwargs.get('exclude', None),
             self._kwargs.get('rescale', None)
-            )
+        )
 
     def translate_metric(self, text_key=None, set_value=False):
         if not (self.is_stat() or self.is_base() or self.is_sum()):
@@ -293,7 +295,7 @@ class View(object):
     def _update_mi_value(self, axis='x', new_val=None):
         names = ['Question', 'Values']
         q_level = self.dataframe.index.get_level_values(0)[0]
-        vals =[q_level, [new_val]]
+        vals = [q_level, [new_val]]
         self.dataframe.index = pd.MultiIndex.from_product(vals, names=names)
         return None
 
@@ -302,7 +304,8 @@ class View(object):
         if conditionals: conditionals = list(reversed(conditionals))
         logic_codes = []
         for grp in logic:
-            if any(isinstance(val, (tuple, dict)) for val in list(grp.values())):
+            if any(isinstance(val, (tuple, dict)) for val in
+                   list(grp.values())):
                 codes = conditionals.pop()
                 logic_codes.append(codes)
             else:
@@ -311,7 +314,7 @@ class View(object):
                     grp = copy.deepcopy(grp)
                     expand_cond = grp['expand']
                     del grp['expand']
-                codes = '{'+','.join(map(str, list(grp.values())[0]))+'}'
+                codes = '{' + ','.join(map(str, list(grp.values())[0])) + '}'
                 if expand_cond is None:
                     logic_codes.append("{}[{}]".format(axis, codes))
                 elif expand_cond == 'after':
@@ -338,12 +341,14 @@ class View(object):
                 x_values = [x if not x in self.rescaling()
                             else self.rescaling()[x] for x in x_values]
             if self.missing() or self.rescaling():
-                condition = 'x[{}]'.format('{'+','.join(map(str, x_values))+'}')
+                condition = 'x[{}]'.format(
+                    '{' + ','.join(map(str, x_values)) + '}')
             else:
                 condition = 'x' if self._kwargs.get('axis', 'x') == 'x' else 'y'
         except:
             if self.missing():
-                code_excl = '{' + ','.join([str(m) for m in self.missing()]) + '}'
+                code_excl = '{' + ','.join(
+                        [str(m) for m in self.missing()]) + '}'
                 condition = 'x~{}'.format(code_excl)
             else:
                 condition = 'x' if self._kwargs.get('axis', 'x') == 'x' else 'y'
@@ -398,14 +403,14 @@ class View(object):
         else:
             condition = 'x' if self._kwargs.get('axis', 'x') == 'x' else 'y'
         if calc is not None:
-                calc_cond = self._calc_condition(logic, condition, calc)
-                if not self._kwargs.get('calc_only', False):
-                    if logic:
-                        condition = '{},{}'.format(','.join(condition), calc_cond)
-                    else:
-                        condition = '{},{}'.format(condition, calc_cond)
+            calc_cond = self._calc_condition(logic, condition, calc)
+            if not self._kwargs.get('calc_only', False):
+                if logic:
+                    condition = '{},{}'.format(','.join(condition), calc_cond)
                 else:
-                    condition = calc_cond
+                    condition = '{},{}'.format(condition, calc_cond)
+            else:
+                condition = calc_cond
         else:
             if logic: condition = ','.join(condition)
         return condition
@@ -477,7 +482,6 @@ class View(object):
         else:
             return False
 
-
     def is_net(self):
         """
         Tests if the View is a code group/net aggregation.
@@ -527,7 +531,7 @@ class View(object):
         if self._is_test():
             teststr = self._notation.split('|')[1].split('.')
             if teststr[1] == 'means':
-                return float(teststr[3].split('+')[0])/100
+                return float(teststr[3].split('+')[0]) / 100
             else:
                 return False
         else:
@@ -540,7 +544,7 @@ class View(object):
         if self._is_test():
             teststr = self._notation.split('|')[1].split('.')
             if teststr[1] == 'props':
-                return float(teststr[3].split('+')[0])/100
+                return float(teststr[3].split('+')[0]) / 100
             else:
                 return False
         else:
@@ -558,8 +562,8 @@ class View(object):
             return False
 
     def has_calc(self):
-        return 'f.c' in self._notation.split('|')[1] and not self.is_cumulative()
-
+        return 'f.c' in self._notation.split('|')[
+            1] and not self.is_cumulative()
 
     def is_cumulative(self):
         """
@@ -622,7 +626,8 @@ class View(object):
                 'sem': 'Std. err. of mean',
                 'sum': 'Total Sum',
                 'lower_q': 'Lower quartile',
-                'upper_q': 'Upper quartile'},
+                'upper_q': 'Upper quartile'
+            },
             # Danish
             'da-DK': {
                 '@': 'Total',
@@ -640,7 +645,8 @@ class View(object):
                 'sem': 'StdErr',
                 'sum': 'Totalsum',
                 'lower_q': 'Nedre kvartil',
-                'upper_q': 'Øvre kvartil'},
+                'upper_q': 'Øvre kvartil'
+            },
             # Swedish
             'sv-SE': {
                 '@': 'Total',
@@ -658,7 +664,8 @@ class View(object):
                 'sem': 'StdErr',
                 'sum': 'Summa',
                 'lower_q': 'Undre kvartilen',
-                'upper_q': 'Övre kvartilen'},
+                'upper_q': 'Övre kvartilen'
+            },
             # Norwegian
             'nb-NO': {
                 '@': 'Total',
@@ -676,7 +683,8 @@ class View(object):
                 'sem': 'StdErr',
                 'sum': 'Totalsum',
                 'lower_q': 'Nedre kvartil',
-                'upper_q': 'Øvre kvartil'},
+                'upper_q': 'Øvre kvartil'
+            },
             # Finnish
             'fi-FI': {
                 '@': 'Total',
@@ -694,7 +702,8 @@ class View(object):
                 'sem': 'StdErr',
                 'sum': 'Totalsum',
                 'lower_q': 'Alakvartiili',
-                'upper_q': 'Yläkvartiili'},
+                'upper_q': 'Yläkvartiili'
+            },
             # French
             'fr-FR': {
                 '@': 'Total',
@@ -712,7 +721,8 @@ class View(object):
                 'sem': 'StdErr',
                 'sum': 'Totalsum',
                 'lower_q': 'Quartile inférieur',
-                'upper_q': 'Quartile supérieur'},
+                'upper_q': 'Quartile supérieur'
+            },
             # Italian
             'it-IT': {
                 '@': 'Total',
@@ -730,7 +740,8 @@ class View(object):
                 'sem': 'Std. err. of mean',
                 'sum': 'Total Sum',
                 'lower_q': 'Lower quartile',
-                'upper_q': 'Upper quartile'},
+                'upper_q': 'Upper quartile'
+            },
             # Spanish
             'es-ES': {
                 '@': 'Total',
@@ -748,7 +759,8 @@ class View(object):
                 'sem': 'Std. err. of mean',
                 'sum': 'Total Sum',
                 'lower_q': 'Lower quartile',
-                'upper_q': 'Upper quartile'},
+                'upper_q': 'Upper quartile'
+            },
             # German
             'de-DE': {
                 '@': 'Gesamt',
@@ -766,7 +778,8 @@ class View(object):
                 'sem': 'StdErr',
                 'sum': 'Summe',
                 'lower_q': '25% Perzentil',
-                'upper_q': '75% Perzentil'}
+                'upper_q': '75% Perzentil'
+            }
         }
         for lang in mdict:
             for key in mdict[lang]:
