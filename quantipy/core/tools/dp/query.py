@@ -1,6 +1,11 @@
-import pandas as pd
-import quantipy as qp
 import re
+
+import pandas as pd
+from pandas.util.version import Version
+
+import quantipy as qp
+from quantipy.version import pandas_version
+
 
 def get_views(qp_structure):
     ''' Generator replacement for nested loops to return all view objects
@@ -16,6 +21,7 @@ def get_views(qp_structure):
                 yield item
         else:
             yield v
+
 
 def get_variable_types(data, meta):
     """ Returns a dict of variable types to lists of variable names.
@@ -53,9 +59,10 @@ def get_variable_types(data, meta):
         types[meta['masks'][mask]['type']].append(mask)
 
     if not_found:
-        print('%s not found in meta file. Ignored.' %(not_found))
+        print('%s not found in meta file. Ignored.' % (not_found))
 
     return types
+
 
 def uniquify_list(l):
     # De-dupe keys so far:
@@ -65,6 +72,7 @@ def uniquify_list(l):
     seen_add = seen.add
     l = [x for x in l if x not in seen and not seen_add(x)]
     return l
+
 
 def get_tests_slicer(s, reverse=False):
     """
@@ -80,6 +88,10 @@ def get_tests_slicer(s, reverse=False):
     ]
     return tests_slicer
 
+
+_pandas_sort_index_changed_version = Version('0.19.2')
+
+
 def shake(l):
     """
     De-dupe and reorder view keys in l for request_views.
@@ -88,11 +100,13 @@ def shake(l):
     s = pd.Series(uniquify_list(l))
     df = pd.DataFrame(s.str.split('|').tolist())
     df.insert(0, 'view', s)
-    if pd.__version__ >= '0.19.2':
+
+    if pandas_version >= _pandas_sort_index_changed_version:
         df.sort_values(by=[2, 1], inplace=True)
     else:
         df.sort_index(by=[2, 1], inplace=True)
     return df
+
 
 def shake_nets(l):
     """
@@ -101,6 +115,7 @@ def shake_nets(l):
 
     l = shake(l)['view'].values.tolist()
     return l
+
 
 def shake_descriptives(l, descriptives):
     """
@@ -119,11 +134,11 @@ def shake_descriptives(l, descriptives):
             mean_found = False
             tests_done = False
             for idx in s.index:
-                if s[idx]=='d.{}'.format(desc):
+                if s[idx] == 'd.{}'.format(desc):
                     slicer.append(idx)
-                    if desc=='mean':
+                    if desc == 'mean':
                         mean_found = True
-                if desc=='mean' and mean_found and not tests_done:
+                if desc == 'mean' and mean_found and not tests_done:
                     tests_slicer = get_tests_slicer(s)
                     slicer.extend(tests_slicer)
                     tests_done = True
@@ -132,6 +147,7 @@ def shake_descriptives(l, descriptives):
     l = s.values.tolist()
 
     return l
+
 
 def request_views(stack, data_key=None, filter_key=None, weight=None,
                   frequencies=True, default=False, nets=True,
@@ -247,7 +263,7 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             'grouped_views': {'c': [], 'p': [], 'cp': []}
         }
         xks_views = {
-            xk: [vk for vk in described.loc[described['x']==xk]['view']]
+            xk: [vk for vk in described.loc[described['x'] == xk]['view']]
             for xk in xks
         }
     else:
@@ -269,7 +285,7 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
     if frequencies:
         cs = ['x|f|:||%s|counts' % (weight)]
         ps = ['x|f|:|y|%s|c%%' % (weight)]
-        cps = cs[:] + ps [:]
+        cps = cs[:] + ps[:]
         csc = ['x|f.c:f|x++:||%s|counts_cumsum' % (weight)]
         psc = ['x|f.c:f|x++:|y|%s|c%%_cumsum' % (weight)]
         cpsc = csc[:] + psc[:]
@@ -284,7 +300,7 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
     if default:
         dcs = ['x|default|:||%s|default' % (weight)]
         dps = ['x|default|:||%s|default' % (weight)]
-        dcps = cs[:] + ps [:]
+        dcps = cs[:] + ps[:]
 
         cs.extend(dcs)
         ps.extend(dps)
@@ -303,7 +319,7 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
         # Remove leading 0
         if not isinstance(level, str):
             level = str(level)
-        if level[0]=='0': level = level[1:]
+        if level[0] == '0': level = level[1:]
         if level in list(levels_ref.keys()):
             lvls.append(levels_ref[level])
         elif not re.match('\.[0-9]$', level) is None:
@@ -322,11 +338,11 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             props_test_views = [
                 v for v in all_views
                 if 't.props.{}{}'.format(
-                    mimic,
-                    level
+                        mimic,
+                        level
                 ) in v
-                and v.split('|')[2]==':'
-                and v.split('|')[4]==weight
+                   and v.split('|')[2] == ':'
+                   and v.split('|')[4] == weight
             ]
             cs.extend(props_test_views)
             ps.extend(props_test_views)
@@ -337,11 +353,11 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             props_test_views = [
                 v for v in all_views
                 if 't.props.{}{}'.format(
-                    mimic,
-                    level
+                        mimic,
+                        level
                 ) in v
-                and v.split('|')[2]=='x++:'
-                and v.split('|')[4]==weight
+                   and v.split('|')[2] == 'x++:'
+                   and v.split('|')[4] == weight
             ]
             csc.extend(props_test_views)
             psc.extend(props_test_views)
@@ -352,21 +368,21 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
         net_cs = [
             [v] for v in all_views
             if v.split('|')[1].startswith('f')
-            and v.split('|')[2].startswith('x[')
-            and v.split('|')[3]==''
-            and v.split('|')[4]==weight
+               and v.split('|')[2].startswith('x[')
+               and v.split('|')[3] == ''
+               and v.split('|')[4] == weight
         ]
         net_ps = [
             [v] for v in all_views
             if v.split('|')[1].startswith('f')
-            and v.split('|')[2].startswith('x[')
-            and v.split('|')[3]=='y'
-            and v.split('|')[4]==weight
+               and v.split('|')[2].startswith('x[')
+               and v.split('|')[3] == 'y'
+               and v.split('|')[4] == weight
         ]
         net_cps = []
         for vc in net_cs:
             for vp in net_ps:
-                if  vc[0] == vp[0].replace('|y|', '||'):
+                if vc[0] == vp[0].replace('|y|', '||'):
                     net_cps.append([vc[0], vp[0]])
                     break
 
@@ -379,16 +395,16 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
                     # Net test views
                     net_test_views.extend([
                         v for v in all_views
-                        if v.split('|')[1]=='t.props.{}{}'.format(
-                            mimic,
-                            level
+                        if v.split('|')[1] == 't.props.{}{}'.format(
+                                mimic,
+                                level
                         )
-                        and v.split('|')[2].startswith('x[')
-                        and v.split('|')[4]==weight
+                           and v.split('|')[2].startswith('x[')
+                           and v.split('|')[4] == weight
                     ])
             for i, vc in enumerate(net_cs):
                 for vt in net_test_views:
-                    eq_relation = vc[0].split('|')[2]  == vt.split('|')[2]
+                    eq_relation = vc[0].split('|')[2] == vt.split('|')[2]
                     eq_weight = vc[0].split('|')[4] == vt.split('|')[4]
                     if eq_relation and eq_weight:
                         net_cs[i].append(vt)
@@ -404,14 +420,14 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
         sums_cs = [
             [v] for v in all_views
             if v.split('|')[3] == ''
-            and v.split('|')[4] == weight
-            and v.split('|')[-1].endswith('_sum')
+               and v.split('|')[4] == weight
+               and v.split('|')[-1].endswith('_sum')
         ]
         sums_ps = [
             [v] for v in all_views
             if v.split('|')[3] == 'y'
-            and v.split('|')[4] == weight
-            and v.split('|')[-1].endswith('_sum')
+               and v.split('|')[4] == weight
+               and v.split('|')[-1].endswith('_sum')
         ]
 
         if sums_cs:
@@ -428,7 +444,6 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
         sum_chains = [sums_cs_flat, sums_ps_flat, sums_cps_flat]
         sum_gvs = [sums_cs, sums_ps, sums_cps]
 
-
     # Descriptive statistics views
     if descriptives:
         views = {}
@@ -436,25 +451,24 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             views[descriptive] = [
                 [v] for v in all_views
                 if v.split('|')[1] == 'd.{}'.format(descriptive)
-                and v.split('|')[4] == weight
+                   and v.split('|')[4] == weight
             ]
 
             # Column tests
-            if descriptive=='mean' and coltests:
+            if descriptive == 'mean' and coltests:
                 means_test_views = []
                 for level in sig_levels:
-
                     # Means test views
                     means_test_views.extend([
                         v for v in all_views
-                        if v.split('|')[1]=='t.means.{}{}'.format(
-                            mimic,
-                            level
+                        if v.split('|')[1] == 't.means.{}{}'.format(
+                                mimic,
+                                level
                         )
-                        and v.split('|')[4]==weight
+                           and v.split('|')[4] == weight
                     ])
 
-        base_desc =  descriptives[0]
+        base_desc = descriptives[0]
         if 'mean' in descriptives and coltests:
             for i, vbd in enumerate(views['mean']):
                 for vt in means_test_views:
@@ -467,7 +481,8 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             for i, vbd in enumerate(views[base_desc]):
                 for rem_desc in descriptives[1:]:
                     for vrd in views[rem_desc]:
-                        eq_relation = vbd[0].split('|')[2]  == vrd[0].split('|')[2]
+                        eq_relation = vbd[0].split('|')[2] == vrd[0].split('|')[
+                            2]
                         eq_weight = vbd[0].split('|')[4] == vrd[0].split('|')[4]
                         if eq_relation and eq_weight:
                             views[base_desc][i].extend(vrd)
@@ -480,7 +495,7 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
     if by_x:
         xks = described['x'].unique().tolist()
         all_views = {
-            xk: described.loc[described['x']==xk]['view'].unique().tolist()
+            xk: described.loc[described['x'] == xk]['view'].unique().tolist()
             for xk in xks
         }
 
@@ -520,7 +535,6 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             requested_views['get_chain']['p'].extend(net_ps_flat)
             requested_views['get_chain']['cp'].extend(net_cps_flat)
 
-
         requested_views['grouped_views']['c'].extend(net_cs)
         requested_views['grouped_views']['p'].extend(net_ps)
         requested_views['grouped_views']['cp'].extend(net_cps)
@@ -531,12 +545,11 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
         for ci, sum_gv in zip(['c', 'p', 'cp'], sum_gvs):
             requested_views['grouped_views'][ci].extend(sum_gv)
 
-
     if descriptives and desc:
 
         desc_flat = shake_descriptives(
-            [v for item in desc for v in item],
-            descriptives)
+                [v for item in desc for v in item],
+                descriptives)
 
         if by_x:
             for xk in xks:
@@ -581,6 +594,7 @@ def request_views(stack, data_key=None, filter_key=None, weight=None,
             ]
     return requested_views
 
+
 def reorder_set_keys(view_set):
     """
     Enforces an ordered convention of view keys in given keyed lists.
@@ -605,6 +619,7 @@ def reorder_set_keys(view_set):
         view_set['items'][key] = new_order
 
     return view_set
+
 
 def reorder_test_keys(views):
     """
@@ -637,14 +652,14 @@ def reorder_test_keys(views):
             for vk2 in views:
                 pos2, agg2, relation2, rel_to2, weight2, name2 = vk2.split('|')
                 if 't.props.Dim' in agg2:
-                    if relation1==relation2:
+                    if relation1 == relation2:
                         new_order.append(vk2)
         elif agg1 == 'd.mean':
             new_order.append(vk1)
             for vk2 in views:
                 pos2, agg2, relation2, rel_to2, weight2, name2 = vk2.split('|')
                 if 't.means.Dim' in agg2:
-                    if relation1==relation2:
+                    if relation1 == relation2:
                         new_order.append(vk2)
         elif agg1 in ['d.stddev', 'd.sem', 'nps']:
             new_order.append(pos)

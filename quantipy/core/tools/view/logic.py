@@ -1,15 +1,21 @@
-import pandas as pd
+from operator import eq, ge, gt, le, lt, ne
 
-from operator import lt, le, eq, ne, ge, gt
+import pandas as pd
+from pandas.core.index import Index
+from pandas.util.version import Version
+
+from quantipy.version import pandas_version
+
 __op_symbol__ = {lt: '<', le: '<=', eq: '', ne: '!=', ge: '>=', gt: '>'}
 
-from pandas.core.index import Index
 __index_symbol__ = {
     Index.union: ',',
     Index.intersection: '&',
     Index.difference: '~',
 }
+
 __index_symbol__[Index.symmetric_difference] = '^'
+
 
 def verify_logic_values(values, func_name):
     """ Verifies that the values given are a list of ints.
@@ -30,19 +36,19 @@ def verify_logic_values(values, func_name):
         for value in values:
             if not isinstance(value, int):
                 raise TypeError(
-                    "The values given to %s() are not correctly "
-                    "typed. Expected list of <int>, found a %s." % (
-                        func_name,
-                        type(value)
-                    )
+                        "The values given to %s() are not correctly "
+                        "typed. Expected list of <int>, found a %s." % (
+                            func_name,
+                            type(value)
+                        )
                 )
     else:
         raise TypeError(
-            "The values given to %s() must be given as a list. "
-            "Expected a <list>, found a %s" % (
-                func_name,
-                type(values)
-            )
+                "The values given to %s() must be given as a list. "
+                "Expected a <list>, found a %s" % (
+                    func_name,
+                    type(values)
+                )
         )
 
 
@@ -64,11 +70,11 @@ def verify_logic_series(series, func_name):
     """
     if not series.dtype in ['object', 'int64', 'float64']:
         raise TypeError(
-            "The series given to %s() must be a supported dtype. "
-            "Expected 'object', 'int64' or 'float64', found a '%s'." % (
-                func_name,
-                series.dtype
-            )
+                "The series given to %s() must be a supported dtype. "
+                "Expected 'object', 'int64' or 'float64', found a '%s'." % (
+                    func_name,
+                    series.dtype
+                )
         )
 
 
@@ -96,68 +102,69 @@ def verify_count_responses(responses, func_name):
         responses = [responses]
 
     if not len(responses) in [1, 2, 3]:
-        raise IndexError (
-            "The responses list given to %s() must have "
-            "either 1, 2 or 3 items in the form: "
-            "[target_count] or "
-            "[min, max] or "
-            "[min, max, [values subset]] or "
-            "[<operator_function>, numerator] or "
-            "[<operator_function>, numerator, [values subset]]. "
-            "Found %s." % (func_name, responses)
+        raise IndexError(
+                "The responses list given to %s() must have "
+                "either 1, 2 or 3 items in the form: "
+                "[target_count] or "
+                "[min, max] or "
+                "[min, max, [values subset]] or "
+                "[<operator_function>, numerator] or "
+                "[<operator_function>, numerator, [values subset]]. "
+                "Found %s." % (func_name, responses)
         )
 
     if isinstance(responses[0], tuple):
-        if not responses[0][0] in [_is_lt, _is_le, _is_eq, _is_ne, _is_ge, _is_gt]:
-            raise TypeError (
-                "The binary function given to %s() is not recognized "
-                "Found %s." % (func_name, responses)
+        if not responses[0][0] in [_is_lt, _is_le, _is_eq, _is_ne, _is_ge,
+                                   _is_gt]:
+            raise TypeError(
+                    "The binary function given to %s() is not recognized "
+                    "Found %s." % (func_name, responses)
             )
         if not isinstance(responses[0][1], int):
-            raise TypeError (
-                "The numerator given to %s() is "
-                "incorrectly typed. It must be <int>. "
-                "Found %s." % (func_name, responses)
+            raise TypeError(
+                    "The numerator given to %s() is "
+                    "incorrectly typed. It must be <int>. "
+                    "Found %s." % (func_name, responses)
             )
 
-        if len(responses)==2:
+        if len(responses) == 2:
             for value in responses[1]:
                 if not isinstance(value, int):
-                    raise TypeError (
-                        "The values subset given to %s() are"
-                        " not correctly typed. Each value must be "
-                        "<int>. Found %s." % (func_name, responses[1])
+                    raise TypeError(
+                            "The values subset given to %s() are"
+                            " not correctly typed. Each value must be "
+                            "<int>. Found %s." % (func_name, responses[1])
                     )
 
         return responses
 
-    if len(responses)==1:
+    if len(responses) == 1:
         if not isinstance(responses[0], int):
-            raise TypeError (
-                "The count target given to %s() is "
-                "incorrectly typed. It must be <int>. "
-                "Found %s." % (func_name, responses)
+            raise TypeError(
+                    "The count target given to %s() is "
+                    "incorrectly typed. It must be <int>. "
+                    "Found %s." % (func_name, responses)
             )
         return responses
 
     if len(responses) in [2, 3]:
         for value in responses[:2]:
             if not isinstance(value, int):
-                raise TypeError (
-                    "The values subset given to %s() are"
-                    " not correctly typed. Each value must be "
-                    "<int>. Found %s." % (func_name, responses[1])
-                )
-
-    if len(responses)==3:
-
-        if len(responses)==3:
-            for value in responses[2]:
-                if not isinstance(value, int):
-                    raise TypeError (
+                raise TypeError(
                         "The values subset given to %s() are"
                         " not correctly typed. Each value must be "
-                        "<int>. Found %s." % (func_name, responses)
+                        "<int>. Found %s." % (func_name, responses[1])
+                )
+
+    if len(responses) == 3:
+
+        if len(responses) == 3:
+            for value in responses[2]:
+                if not isinstance(value, int):
+                    raise TypeError(
+                            "The values subset given to %s() are"
+                            " not correctly typed. Each value must be "
+                            "<int>. Found %s." % (func_name, responses)
                     )
 
     return responses
@@ -182,10 +189,10 @@ def verify_numeric(value, func_name):
         test = float(value)
     except ValueError:
         raise ValueError(
-            "The value given to is_%s() must be numeric. Found %s." % (
-                func_name,
-                type(value)
-            )
+                "The value given to is_%s() must be numeric. Found %s." % (
+                    func_name,
+                    type(value)
+                )
         )
 
     return value
@@ -212,7 +219,7 @@ def _any_all(series, values, func_name, exclusive=False, _not=False):
         The index of series for rows containing any/all of the given values.
 
     """
-    if series.dtype=='object':
+    if series.dtype == 'object':
         # Get the dichotomous version of series
         dummies = series.str.get_dummies(';')
         # Slice the dummies column-wise for only the targeted values
@@ -235,29 +242,33 @@ def _any_all(series, values, func_name, exclusive=False, _not=False):
                     dummies.columns if not col in values
                 ]
                 other_dummies = dummies[other_cols]
-                other_dummies = other_dummies[(other_dummies.T==1).any()]
+                other_dummies = other_dummies[(other_dummies.T == 1).any()]
             dummies = dummies[cols]
         # Slice the dummies row-wise for only rows with any/all of
         # the targeted responses
         if 'any' in func_name:
             # Apply 'any' logic
-            dummies = dummies[(dummies.T!=0).any()]
+            dummies = dummies[(dummies.T != 0).any()]
             if exclusive:
                 if _not:
-                    exclusive_idx = other_dummies.index.difference(dummies.index)
+                    exclusive_idx = other_dummies.index.difference(
+                            dummies.index)
                     return exclusive_idx
                 else:
-                    exclusive_idx = dummies.index.difference(other_dummies.index)
+                    exclusive_idx = dummies.index.difference(
+                            other_dummies.index)
                     dummies = dummies.loc[exclusive_idx]
         if 'all' in func_name:
             # Apply 'all' logic
-            dummies = dummies[(dummies.T==1).all()]
+            dummies = dummies[(dummies.T == 1).all()]
             if exclusive:
                 if _not:
-                    exclusive_idx = other_dummies.index.difference(dummies.index)
+                    exclusive_idx = other_dummies.index.difference(
+                            dummies.index)
                     return exclusive_idx
                 else:
-                    exclusive_idx = dummies.index.difference(other_dummies.index)
+                    exclusive_idx = dummies.index.difference(
+                            other_dummies.index)
                     dummies = dummies.loc[exclusive_idx]
 
         if _not:
@@ -271,7 +282,7 @@ def _any_all(series, values, func_name, exclusive=False, _not=False):
     elif series.dtype in ['int64', 'float64']:
         # Slice the series row-wise for only rows with any/all of the
         # targets responses
-        if func_name=='any' or (func_name=='all' and len(values)==1):
+        if func_name == 'any' or (func_name == 'all' and len(values) == 1):
             result = series[series.isin(values)].dropna()
         else:
             # has_all() for multiple values is being requested on a
@@ -294,7 +305,7 @@ def _any_all(series, values, func_name, exclusive=False, _not=False):
 
     else:
         raise TypeError(
-            "The dtype '%s' of series is incompatible with has_%s()" %
+                "The dtype '%s' of series is incompatible with has_%s()" %
                 series.dtype,
                 func_name
         )
@@ -605,7 +616,7 @@ def _count(series, responses, exclusive=False, _not=False):
         # pd 0.25 includes a dummy col for 'nan' but 0.24 didn't
         if 'nan' in dummies.columns:
             dummies = dummies.drop('nan', axis=1)
-        if dummies.columns.dtype=='object':
+        if dummies.columns.dtype == 'object':
             dummies.columns = [int(float(col)) for col in dummies.columns]
         try:
             if isinstance(responses[0], tuple):
@@ -628,7 +639,7 @@ def _count(series, responses, exclusive=False, _not=False):
                         dummies.columns if not col in values
                     ]
                     other_dummies = dummies[other_cols]
-                    other_dummies = other_dummies[(other_dummies.T==1).any()]
+                    other_dummies = other_dummies[(other_dummies.T == 1).any()]
                 dummies = dummies[cols]
         except:
             pass
@@ -648,11 +659,11 @@ def _count(series, responses, exclusive=False, _not=False):
             try:
                 _max = responses[1]
                 # Get a boolean slicing mask for use on dummies
-                mask = (count>=_min) & (count<=_max)
+                mask = (count >= _min) & (count <= _max)
             except:
                 _max = None
                 # Get a boolean slicing mask for use on dummies
-                mask = count==_min
+                mask = count == _min
 
         # Slice the dummies row-wise for only rows with the targeted
         # count of responses
@@ -662,14 +673,15 @@ def _count(series, responses, exclusive=False, _not=False):
             dummies = dummies.loc[exclusive_idx]
 
         if _not:
-            dummies = series.loc[series.index.difference(dummies.index)].dropna()
+            dummies = series.loc[
+                series.index.difference(dummies.index)].dropna()
 
         # Return the index
         return dummies.index
 
     else:
         raise TypeError(
-            "The series given to has_count() must be a supported dtype."
+                "The series given to has_count() must be a supported dtype."
         )
 
 
@@ -1094,7 +1106,7 @@ def _symmetric_difference(idxs):
     """
     idx = idxs[0]
     for idx_part in idxs[1:]:
-        if pd.__version__ == '0.19.2':
+        if pandas_version >= Version('0.19.2'):
             idx = idx.symmetric_difference(idx_part)
         else:
             idx = idx.symmetric_difference(idx_part)
@@ -1214,26 +1226,26 @@ def get_logic_key_chunk(func, values, exclusive=False):
                 __op_symbol__[op_func],
                 numerator
             )
-            if len(values)==2:
+            if len(values) == 2:
                 values = values[1]
                 values = [str(v) for v in values]
             else:
                 values = None
         else:
             op_func = None
-            if len(values)>1:
+            if len(values) > 1:
                 _max = values[1]
             else:
                 _max = None
                 min_max = _min
-            if len(values)==3:
+            if len(values) == 3:
                 values = values[2]
                 values = [str(v) for v in values]
             else:
                 values = None
 
         if not _max is None:
-            if _min==_max:
+            if _min == _max:
                 min_max = _min
                 max = None
             else:
@@ -1310,7 +1322,7 @@ def resolve_logic(series, logic, data):
         if type(wildcard) == bytes:
             wildcard = wildcard.decode('utf8')
         if isinstance(logic, str):
-            idx = data[data[wildcard]==logic].index
+            idx = data[data[wildcard] == logic].index
             vkey = logic
         else:
             if isinstance(logic, list):
@@ -1325,10 +1337,10 @@ def resolve_logic(series, logic, data):
             logic = has_any([logic])
 
         if logic[0] in [
-                _has_any, _not_any,
-                _has_all, _not_all,
-                _has_count, _not_count
-            ]:
+            _has_any, _not_any,
+            _has_all, _not_all,
+            _has_count, _not_count
+        ]:
             idx, vkey = resolve_func_logic(series, logic)
 
         elif logic[0] in [_is_lt, _is_le, _is_eq, _is_ne, _is_ge, _is_gt]:
@@ -1337,7 +1349,8 @@ def resolve_logic(series, logic, data):
             idx = func(series, value)
             vkey = get_logic_key_chunk(func, value)
 
-        elif logic[0] in [_union, _intersection, _difference, _symmetric_difference]:
+        elif logic[0] in [_union, _intersection, _difference,
+                          _symmetric_difference]:
             set_func = logic[0]
             idx, vkey = apply_set_theory(set_func, series, logic[1], data)
 
@@ -1388,9 +1401,9 @@ def get_logic_index(series, logic, data=None):
         idx, vkey = resolve_logic(series, logic, data)
 
     else:
-        raise TypeError (
-            "get_logic_index() recieved a non-tuple logical chunk. "
-            "%s" % (logic)
+        raise TypeError(
+                "get_logic_index() recieved a non-tuple logical chunk. "
+                "%s" % (logic)
         )
 
     vkey = 'x[%s]:y' % (vkey)

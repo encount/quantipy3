@@ -1,10 +1,14 @@
-import re
-import pandas as pd
-from collections import OrderedDict
 import copy
-import quantipy as qp
-import numpy as np
+import re
 import warnings
+from collections import OrderedDict
+
+import numpy as np
+from pandas.util.version import Version
+
+import quantipy as qp
+from quantipy.version import pandas_version
+
 
 class Rules(object):
 
@@ -338,7 +342,7 @@ class Rules(object):
                 v in list(net_groups.keys())) and not v in fix_codes]
         # sort between groups
         if between:
-            if pd.__version__ == '0.19.2':
+            if pandas_version >= Version('0.19.2'):
                 temp_df = df.loc[sort].sort_values(sort_col, 0, ascending=ascending)
             else:
                 temp_df = df.loc[sort].sort_index(0, sort_col, ascending=ascending)
@@ -360,7 +364,7 @@ class Rules(object):
                 fixed_in_g = [v for v in g[1:] if v in fix_codes]
                 sort = [(name, v) for v in g[1:] if not v in fixed_in_g]
                 if within:
-                    if pd.__version__ == '0.19.2':
+                    if pandas_version >= Version('0.19.2'):
                         temp_df = df.loc[sort].sort_values(sort_col, 0, ascending=ascending)
                     else:
                         temp_df = df.loc[sort].sort_index(0, sort_col, ascending=ascending)
@@ -462,7 +466,7 @@ class Rules(object):
             except:
                 sort_on = str(sort_on)
             sort_col = (name_y, sort_on)
-            if pd.__version__ == '0.19.2':
+            if pandas_version >= Version('0.19.2'):
                 df_sorted = df.loc[s_sort].sort_values(sort_col, 0, ascending)
             else:
                 df_sorted = df.loc[s_sort].sort_index(0, sort_col, ascending)

@@ -1,15 +1,16 @@
 import numpy as np
 import pandas as pd
-import quantipy as qp
+from pandas.util.version import Version
 
+import quantipy as qp
 from quantipy.core.helpers.functions import (
-    get_rules_slicer,
     get_rules,
     paint_dataframe,
     rule_viable_axes
 )
-
 from quantipy.core.rules import Rules
+from quantipy.version import pandas_version
+
 
 def set_fullname(pos, method_name, relation, rel_to, weights, view_name):
     '''
@@ -71,7 +72,9 @@ def set_fullname(pos, method_name, relation, rel_to, weights, view_name):
     if relation is None:
         relation = ''
 
-    return '%s|%s|%s|%s|%s|%s' %(pos, method_name, relation, rel_to, weights, view_name)
+    return '%s|%s|%s|%s|%s|%s' % (
+    pos, method_name, relation, rel_to, weights, view_name)
+
 
 def get_std_kwargs(kwargs_dict):
     '''
@@ -93,7 +96,8 @@ def get_std_kwargs(kwargs_dict):
         kwargs_dict.get('weights', None),
         kwargs_dict.get('groups', None),
         kwargs_dict.get('text', '')
-        )
+    )
+
 
 def get_source_key(pos, rel_to, weights):
     '''
@@ -119,7 +123,8 @@ def get_source_key(pos, rel_to, weights):
     else:
         name = 'r%'
 
-    return '%s|frequency|||%s|counts' %(pos, weights)
+    return '%s|frequency|||%s|counts' % (pos, weights)
+
 
 def get_rel_to_key(rel_to, weights):
     '''
@@ -140,9 +145,10 @@ def get_rel_to_key(rel_to, weights):
     if weights is None:
         weights = ''
     if rel_to == 'y':
-        return 'x|frequency|x:y||%s|cbase' %(weights)
+        return 'x|frequency|x:y||%s|cbase' % (weights)
     else:
-        return 'y|frequency|y:x||%s|rbase' %(weights)
+        return 'y|frequency|y:x||%s|rbase' % (weights)
+
 
 def set_num_stats_relation(link, exclude, rescale):
     '''
@@ -163,9 +169,11 @@ def set_num_stats_relation(link, exclude, rescale):
     try:
         if '[{' in link.x:
             set_name = link.x.split('[{')[0] + link.x.split('}]')[-1]
-            x_values = [int(x['value']) for x in link.get_meta()['lib']['values'][set_name]]
+            x_values = [int(x['value']) for x in
+                        link.get_meta()['lib']['values'][set_name]]
         else:
-            x_values = [int(x['value']) for x in link.get_meta()['columns'][link.x]['values']]
+            x_values = [int(x['value']) for x in
+                        link.get_meta()['columns'][link.x]['values']]
         if exclude:
             x_values = [x for x in x_values if not x in exclude]
         if rescale:
@@ -179,6 +187,7 @@ def set_num_stats_relation(link, exclude, rescale):
 
     return relation
 
+
 def get_num_stats_fullname_from_subset(link, subset, weights):
     '''
     '''
@@ -189,12 +198,14 @@ def get_num_stats_fullname_from_subset(link, subset, weights):
     exclude = kwargs.get('exclude', None)
     rescale = kwargs.get('rescale', None)
     relation = set_num_stats_relation(link, exclude, rescale)
-    return 'x|mean|%s||%s|%s' %(relation, weights, subset_name)
+    return 'x|mean|%s||%s|%s' % (relation, weights, subset_name)
+
 
 def get_num_stats_relation_from_fullname(fullname):
     '''
     '''
-    return fullname.split('|',3)[2]
+    return fullname.split('|', 3)[2]
+
 
 def slicex(df, values, keep_margins=True):
     """
@@ -220,7 +231,7 @@ def slicex(df, values, keep_margins=True):
 
     # If the index is from a frequency then the rule
     # should be skipped
-    if df.index.levels[1][0]=='@':
+    if df.index.levels[1][0] == '@':
         return df
 
     name_x = df.index.levels[0][0]
@@ -231,6 +242,7 @@ def slicex(df, values, keep_margins=True):
     df = df.loc[slicer]
 
     return df
+
 
 def sortx(df, sort_on='@', within=True, between=True, ascending=False,
           fixed=None, with_weight='auto'):
@@ -283,7 +295,7 @@ def sortx(df, sort_on='@', within=True, between=True, ascending=False,
     # If the index is from a frequency then the rule
     # should be skipped
     try:
-        if df.index.levels[1][0]=='@':
+        if df.index.levels[1][0] == '@':
             return df
         # Get question names for index and columns from the
         # index/column level 0 values
@@ -313,17 +325,16 @@ def sortx(df, sort_on='@', within=True, between=True, ascending=False,
             sort_col = (name_y, sort_on)
         elif (name_y, str(sort_on)) in df.columns:
             sort_col = (name_y, str(sort_on))
-        if pd.__version__ == '0.19.2':
+        if pandas_version >= Version('0.19.2'):
             df_sorted = df.loc[s_sort].sort_values(sort_col, 0, ascending)
         else:
             df_sorted = df.loc[s_sort].sort_index(0, sort_col, ascending)
         s_sort = df_sorted.index.tolist()
-        df = df.loc[s_all+s_sort+s_fixed]
+        df = df.loc[s_all + s_sort + s_fixed]
         return df
     except UnboundLocalError:
         print('Could not sort on {}'.format(sort_on))
         return df
-
 
 
 def dropx(df, values):
@@ -348,26 +359,27 @@ def dropx(df, values):
 
     # If the index is from a frequency then the rule
     # should be skipped
-    if df.index.levels[1][0]=='@':
+    if df.index.levels[1][0] == '@':
         return df
 
     name_x = df.index.levels[0][0]
     slicer = [(name_x, value) for value in values]
 
     if not all([s in df.index for s in slicer]):
-        raise KeyError (
-            "Some of of the values from the list %s cannot be dropped"
-            " from the dataframe because they were not found in %s."
-            " Be careful that you are not both slicing and/or sorting"
-            " any values that you are also trying to drop." % (
-                values,
-                df.index.tolist()
-            )
+        raise KeyError(
+                "Some of of the values from the list %s cannot be dropped"
+                " from the dataframe because they were not found in %s."
+                " Be careful that you are not both slicing and/or sorting"
+                " any values that you are also trying to drop." % (
+                    values,
+                    df.index.tolist()
+                )
         )
 
     df = df.drop(slicer)
 
     return df
+
 
 def get_dataframe(obj, described=None, loc=None, keys=None,
                   show='values', rules=False, verbose=False):
@@ -420,18 +432,18 @@ def get_dataframe(obj, described=None, loc=None, keys=None,
 
     # Error handling for both loc and keys being None
     if all([arg is None for arg in [loc, keys]]):
-        raise ValueError (
-            "You must provide a value for either loc or keys."
+        raise ValueError(
+                "You must provide a value for either loc or keys."
         )
     if not described is None:
         if not isinstance(described, pd.DataFrame):
-            raise TypeError (
-                "The describe argument must be a pandas.DataFrame."
+            raise TypeError(
+                    "The describe argument must be a pandas.DataFrame."
             )
     # Error handling for both loc and keys being provided
     if all([not arg is None for arg in [loc, keys]]):
-        raise ValueError (
-            "You should not provide values for both loc and keys."
+        raise ValueError(
+                "You should not provide values for both loc and keys."
         )
 
     if not loc is None:
@@ -468,14 +480,14 @@ def get_dataframe(obj, described=None, loc=None, keys=None,
 
     try:
         df = obj[dk][fk][xk][yk][vk].dataframe.copy()
-        x_is_block = len(vk.split("|")[2].split(":")[0].split("x"))>1
+        x_is_block = len(vk.split("|")[2].split(":")[0].split("x")) > 1
         x_is_descriptive = vk.split("|")[1].startswith('d.')
         y_is_condensed = vk.split("|")[2].split(":")[1].startswith('y')
     except:
-        raise AttributeError (
-            "The aggregation for this view must have failed,"
-            " expected View instance under a view key that"
-            " did already exist but found a Stack instead."
+        raise AttributeError(
+                "The aggregation for this view must have failed,"
+                " expected View instance under a view key that"
+                " did already exist but found a Stack instead."
         )
 
     if isinstance(obj, qp.Chain):
@@ -487,16 +499,15 @@ def get_dataframe(obj, described=None, loc=None, keys=None,
         meta = obj[dk].meta
         data = obj[dk][fk].data
         weight_notation = vk.split('|')[4]
-        weight = None if weight_notation=='' else weight_notation
+        weight = None if weight_notation == '' else weight_notation
 
-#         if (yk, 'All') in df.columns:
-#             print df
-#             cols = [(yk, 'All')] + [
-#                 col
-#                 for col in df.columns
-#                 if col!=(yk, 'All')]
-#             df = df[cols]
-
+        #         if (yk, 'All') in df.columns:
+        #             print df
+        #             cols = [(yk, 'All')] + [
+        #                 col
+        #                 for col in df.columns
+        #                 if col!=(yk, 'All')]
+        #             df = df[cols]
 
         if rules:
             if isinstance(rules, bool):
@@ -520,10 +531,10 @@ def get_dataframe(obj, described=None, loc=None, keys=None,
                 if rules:
                     rules_x = get_rules(meta, xk, 'x')
                     if any([x_is_block, x_is_descriptive]):
-                         rules_x = None
+                        rules_x = None
                     if not rules_x is None and 'x' in rules:
                         f = qp.core.tools.dp.prep.frequency(
-                            meta, data, x=xk, weight=weight, rules=True)
+                                meta, data, x=xk, weight=weight, rules=True)
                         if not (xk, 'All') in df.index:
                             f = f.drop((xk, 'All'), axis=0)
                         df = df.loc[f.index.values]
@@ -532,11 +543,11 @@ def get_dataframe(obj, described=None, loc=None, keys=None,
                     if any([y_is_condensed]):
                         rules_y = None
                     if not rules_y is None and 'y' in rules:
-        #                 print xk, yk, vk
-        #                 if vk == 'x|f|:y|||rbase':
-        #                     print ''
+                        #                 print xk, yk, vk
+                        #                 if vk == 'x|f|:y|||rbase':
+                        #                     print ''
                         f = qp.core.tools.dp.prep.frequency(
-                            meta, data, y=yk, weight=weight, rules=True)
+                                meta, data, y=yk, weight=weight, rules=True)
                         if not (yk, 'All') in df.index:
                             f = f.drop((yk, 'All'), axis=1)
                         df = df[f.columns.values]
@@ -544,8 +555,8 @@ def get_dataframe(obj, described=None, loc=None, keys=None,
                         if vk.split('|')[1].startswith('t.'):
                             df = qp.core.tools.dp.prep.verify_test_results(df)
 
-        if show!='values':
-            if show=='text':
+        if show != 'values':
+            if show == 'text':
                 text_key = meta['lib']['default text']
             else:
                 text_key = show

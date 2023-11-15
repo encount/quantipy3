@@ -1,12 +1,15 @@
-import pandas as pd
-from quantipy.core.tools.qp_decorators import modify
-from collections import OrderedDict
-from itertools import chain
-from operator import add, sub, mul
-from operator import truediv as div
-
 import re
 import warnings
+from collections import OrderedDict
+from itertools import chain
+from operator import add, mul, sub, truediv as div
+
+import pandas as pd
+from pandas.util.version import Version
+
+from quantipy.core.tools.qp_decorators import modify
+from quantipy.version import pandas_version
+
 
 class ViewManager(object):
     def __init__(self, stack):
@@ -23,7 +26,6 @@ class ViewManager(object):
         self._base_views = None
         self._grouped_views = None
         return None
-
 
     def _base_len(self):
         """
@@ -100,7 +102,8 @@ class ViewManager(object):
                     'counts_colpct_rowpct']
         valid_bases = ['auto', 'both', 'weighted', 'unweighted']
         if bases not in valid_bases:
-            err = "'bases must be one of {}, not '{}'!".format(valid_bases, bases)
+            err = "'bases must be one of {}, not '{}'!".format(valid_bases,
+                                                               bases)
             raise ValueError(err)
         self.base_spec = bases
         if cell_items not in valid_ci:
@@ -115,7 +118,8 @@ class ViewManager(object):
             else:
                 data_key = list(stack.keys())[0]
         if not filter_key:
-            no_filter_ph = 'no_filter' in stack[data_key] and list(stack[data_key].keys())
+            no_filter_ph = 'no_filter' in stack[data_key] and list(
+                    stack[data_key].keys())
             if len(list(stack[data_key].keys())) > 1 and not no_filter_ph:
                 err = ("Must provide 'filter_key' if more than one filter is "
                        "applied to the Stack!")
@@ -124,10 +128,11 @@ class ViewManager(object):
                 filter_key = list(stack[data_key].keys())[0]
 
         views = self._request_views(
-            data_key=data_key, filter_key=filter_key, weight=self.weighted,
-            frequencies=self.basics, nets=self.nets, descriptives=self.stats,
-            sums=self.sums_pos, coltests=True if self.tests else False,
-            sig_levels=self.tests if self.tests else [])
+                data_key=data_key, filter_key=filter_key, weight=self.weighted,
+                frequencies=self.basics, nets=self.nets,
+                descriptives=self.stats,
+                sums=self.sums_pos, coltests=True if self.tests else False,
+                sig_levels=self.tests if self.tests else [])
         self._grouped_views = views['grouped_views'][cell_items]
         self.views = views['get_chain'][cell_items]
         # Defining the base view layout vs. all collected views...
@@ -156,8 +161,8 @@ class ViewManager(object):
         return self
 
     def set_bases(self, base='w', gross=False, effective=False, rbase=False,
-                    order=['base', 'gross', 'rbase', 'effective'],
-                    uw_pos='before', sticky_gross=False):
+                  order=['base', 'gross', 'rbase', 'effective'],
+                  uw_pos='before', sticky_gross=False):
         """
         Set the base (sample size) view presentation.
 
@@ -205,7 +210,8 @@ class ViewManager(object):
             if rbase: rbase = 'uw'
         valid_order_items = ['base', 'gross', 'rbase', 'effective']
         if not all(b in valid_order_items for b in order):
-            err = "Items in 'order' must be one of: {}!".format(valid_order_items)
+            err = "Items in 'order' must be one of: {}!".format(
+                    valid_order_items)
             raise ValueError(err)
         # view key definitions
         base_vk = 'x|f|x:||{}|cbase'
@@ -226,7 +232,8 @@ class ViewManager(object):
         base_dict = {'base': [base, uw_base_vk, w_base_vk],
                      'rbase': [rbase, uw_rbase_vk, w_rbase_vk],
                      'gross': [gross, uw_gross_vk, w_gross_vk],
-                     'effective': [effective, uw_effective_vk, w_effective_vk]}
+                     'effective': [effective, uw_effective_vk, w_effective_vk]
+                     }
         # assembling all base types...
         for base_type in order:
             btype = base_dict[base_type][0]
@@ -287,7 +294,8 @@ class ViewManager(object):
         full_grouped_views = []
         flat_gv = list(chain.from_iterable(grouped_views))
 
-        non_grouped = [v for v in self.views[self._base_len():] if v not in flat_gv]
+        non_grouped = [v for v in self.views[self._base_len():] if
+                       v not in flat_gv]
 
         regs, nets, comps, stats, sums = self._get_view_types(grouped_views)
         if switch:
@@ -302,7 +310,7 @@ class ViewManager(object):
         stats.extend(stats2)
         sums.extend(sums2)
         if self.sums_pos == 'bottom':
-            view_collection = regs + comps + nets  + stats + sums
+            view_collection = regs + comps + nets + stats + sums
         elif self.sums_pos == 'mid':
             view_collection = regs + comps + sums + nets + stats
 
@@ -350,16 +358,17 @@ class ViewManager(object):
                 n_views.append(v)
             elif v[0].split('|')[1].startswith('d.'):
                 n_views.append(v)
-            elif len(v) < 3 and any(view.split('|')[1].startswith('t.') for view in v):
+            elif len(v) < 3 and any(
+                    view.split('|')[1].startswith('t.') for view in v):
                 n_views.append(v)
             else:
                 n_views.append(v[1::-1] + v[2:])
         return n_views
 
     def _request_views(self, data_key=None, filter_key=None, weight=None,
-                      frequencies=True, nets=True, descriptives=["mean"],
-                      sums=None, coltests=True, mimic='Dim',
-                      sig_levels=[".05"], x=None, y=None):
+                       frequencies=True, nets=True, descriptives=["mean"],
+                       sums=None, coltests=True, mimic='Dim',
+                       sig_levels=[".05"], x=None, y=None):
         """
         Get structured, request-ready views from ``self.stack``.
 
@@ -458,7 +467,7 @@ class ViewManager(object):
         ci = {'counts': [], 'colpct': [], 'rowpct': [],
               'counts_colpct': [], 'counts_rowpct': [], 'colpct_rowpct': [],
               'counts_colpct_rowpct': []
-             }
+              }
         requested_views = {'get_chain': ci.copy(), 'grouped_views': ci.copy()}
 
         # Base views
@@ -476,10 +485,10 @@ class ViewManager(object):
             cs = ['x|f|:||%s|counts' % (weight)]
             ps = ['x|f|:|y|%s|c%%' % (weight)]
             rps = ['x|f|:|x|%s|r%%' % (weight)]
-            cps = cs[:] + ps [:]
+            cps = cs[:] + ps[:]
             crps = cs[:] + rps[:]
             psrps = ps[:] + rps[:]
-            cpsrps = cs[:] + ps [:] + rps[:]
+            cpsrps = cs[:] + ps[:] + rps[:]
             csc = ['x|f.c:f|x++:||%s|counts_cumsum' % (weight)]
             csc = csc if csc[0] in all_views else []
             psc = ['x|f.c:f|x++:|y|%s|c%%_cumsum' % (weight)]
@@ -510,7 +519,7 @@ class ViewManager(object):
             # Remove leading 0
             if not isinstance(level, str):
                 level = str(level)
-            if level[0]=='0': level = level[1:]
+            if level[0] == '0': level = level[1:]
             if level in list(levels_ref.keys()):
                 lvls.append(levels_ref[level])
             elif not re.match('\.[0-9]$', level) is None:
@@ -529,11 +538,11 @@ class ViewManager(object):
                 props_test_views = [
                     v for v in all_views
                     if 't.props.{}{}'.format(
-                        mimic,
-                        level
+                            mimic,
+                            level
                     ) in v
-                    and v.split('|')[2]==':'
-                    and v.split('|')[4]==weight
+                       and v.split('|')[2] == ':'
+                       and v.split('|')[4] == weight
                 ]
                 cs.extend(props_test_views)
                 ps.extend(props_test_views)
@@ -546,11 +555,11 @@ class ViewManager(object):
                 props_test_views_cumsum = [
                     v for v in all_views
                     if 't.props.{}{}'.format(
-                        mimic,
-                        level
+                            mimic,
+                            level
                     ) in v
-                    and v.split('|')[2]=='x++:'
-                    and v.split('|')[4]==weight
+                       and v.split('|')[2] == 'x++:'
+                       and v.split('|')[4] == weight
                 ]
                 csc.extend(props_test_views_cumsum)
                 psc.extend(props_test_views_cumsum)
@@ -561,44 +570,43 @@ class ViewManager(object):
             net_cs = [
                 [v] for v in all_views
                 if v.split('|')[1].startswith('f')
-                and v.split('|')[2].startswith('x[')
-                and v.split('|')[3]==''
-                and v.split('|')[4]==weight
+                   and v.split('|')[2].startswith('x[')
+                   and v.split('|')[3] == ''
+                   and v.split('|')[4] == weight
             ]
             net_ps = [
                 [v] for v in all_views
                 if v.split('|')[1].startswith('f')
-                and v.split('|')[2].startswith('x[')
-                and v.split('|')[3]=='y'
-                and v.split('|')[4]==weight
+                   and v.split('|')[2].startswith('x[')
+                   and v.split('|')[3] == 'y'
+                   and v.split('|')[4] == weight
             ]
             net_rps = [
                 [v] for v in all_views
                 if v.split('|')[1].startswith('f')
-                and v.split('|')[2].startswith('x[')
-                and v.split('|')[3]=='x'
-                and v.split('|')[4]==weight
+                   and v.split('|')[2].startswith('x[')
+                   and v.split('|')[3] == 'x'
+                   and v.split('|')[4] == weight
             ]
-
 
             net_cps = []
             for vc in net_cs:
                 for vp in net_ps:
-                    if  vc[0] == vp[0].replace('|y|', '||'):
+                    if vc[0] == vp[0].replace('|y|', '||'):
                         net_cps.append([vc[0], vp[0]])
                         break
 
             net_crps = []
             for vc in net_cs:
                 for vp in net_rps:
-                    if  vc[0] == vp[0].replace('|x|', '||'):
+                    if vc[0] == vp[0].replace('|x|', '||'):
                         net_crps.append([vc[0], vp[0]])
                         break
 
             net_psrps = []
             for vc in net_ps:
                 for vp in net_rps:
-                    if  vc[0] == vp[0].replace('|x|', '|y|'):
+                    if vc[0] == vp[0].replace('|x|', '|y|'):
                         net_psrps.append([vc[0], vp[0]])
                         break
 
@@ -606,7 +614,8 @@ class ViewManager(object):
             for vc in net_cs:
                 for vp in net_ps:
                     for vrp in net_rps:
-                        if  vc[0] == vp[0].replace('|y|', '||') and vc[0] == vrp[0].replace('|x|', '||'):
+                        if vc[0] == vp[0].replace('|y|', '||') and vc[0] == vrp[
+                            0].replace('|x|', '||'):
                             net_cpsrps.append([vc[0], vp[0], vrp[0]])
                             break
 
@@ -619,13 +628,15 @@ class ViewManager(object):
                         # Net test views
                         net_test_views.extend([
                             v for v in all_views
-                            if 't.props.{}{}'.format(mimic, level) in v.split('|')[1]
+                            if
+                            't.props.{}{}'.format(mimic, level) in v.split('|')[
+                                1]
                             and v.split('|')[2].startswith('x[')
-                            and v.split('|')[4]==weight
+                            and v.split('|')[4] == weight
                         ])
                 for i, vc in enumerate(net_cs):
                     for vt in net_test_views:
-                        eq_relation = vc[0].split('|')[2]  == vt.split('|')[2]
+                        eq_relation = vc[0].split('|')[2] == vt.split('|')[2]
                         eq_weight = vc[0].split('|')[4] == vt.split('|')[4]
                         if eq_relation and eq_weight:
                             net_cs[i].append(vt)
@@ -649,14 +660,14 @@ class ViewManager(object):
             sums_cs = [
                 [v] for v in all_views
                 if v.split('|')[3] == ''
-                and v.split('|')[4] == weight
-                and v.split('|')[-1].endswith('_sum')
+                   and v.split('|')[4] == weight
+                   and v.split('|')[-1].endswith('_sum')
             ]
             sums_ps = [
                 [v] for v in all_views
                 if v.split('|')[3] == 'y'
-                and v.split('|')[4] == weight
-                and v.split('|')[-1].endswith('_sum')
+                   and v.split('|')[4] == weight
+                   and v.split('|')[-1].endswith('_sum')
             ]
 
             if sums_cs:
@@ -680,7 +691,7 @@ class ViewManager(object):
                 views[descriptive] = [
                     [v] for v in all_views
                     if v.split('|')[1].startswith('d.{}'.format(descriptive))
-                    and v.split('|')[4] == weight
+                       and v.split('|')[4] == weight
                 ]
                 for desv in views[descriptive]:
                     rel = desv[0].split('|')[2]
@@ -689,17 +700,17 @@ class ViewManager(object):
                         rel_w.append(tuple([rel, w]))
 
                 # Column tests
-                if descriptive=='mean' and coltests:
+                if descriptive == 'mean' and coltests:
                     means_test_views = []
                     for level in sig_levels:
                         # Means test views
                         means_test_views.extend([
                             v for v in all_views
                             if v.split('|')[1].startswith('t.means.{}{}'.format(
-                                mimic,
-                                level
+                                    mimic,
+                                    level
                             ))
-                            and v.split('|')[4]==weight
+                               and v.split('|')[4] == weight
                         ])
 
             if 'mean' in descriptives and coltests:
@@ -715,7 +726,8 @@ class ViewManager(object):
                 rel_w_v = []
                 for des in descriptives:
                     for desv in views[des]:
-                        if desv[0].split('|')[2] == rel and desv[0].split('|')[4] == w:
+                        if desv[0].split('|')[2] == rel and desv[0].split('|')[
+                            4] == w:
                             rel_w_v.extend(desv)
                 if rel_w_v:
                     desc.append(rel_w_v)
@@ -731,7 +743,8 @@ class ViewManager(object):
         requested_views['get_chain']['counts_colpct'] = bases + cps + cpsc
         requested_views['get_chain']['counts_rowpct'] = bases + crps + psc
         requested_views['get_chain']['colpct_rowpct'] = bases + psrps + psc
-        requested_views['get_chain']['counts_colpct_rowpct'] = bases + cpsrps + psc
+        requested_views['get_chain'][
+            'counts_colpct_rowpct'] = bases + cpsrps + psc
 
         requested_views['grouped_views']['counts'] = [bases, cs, csc]
         requested_views['grouped_views']['colpct'] = [bases, ps, psc]
@@ -739,7 +752,8 @@ class ViewManager(object):
         requested_views['grouped_views']['counts_colpct'] = [bases, cps, cpsc]
         requested_views['grouped_views']['counts_rowpct'] = [bases, crps, psc]
         requested_views['grouped_views']['colpct_rowpct'] = [bases, psrps, psc]
-        requested_views['grouped_views']['counts_colpct_rowpct'] = [bases, cpsrps, psc]
+        requested_views['grouped_views']['counts_colpct_rowpct'] = [bases,
+                                                                    cpsrps, psc]
 
         if sums == 'mid':
             requested_views['get_chain']['counts'].extend(sums_cs_flat)
@@ -747,37 +761,44 @@ class ViewManager(object):
             requested_views['get_chain']['rowpct'].extend(sums_ps_flat)
             requested_views['get_chain']['counts_colpct'].extend(sums_cps_flat)
             requested_views['get_chain']['counts_rowpct'].extend(sums_ps_flat)
-            requested_views['get_chain']['counts_colpct_rowpct'].extend(sums_cps_flat)
+            requested_views['get_chain']['counts_colpct_rowpct'].extend(
+                    sums_cps_flat)
 
             requested_views['grouped_views']['counts'].extend(sums_cs)
             requested_views['grouped_views']['colpct'].extend(sums_ps)
             requested_views['grouped_views']['rowpct'].extend(sums_ps)
             requested_views['grouped_views']['counts_colpct'].extend(sums_cps)
             requested_views['grouped_views']['counts_rowpct'].extend(sums_ps)
-            requested_views['grouped_views']['counts_colpct_rowpct'].extend(sums_cps)
+            requested_views['grouped_views']['counts_colpct_rowpct'].extend(
+                    sums_cps)
 
         if nets and net_cs and net_ps and net_cps:
             net_cs_flat = self._shake_nets([v for item in net_cs for v in item])
             net_ps_flat = self._shake_nets([v for item in net_ps for v in item])
 
             if net_rps:
-                net_rps_flat = self._shake_nets([v for item in net_rps for v in item])
+                net_rps_flat = self._shake_nets(
+                        [v for item in net_rps for v in item])
             else:
                 net_rps_flat = []
-            net_cps_flat = self._shake_nets([v for item in net_cps for v in item])
+            net_cps_flat = self._shake_nets(
+                    [v for item in net_cps for v in item])
 
             if net_crps:
-                net_crps_flat = self._shake_nets([v for item in net_crps for v in item])
+                net_crps_flat = self._shake_nets(
+                        [v for item in net_crps for v in item])
             else:
                 net_crps_flat = []
 
             if net_psrps:
-                net_psrps_flat = self._shake_nets([v for item in net_psrps for v in item])
+                net_psrps_flat = self._shake_nets(
+                        [v for item in net_psrps for v in item])
             else:
                 net_psrps_flat = []
 
             if net_cpsrps:
-                net_cpsrps_flat = self._shake_nets([v for item in net_cpsrps for v in item])
+                net_cpsrps_flat = self._shake_nets(
+                        [v for item in net_cpsrps for v in item])
             else:
                 net_cpsrps_flat = []
 
@@ -787,7 +808,8 @@ class ViewManager(object):
             requested_views['get_chain']['counts_colpct'].extend(net_cs_flat)
             requested_views['get_chain']['counts_rowpct'].extend(net_crps_flat)
             requested_views['get_chain']['colpct_rowpct'].extend(net_psrps_flat)
-            requested_views['get_chain']['counts_colpct_rowpct'].extend(net_cpsrps_flat)
+            requested_views['get_chain']['counts_colpct_rowpct'].extend(
+                    net_cpsrps_flat)
 
             requested_views['grouped_views']['counts'].extend(net_cs)
             requested_views['grouped_views']['colpct'].extend(net_ps)
@@ -795,13 +817,13 @@ class ViewManager(object):
             requested_views['grouped_views']['counts_colpct'].extend(net_cps)
             requested_views['grouped_views']['counts_rowpct'].extend(net_crps)
             requested_views['grouped_views']['colpct_rowpct'].extend(net_psrps)
-            requested_views['grouped_views']['counts_colpct_rowpct'].extend(net_cpsrps)
+            requested_views['grouped_views']['counts_colpct_rowpct'].extend(
+                    net_cpsrps)
 
         if descriptives and desc:
-
             desc_flat = self._shake_descriptives(
-                [v for item in desc for v in item],
-                descriptives)
+                    [v for item in desc for v in item],
+                    descriptives)
 
             requested_views['get_chain']['counts'].extend(desc_flat)
             requested_views['get_chain']['colpct'].extend(desc_flat)
@@ -809,7 +831,8 @@ class ViewManager(object):
             requested_views['get_chain']['counts_colpct'].extend(desc_flat)
             requested_views['get_chain']['counts_rowpct'].extend(desc_flat)
             requested_views['get_chain']['colpct_rowpct'].extend(desc_flat)
-            requested_views['get_chain']['counts_colpct_rowpct'].extend(desc_flat)
+            requested_views['get_chain']['counts_colpct_rowpct'].extend(
+                    desc_flat)
 
             requested_views['grouped_views']['counts'].extend(desc)
             requested_views['grouped_views']['colpct'].extend(desc)
@@ -817,7 +840,8 @@ class ViewManager(object):
             requested_views['grouped_views']['counts_colpct'].extend(desc)
             requested_views['grouped_views']['counts_rowpct'].extend(desc)
             requested_views['grouped_views']['colpct_rowpct'].extend(desc)
-            requested_views['grouped_views']['counts_colpct_rowpct'].extend(desc)
+            requested_views['grouped_views']['counts_colpct_rowpct'].extend(
+                    desc)
 
         if sums == 'bottom':
             requested_views['get_chain']['counts'].extend(sums_cs_flat)
@@ -825,17 +849,20 @@ class ViewManager(object):
             requested_views['get_chain']['rowpct'].extend(sums_ps_flat)
             requested_views['get_chain']['counts_colpct'].extend(sums_cps_flat)
             requested_views['get_chain']['counts_rowpct'].extend(sums_ps_flat)
-            requested_views['get_chain']['counts_colpct_rowpct'].extend(sums_cps_flat)
+            requested_views['get_chain']['counts_colpct_rowpct'].extend(
+                    sums_cps_flat)
 
             requested_views['grouped_views']['counts'].extend(sums_cs)
             requested_views['grouped_views']['colpct'].extend(sums_ps)
             requested_views['grouped_views']['rowpct'].extend(sums_ps)
             requested_views['grouped_views']['counts_colpct'].extend(sums_cps)
             requested_views['grouped_views']['counts_rowpct'].extend(sums_ps)
-            requested_views['grouped_views']['counts_colpct_rowpct'].extend(sums_cps)
+            requested_views['grouped_views']['counts_colpct_rowpct'].extend(
+                    sums_cps)
 
         # Remove bases and lists with one element
-        for key in ['counts', 'colpct', 'rowpct', 'counts_colpct', 'counts_rowpct', 'colpct_rowpct', 'counts_colpct_rowpct']:
+        for key in ['counts', 'colpct', 'rowpct', 'counts_colpct',
+                    'counts_rowpct', 'colpct_rowpct', 'counts_colpct_rowpct']:
 
             requested_views['grouped_views'][key].pop(0)
             requested_views['grouped_views'][key] = [
@@ -849,9 +876,10 @@ class ViewManager(object):
                     vk
                     for vk in item
                     if vk.split('|')[1] not in ['d.median', 'd.stddev',
-                                                'd.sem', 'd.max', 'd.min', 'd.mean',
+                                                'd.sem', 'd.max', 'd.min',
+                                                'd.mean',
                                                 'd.upper_q', 'd.lower_q'] or
-                    vk.split('|')[1] == 'd.mean' and coltests
+                       vk.split('|')[1] == 'd.mean' and coltests
                 ]
 
             requested_views['grouped_views'][key] = [
@@ -863,7 +891,6 @@ class ViewManager(object):
             if all(not rg for rg in requested_views['grouped_views'][key]):
                 requested_views['grouped_views'][key] = []
         return requested_views
-
 
     @staticmethod
     def _uniquify_list(l):
@@ -901,7 +928,7 @@ class ViewManager(object):
         s = pd.Series(self._uniquify_list(l))
         df = pd.DataFrame(s.str.split('|').tolist())
         df.insert(0, 'view', s)
-        if pd.__version__ == '0.19.2':
+        if pandas_version >= Version('0.19.2'):
             df.sort_values(by=[2, 1], inplace=True)
         else:
             df.sort_index(by=[2, 1], inplace=True)
@@ -933,9 +960,9 @@ class ViewManager(object):
                 for idx in s.index:
                     if s[idx].startswith('d.{}'.format(desc)):
                         slicer.append(idx)
-                        if desc=='mean':
+                        if desc == 'mean':
                             mean_found = True
-                    if desc=='mean' and mean_found and not tests_done:
+                    if desc == 'mean' and mean_found and not tests_done:
                         tests_slicer = self._get_tests_slicer(s)
                         slicer.extend(tests_slicer)
                         tests_done = True
@@ -966,7 +993,8 @@ def net(append_to=[], condition=None, text='', text_key=None):
         If text is a str, it will be added for all defined text_keys.
     """
     if not (isinstance(text, dict) or text_key):
-        raise ValueError("'text' must be a dict or a text_key must be provided.")
+        raise ValueError(
+                "'text' must be a dict or a text_key must be provided.")
     elif not isinstance(text, dict):
         text = {tk: text for tk in text_key}
     if isinstance(append_to, dict):
@@ -975,6 +1003,7 @@ def net(append_to=[], condition=None, text='', text_key=None):
         net = {len(append_to) + 1: condition, 'text': text}
         append_to.append(net)
         return append_to
+
 
 def calc(expression, text, text_key=None, exclusive=False):
     """
@@ -999,12 +1028,14 @@ def calc(expression, text, text_key=None, exclusive=False):
         If True the groups are suppressed and only the calculation result is kept.
     """
     if not (isinstance(text, dict) or text_key):
-        raise ValueError("'text' must be a dict or a text_key must be provided.")
+        raise ValueError(
+                "'text' must be a dict or a text_key must be provided.")
     elif not isinstance(text, dict):
         text = {tk: text for tk in text_key}
     operator = {'+': add, '-': sub, '*': mul, '/': div}
-    instruction = OrderedDict([('calc', tuple(operator.get(e, 'net_{}'.format(e))
-                                                           for e in expression)),
-                   ('calc_only', exclusive),
-                   ('text', text)])
+    instruction = OrderedDict(
+            [('calc', tuple(operator.get(e, 'net_{}'.format(e))
+                            for e in expression)),
+             ('calc_only', exclusive),
+             ('text', text)])
     return instruction
