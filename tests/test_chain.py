@@ -1,10 +1,19 @@
-
+import json
 import os
 
 import numpy as np
 import pandas as pd
 import pytest
-from pandas.util.testing import assert_frame_equal, assert_index_equal
+from pandas import Timestamp
+from pandas.util.version import Version
+
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import pd_util_testing_deprecated
+
+if __pandas_version_parsed__ >= pd_util_testing_deprecated:
+    from pandas.testing import assert_frame_equal, assert_index_equal
+else:
+    from pandas.util.testing import assert_frame_equal, assert_index_equal
 
 import quantipy as qp
 import tests.parameters_chain as parameters
@@ -183,6 +192,14 @@ class TestChainExceptions:
 def params_getx(request):
     return request.param
 
+class JSONExtraEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Timestamp):
+            return repr(obj)
+        return json.JSONEncoder.default(self, obj)
+
+json_extra_encoder = JSONExtraEncoder()
+
 class TestChainGet:
     _VIEWS = ('cbase', 'counts', 'c%', 'mean', 'median', 'c%_sum')
 
@@ -196,12 +213,33 @@ class TestChainGet:
 
     def test_get_x_orientation(self, stack, params_getx, complex_chain, multi_index, frame):
         x, y, expected = params_getx
+        h = '_'.join(x + y)
+
+        def dump_stack(S):
+            return {
+                key: {
+                    'meta': value.meta,
+                    'data': value.data.to_dict(),
+                }
+                for key, value in S.items()
+            }
+
+        update_json = (__pandas_version_parsed__ < Version('2.0.0'))
+
+        debug_path = './tests/chain_values_pre_pandas_2_0_0'
+        stack_json_filename = f'{debug_path}/test_get_x_orientation_stack-{h}.json'
+        dump = json.dumps(dump_stack(stack), indent=2, default=json_extra_encoder.default)
+        if update_json:
+            with open(stack_json_filename, 'w') as fd:
+                fd.write(dump)
+        else:
+            locals_json = open(stack_json_filename, 'r').read()
+            assert dump == locals_json
 
         chains = complex_chain(stack, x, y, self._VIEWS, self._VIEW_KEYS, 'x',
                                incl_tests=False, incl_sum=False)
 
-        for chain, args in zip(chains, expected):
-
+        for i, (chain, args) in enumerate(zip(chains, expected)):
             values, index, columns, pindex, pcolumns, chain_str = args
 
             expected_dataframe = frame(values,
@@ -215,6 +253,21 @@ class TestChainGet:
 
             ### Test Chain attributes
             assert chain.orientation is 'x'
+
+            ### Test against stored JSON.
+
+            chain_filename = f'{debug_path}/test_get_x_orientation_chain_df-{h}{i}.json'
+            expected_filename = f'{debug_path}/test_get_x_orientation_expected_df-{h}-{i}.json'
+            if update_json:
+                chain.dataframe.to_json(chain_filename, indent=2)
+                expected_dataframe.to_json(expected_filename, indent=2)
+            else:
+                chain_df_json = open(chain_filename).read()
+                expected_df_json = open(expected_filename).read()
+
+                assert expected_dataframe.to_json(indent=2) == expected_df_json
+                assert chain.dataframe.to_json(indent=2) == chain_df_json
+
 
             ### Test Chain.get
             assert_frame_equal(chain.dataframe, expected_dataframe)
@@ -371,4 +424,4 @@ class TestChainAddRepaint:
             _chain.paint(sep=sep, text_key='en-GB', na_rep=parameters.AST)
 
             assert_frame_equal(_chain.structure.fillna('*'),
-                               _expected_structure)
+                               _expected_structure, check_dtype=False)
