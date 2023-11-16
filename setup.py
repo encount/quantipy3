@@ -3,9 +3,9 @@
 import sys
 from setuptools import setup, find_packages
 
-versions = dict(numpy='1.22.4',
-                scipy='1.7.3',
-                pandas='1.5.3',
+versions = dict(numpy='1.26.0',
+                scipy='1.11.3',
+                pandas='2.1.3',
                 ftfy='6.1.1',
                 pyreadstat='1.2.4')
 
@@ -41,7 +41,7 @@ else:
     INSTALL_REQUIRES = version_libs(libs, precisions, versions)
 
 setup(name='quantipy3',
-      version='0.2.15',
+      version='0.3.0',
       author='Geir Freysson',
       author_email='geir@datasmoothie.com',
       packages=find_packages(exclude=['tests']),
