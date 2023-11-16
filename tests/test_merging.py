@@ -1,8 +1,20 @@
 import unittest
 
 import pandas as pd
-from pandas.core.index import Index
-from pandas.util.testing import assert_frame_equal
+
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import pd_core_index_deprecated, \
+    pd_util_testing_deprecated
+
+if __pandas_version_parsed__ >= pd_core_index_deprecated:
+    from pandas.core.indexes.api import Index
+else:
+    from pandas.core.index import Index
+
+if __pandas_version_parsed__ >= pd_util_testing_deprecated:
+    from pandas.testing import assert_frame_equal
+else:
+    from pandas.util.testing import assert_frame_equal
 
 __index_symbol__ = {
     Index.union: ',',
@@ -369,7 +381,7 @@ def verify_hmerge_data(self, data_l, data_r, data_hm, meta_hm):
     l_only_rows = l_rows & (l_rows ^ r_rows)
     r_only_rows = r_rows & (l_rows ^ r_rows)
     new_columns = ['unique_id'] + data_r.columns.difference(
-        data_l.columns).tolist()
+            data_l.columns).tolist()
 
     # check data from left dataset
     actual = data_hm[data_l.columns].fillna(999)
@@ -380,7 +392,7 @@ def verify_hmerge_data(self, data_l, data_r, data_hm, meta_hm):
     actual = data_hm.loc[r_rows, new_columns].fillna(999)
     expected = data_r.loc[l_in_r_rows, new_columns].fillna(999)
     self.assertTrue(
-        all([all(values) for values in (actual == expected).values]))
+            all([all(values) for values in (actual == expected).values]))
 
 
 def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
@@ -401,7 +413,7 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
     ids_left = data_l['unique_id']
     ids_right = data_r['unique_id']
     if blind_append:
-        unique_ids = list(ids_left.append(ids_right))
+        unique_ids = list(ids_left._append(ids_right))
     else:
         unique_ids = list(set(ids_left).union(set(ids_right)))
     self.assertCountEqual(data_vm['unique_id'], unique_ids)
@@ -424,10 +436,10 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
     r_cols = data_r.columns
     l_only_cols = l_cols.difference(r_cols)
     r_only_cols = r_cols.difference(l_cols)
-    all_columnws = l_cols | r_cols
-    overlap_columns = l_cols & r_cols
+    all_columns = l_cols.union(r_cols)
+    overlap_columns = l_cols.intersection(r_cols)
     new_columns = ['unique_id'] + data_r.columns.difference(
-        data_l.columns).tolist()
+            data_l.columns).tolist()
 
     ### -- LEFT ROWS
 
@@ -494,13 +506,13 @@ def verify_vmerge_data(self, data_l, data_r, data_vm, meta_vm,
         actual = data_vm.loc[overlap_rows, overlap_columns].fillna(999)
         expected = data_l.loc[r_in_l_rows, overlap_columns].fillna(999)
         self.assertTrue(
-            all([all(values) for values in (actual == expected).values]))
+                all([all(values) for values in (actual == expected).values]))
 
         # check overlap rows, left only columns
         actual = data_vm.loc[overlap_rows, overlap_columns].fillna(999)
         expected = data_l.loc[r_in_l_rows, overlap_columns].fillna(999)
         self.assertTrue(
-            all([all(values) for values in (actual == expected).values]))
+                all([all(values) for values in (actual == expected).values]))
 
         # check left rows, row_id column
         if not row_id_name is None:

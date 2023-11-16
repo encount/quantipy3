@@ -139,15 +139,15 @@ class TestViewObject(unittest.TestCase):
                 net = 0
                 netw = 0
                 for x_val in values:
-                    net += def_df.xs([xk, x_val])[y_val]
-                    netw += defw_df.xs([xk, x_val])[y_val]
+                    net += def_df.xs((xk, x_val))[y_val]
+                    netw += defw_df.xs((xk, x_val))[y_val]
 #                 if np.round(net, 10) != np.round(df.xs([xk, method_name])[y_val], 10):
 #                     print ''
                 self.assertTrue(
-                    np.allclose(net, df.xs([xk, method_name])[y_val])
+                    np.allclose(net, df.xs((xk, method_name))[y_val])
                 )
                 self.assertTrue(
-                    np.allclose(netw, dfw.xs([xk, method_name])[y_val])
+                    np.allclose(netw, dfw.xs((xk, method_name))[y_val])
                 )
 
 

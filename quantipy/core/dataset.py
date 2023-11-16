@@ -62,7 +62,7 @@ class DataSet(object):
         self._cache = Cache()
         self._dimensions_comp = dimensions_comp
         self._dimensions_suffix = '_grid'
-        return None
+
 
     def __contains__(self, name):
         return self.var_exists(name)
@@ -3031,7 +3031,7 @@ class DataSet(object):
             if any(x == 'x' for x in err_var):
                 new_err = pd.DataFrame([err_var], index=[v],
                                        columns=err_columns)
-                err_df = err_df.append(new_err)
+                err_df = err_df._append(new_err)
 
         for c in [c for c in self._data.columns if
                   not c in self._meta['columns']
@@ -3042,7 +3042,7 @@ class DataSet(object):
                 err_var = err_var[:6]
                 err_columns = err_columns[:6]
             new_err = pd.DataFrame([err_var], index=[c], columns=err_columns)
-            err_df = err_df.append(new_err)
+            err_df = err_df._append(new_err)
 
         if not all(self.var_exists(v.split('@')[-1])
                    for v in
@@ -3142,7 +3142,8 @@ class DataSet(object):
                     row[1] += '{}, '.format(tk)
             if not all(x == '' for x in row):
                 new_row = pd.DataFrame([row], index=[var], columns=columns)
-                df = df.append(new_row)
+                df = df._append(new_row)
+                #df = pd.concat([df, new_row], ignore_index=True)
         if not len(df) == 0: return df.sort_index()
 
     def weight(self, weight_scheme, weight_name='weight', unique_key='identity',
@@ -4432,7 +4433,7 @@ class DataSet(object):
         for var in name:
             if not self.is_array(var): data_drop.append(var)
             remove_loop(meta, var)
-        data.drop(data_drop, 1, inplace=True)
+        data.drop(data_drop, axis=1, inplace=True)
 
         return None
 
@@ -5437,7 +5438,7 @@ class DataSet(object):
             else:
                 original_column = "!;" + original_column + ";!"
 
-            original_column = original_column.replace(pd.np.nan, '')
+            original_column = original_column.replace(np.nan, '')
             original_column = original_column.str.replace("; ", ";")
             original_column = original_column.str.replace(" ;", ";")
 

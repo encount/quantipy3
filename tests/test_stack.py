@@ -4,7 +4,14 @@ from collections import OrderedDict
 
 import numpy
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import pd_util_testing_deprecated
+
+if __pandas_version_parsed__ >= pd_util_testing_deprecated:
+    from pandas.testing import assert_frame_equal
+else:
+    from pandas.util.testing import assert_frame_equal
 
 from quantipy.core.cache import Cache
 from quantipy.core.chain import Chain

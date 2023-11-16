@@ -2,8 +2,14 @@ import os.path
 import unittest
 
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
-from pandas.util.version import Version
+
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import pd_util_testing_deprecated
+
+if __pandas_version_parsed__ >= pd_util_testing_deprecated:
+    from pandas.testing import assert_frame_equal
+else:
+    from pandas.util.testing import assert_frame_equal
 
 from quantipy.core.chain import Chain
 from quantipy.core.helpers.functions import load_json
@@ -20,7 +26,7 @@ class TestChainObject(unittest.TestCase):
     def setUp(self):
         self.path = './tests/'
         self.path_chain = './temp.chain'.format(self.path)
-#         self.path = ''
+        #         self.path = ''
         project_name = 'Example Data (A)'
 
         # Load Example Data (A) data and meta into self
@@ -63,10 +69,12 @@ class TestChainObject(unittest.TestCase):
             sort_order = ['data', 'filter', 'x', 'y', 'view']
             if __pandas_version_parsed__ >= pd_df_sort_deprecated:
                 actual = chain_described.sort_values(sort_order).values.tolist()
-                expected = loaded_chain_described.sort_values(sort_order).values.tolist()
+                expected = loaded_chain_described.sort_values(
+                    sort_order).values.tolist()
             else:
                 actual = chain_described.sort(sort_order).values.tolist()
-                expected = loaded_chain_described.sort(sort_order).values.tolist()
+                expected = loaded_chain_described.sort(
+                    sort_order).values.tolist()
 
             self.assertSequenceEqual(actual, expected)
 
@@ -112,14 +120,14 @@ class TestChainObject(unittest.TestCase):
         # If multiple x and y keys are given without orient_on
         # x-orientation chains are assumed.
         chain = self.stack.get_chain(
-            name='y',
-            data_keys=self.stack.name,
-            filters=fk,
-            x=xk,
-            y=yk,
-            views=views
+                name='y',
+                data_keys=self.stack.name,
+                filters=fk,
+                x=xk,
+                y=yk,
+                views=views
         )
-        self.assertTrue(chain.orientation=='x')
+        self.assertTrue(chain.orientation == 'x')
 
     def test_lazy_name(self):
 
@@ -130,25 +138,27 @@ class TestChainObject(unittest.TestCase):
 
         # get chain but do not name - y orientation
         chain_y = self.stack.get_chain(
-                    data_keys=self.stack.name,
-                    filters=fk,
-                    x=xk,
-                    y=yk[0],
-                    views=views
-                )
+                data_keys=self.stack.name,
+                filters=fk,
+                x=xk,
+                y=yk[0],
+                views=views
+        )
 
         # get chain but do not name - x orientation
         chain_x = self.stack.get_chain(
-                    data_keys=self.stack.name,
-                    filters=fk,
-                    x=xk[0],
-                    y=yk,
-                    views=views
-                )
+                data_keys=self.stack.name,
+                filters=fk,
+                x=xk[0],
+                y=yk,
+                views=views
+        )
 
         # check lazy_name is working as it should be
-        self.assertEqual(chain_y.name, 'y.@.q2b.Wave.q2.q3.q5_1.cbase.counts.c%')
-        self.assertEqual(chain_x.name, 'x.q2b.@.q2b.Wave.q2.q3.q5_1.cbase.counts.c%')
+        self.assertEqual(chain_y.name,
+                         'y.@.q2b.Wave.q2.q3.q5_1.cbase.counts.c%')
+        self.assertEqual(chain_x.name,
+                         'x.q2b.@.q2b.Wave.q2.q3.q5_1.cbase.counts.c%')
 
     def test_dervie_attributes(self):
 
@@ -157,8 +167,10 @@ class TestChainObject(unittest.TestCase):
         self.assertEqual(self.chains[0].orientation, 'y')
         self.assertEqual(self.chains[0].source_name, '@')
         self.assertEqual(self.chains[0].len_of_axis, 5)
-        self.assertEqual(self.chains[0].content_of_axis, ['q2b', 'Wave', 'q2', 'q3', 'q5_1'])
-        self.assertEqual(self.chains[0].views, ['x|f|x:|||cbase', 'x|f|:|||counts', 'x|f|:|y||c%'])
+        self.assertEqual(self.chains[0].content_of_axis,
+                         ['q2b', 'Wave', 'q2', 'q3', 'q5_1'])
+        self.assertEqual(self.chains[0].views,
+                         ['x|f|x:|||cbase', 'x|f|:|||counts', 'x|f|:|y||c%'])
         self.assertEqual(self.chains[0].data_key, 'Example Data (A)')
         self.assertEqual(self.chains[0].filter, 'no_filter')
         self.assertEqual(self.chains[0].source_type, None)
@@ -167,8 +179,10 @@ class TestChainObject(unittest.TestCase):
         self.assertEqual(self.chains[-1].orientation, 'x')
         self.assertEqual(self.chains[-1].source_name, 'q5_1')
         self.assertEqual(self.chains[-1].len_of_axis, 6)
-        self.assertEqual(self.chains[-1].content_of_axis, ['@', 'q2b', 'Wave', 'q2', 'q3', 'q5_1'])
-        self.assertEqual(self.chains[-1].views, ['x|f|x:|||cbase', 'x|f|:|||counts', 'x|f|:|y||c%'])
+        self.assertEqual(self.chains[-1].content_of_axis,
+                         ['@', 'q2b', 'Wave', 'q2', 'q3', 'q5_1'])
+        self.assertEqual(self.chains[-1].views,
+                         ['x|f|x:|||cbase', 'x|f|:|||counts', 'x|f|:|y||c%'])
         self.assertEqual(self.chains[-1].data_key, 'Example Data (A)')
         self.assertEqual(self.chains[-1].filter, 'no_filter')
         self.assertEqual(self.chains[-1].source_type, None)
@@ -181,63 +195,67 @@ class TestChainObject(unittest.TestCase):
 
             chain_described = chain.describe()
 
-            #test describe() returns a dataframe
+            # test describe() returns a dataframe
             self.assertIsInstance(chain_described, pd.DataFrame)
 
-            #test descibe() returns the expected dataframe - *no args*
+            # test descibe() returns the expected dataframe - *no args*
             if chain.orientation == 'y':
                 keys = chain[self.stack.name][fk].keys()
-                views = chain[self.stack.name][fk][keys[0]][chain.source_name].keys()
-                data = [self.stack.name]*(len(keys)*len(views))
-                filters = [fk]*(len(keys)*len(views))
+                views = chain[self.stack.name][fk][keys[0]][
+                    chain.source_name].keys()
+                data = [self.stack.name] * (len(keys) * len(views))
+                filters = [fk] * (len(keys) * len(views))
                 x = []
                 for key in keys:
-                    x.extend([key]*len(views))
-                y = [chain.source_name]*(len(keys)*len(views))
-                view = [v for v in views]*len(keys)
-                ones = [1]*(len(keys)*len(views))
+                    x.extend([key] * len(views))
+                y = [chain.source_name] * (len(keys) * len(views))
+                view = [v for v in views] * len(keys)
+                ones = [1] * (len(keys) * len(views))
                 df = pd.DataFrame({'data': data,
                                    'filter': filters,
                                    'x': x,
                                    'y': y,
                                    'view': view,
-                                   '#': ones})
+                                   '#': ones
+                                   })
                 df = df[chain_described.columns.tolist()]
                 assert_frame_equal(chain_described, df)
             elif chain.orientation == 'x':
 
                 keys = chain[self.stack.name][fk][chain.source_name].keys()
-                views = chain[self.stack.name][fk][chain.source_name][keys[0]].keys()
-                data = [self.stack.name]*(len(keys)*len(views))
-                filters = [fk]*(len(keys)*len(views))
+                views = chain[self.stack.name][fk][chain.source_name][
+                    keys[0]].keys()
+                data = [self.stack.name] * (len(keys) * len(views))
+                filters = [fk] * (len(keys) * len(views))
                 y = []
                 for key in keys:
-                    y.extend([key]*len(views))
-                x = [chain.source_name]*(len(keys)*len(views))
-                view = [v for v in views]*len(keys)
-                ones = [1]*(len(keys)*len(views))
+                    y.extend([key] * len(views))
+                x = [chain.source_name] * (len(keys) * len(views))
+                view = [v for v in views] * len(keys)
+                ones = [1] * (len(keys) * len(views))
                 df = pd.DataFrame({'data': data,
                                    'filter': filters,
                                    'x': x,
                                    'y': y,
                                    'view': view,
-                                   '#': ones})
+                                   '#': ones
+                                   })
                 df = df[chain_described.columns.tolist()]
                 assert_frame_equal(chain_described, df)
 
     @classmethod
     def tearDownClass(self):
         self.stack = Stack("StackName")
-        filepath ='./tests/'+self.stack.name+'.stack'
+        filepath = './tests/' + self.stack.name + '.stack'
         if os.path.exists(filepath):
             os.remove(filepath)
 
     def is_empty(self, any_structure):
         if any_structure:
-            #print('Structure is not empty.')
+            # print('Structure is not empty.')
             return False
         else:
-            #print('Structure is empty.')
+            # print('Structure is empty.')
             return True
 
     def create_key_stack(self, branch_pos="data"):
@@ -252,13 +270,15 @@ class TestChainObject(unittest.TestCase):
                 for x in self.stack[data_key][branch_pos][the_filter]:
                     key_stack[data_key][the_filter][x] = []
                     for y in self.stack[data_key][branch_pos][the_filter][x]:
-                        link = self.stack[data_key][branch_pos][the_filter][x][y]
+                        link = self.stack[data_key][branch_pos][the_filter][x][
+                            y]
                         if not isinstance(link, Link):
                             continue
                         key_stack[data_key][the_filter][x].append(y)
         return key_stack
 
-    def setup_stack_Example_Data_A(self, fk=None, xk=None, yk=None, views=None, weights=None):
+    def setup_stack_Example_Data_A(self, fk=None, xk=None, yk=None, views=None,
+                                   weights=None):
         if fk is None:
             fk = 'no_filter'
         if xk is None:
@@ -272,22 +292,23 @@ class TestChainObject(unittest.TestCase):
 
         self.stack = Stack(name="Example Data (A)")
         self.stack.add_data(
-            data_key=self.stack.name,
-            meta=self.example_data_A_meta,
-            data=self.example_data_A_data
+                data_key=self.stack.name,
+                meta=self.example_data_A_meta,
+                data=self.example_data_A_data
         )
 
         for weight in weights:
             self.stack.add_link(
-                data_keys=self.stack.name,
-                filters=fk,
-                x=xk,
-                y=yk,
-                views=QuantipyViews(views),
-                weights=weight
+                    data_keys=self.stack.name,
+                    filters=fk,
+                    x=xk,
+                    y=yk,
+                    views=QuantipyViews(views),
+                    weights=weight
             )
 
-    def setup_chains_Example_Data_A(self, fk=None, xk=None, yk=None, views=None, orient_on=None):
+    def setup_chains_Example_Data_A(self, fk=None, xk=None, yk=None, views=None,
+                                    orient_on=None):
 
         if fk is None:
             fk = 'no_filter'
@@ -306,27 +327,28 @@ class TestChainObject(unittest.TestCase):
 
         for y in yk:
             self.chains.append(
-                self.stack.get_chain(
-                    name=y,
-                    data_keys=self.stack.name,
-                    filters='no_filter',
-                    x=xk,
-                    y=y,
-                    views=views
-                )
+                    self.stack.get_chain(
+                            name=y,
+                            data_keys=self.stack.name,
+                            filters='no_filter',
+                            x=xk,
+                            y=y,
+                            views=views
+                    )
             )
 
         for x in xk:
             self.chains.append(
-                self.stack.get_chain(
-                    name=x,
-                    data_keys=self.stack.name,
-                    filters='no_filter',
-                    x=x,
-                    y=yk,
-                    views=views
-                )
+                    self.stack.get_chain(
+                            name=x,
+                            data_keys=self.stack.name,
+                            filters='no_filter',
+                            x=x,
+                            y=yk,
+                            views=views
+                    )
             )
+
 
 if __name__ == '__main__':
     unittest.main()

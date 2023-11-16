@@ -210,7 +210,7 @@ def extract_sav_meta(sav_file, name="", data=None, ioLocale='en_US.UTF-8',
                         if len(column_values) > 0:
                             # Get the first "not nan" value from the column
                             value = column_values.values[0]
-                            if isinstance(value, pd.np.float64):
+                            if isinstance(value, np.float64):
                                 # Float AND Int because savReaderWriter loads them both as float64
                                 meta['columns'][column]['text'] = {
                                     text_key: [column]

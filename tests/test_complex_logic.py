@@ -4,16 +4,21 @@ from operator import eq, ge, gt, le, lt, ne
 
 import numpy as np
 import pandas as pd
-from pandas.core.index import Index
-from pandas.util.version import Version
+
+from quantipy.dependency_versions import __pandas_version_parsed__
+from quantipy.significant_dependency_versions import \
+    pd_astype_unitless_datetime_deprecated, pd_core_index_deprecated
+
+if __pandas_version_parsed__ >= pd_core_index_deprecated:
+    from pandas.core.indexes.api import Index
+else:
+    from pandas.core.index import Index
 
 __index_symbol__ = {
     Index.union: ',',
     Index.intersection: '&',
     Index.difference: '~',
 }
-
-from quantipy.dependency_versions import __pandas_version_parsed__
 
 __index_symbol__[Index.symmetric_difference] = '^'
 pd_symmetric_difference = Index.symmetric_difference
@@ -183,7 +188,7 @@ class TestStackObject(unittest.TestCase):
             self.confirm_inverse_index(locality, idx, not_idx, incl_na=True)
         self.assertTrue(
                 (locality.fillna(0) == locality_verify_unchanged.fillna(
-                    0)).all())
+                        0)).all())
 
         # Test _has_any using exclusivity
         q2 = self.example_data_A_data['q2']
@@ -209,14 +214,18 @@ class TestStackObject(unittest.TestCase):
             self.assertTrue(len(idx.intersection(not_idx)) == 0)
             self.assertTrue(
                     len(resulting_columns.intersection(
-                        not_resulting_columns)) == 0)
+                            not_resulting_columns)) == 0)
         self.assertTrue((q2.fillna(0) == q2_verify_unchanged.fillna(0)).all())
 
     def test__has_not_any_errors(self):
 
         # Test unsupported dtype series is given
         start_time = self.example_data_A_data['start_time']
-        start_time = start_time.astype(np.datetime64)
+        if __pandas_version_parsed__ >= pd_astype_unitless_datetime_deprecated:
+            start_time = start_time.astype('datetime64[ns]')
+        else:
+            start_time = start_time.astype(np.datetime64)
+
         # Test has version
         with self.assertRaises(TypeError) as error:
             test_values = [1, 2]
@@ -341,7 +350,7 @@ class TestStackObject(unittest.TestCase):
             self.confirm_inverse_index(locality, idx, not_idx, incl_na=True)
         self.assertTrue(
                 (locality.fillna(0) == locality_verify_unchanged.fillna(
-                    0)).all())
+                        0)).all())
 
         # Test _has_all using exclusivity
         q2 = self.example_data_A_data['q2']
@@ -368,7 +377,10 @@ class TestStackObject(unittest.TestCase):
 
         # Test unsupported dtype series is given
         start_time = self.example_data_A_data['start_time']
-        start_time = start_time.astype(np.datetime64)
+        if __pandas_version_parsed__ >= pd_astype_unitless_datetime_deprecated:
+            start_time = start_time.astype('datetime64[ns]')
+        else:
+            start_time = start_time.astype(np.datetime64)
         # Test has version
         with self.assertRaises(TypeError) as error:
             test_values = [1, 2]
@@ -771,7 +783,10 @@ class TestStackObject(unittest.TestCase):
 
         # Test unsupported dtype series is given
         start_time = self.example_data_A_data['start_time']
-        start_time = start_time.astype(np.datetime64)
+        if __pandas_version_parsed__ >= pd_astype_unitless_datetime_deprecated:
+            start_time = start_time.astype('datetime64[ns]')
+        else:
+            start_time = start_time.astype(np.datetime64)
 
         # Test has version
         with self.assertRaises(TypeError) as error:

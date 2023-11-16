@@ -3118,8 +3118,7 @@ class Chain(object):
                         elif link.y == _TOTAL:
                             level_names = [[link.x], ['@']]
                         try:
-                            frame.columns.set_levels(level_names, level=[0, 1],
-                                                     inplace=True)
+                            frame.columns = frame.columns.set_levels(level_names, level=[0, 1])
                         except ValueError:
                             pass
                     frames.append(frame)

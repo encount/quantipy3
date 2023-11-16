@@ -12,7 +12,7 @@ python-dotenv = "0.21.0"
 [packages]
 scipy = "*"
 numpy = "*"
-pandas = ">=1.2.4,<2"
+pandas = "*"
 ftfy = "*"
 xmltodict = "*"
 lxml = "*"

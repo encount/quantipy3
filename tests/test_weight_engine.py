@@ -2,6 +2,7 @@ import json
 import unittest
 
 import numpy
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -173,15 +174,15 @@ class TestEngine(unittest.TestCase):
             self.assertIn('identity', self.engine_A.schemes[key]['key'])
 
         # Sets weights_scheme_name_A1 and weights_scheme_name_A2 to ones
-        self.engine_A._df[self.scheme_A1._weight_name()] = pd.np.ones(len(self.engine_A._df))
-        self.engine_A._df[self.scheme_A2._weight_name()] = pd.np.ones(len(self.engine_A._df))
+        self.engine_A._df[self.scheme_A1._weight_name()] = np.ones(len(self.engine_A._df))
+        self.engine_A._df[self.scheme_A2._weight_name()] = np.ones(len(self.engine_A._df))
 
         for key in self.engine_A.schemes:
             weight_scheme = self.engine_A._df['weights_'+key]
-            boolean_vector = (weight_scheme == pd.np.ones(len(weight_scheme)))
+            boolean_vector = (weight_scheme == np.ones(len(weight_scheme)))
             self.assertTrue(boolean_vector.all())
             self.engine_A.run(schemes=[key])
-            boolean_vector = (weight_scheme == pd.np.ones(len(weight_scheme)))
+            boolean_vector = (weight_scheme == np.ones(len(weight_scheme)))
             self.assertFalse(boolean_vector.all())
 
     def test_add_scheme_no_key(self):

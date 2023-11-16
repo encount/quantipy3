@@ -222,7 +222,7 @@ class Rim:
                 scale_factor = len(w_vec.index) / float(valid_counts)
                 ratio = ratio / scale_factor
                 # self.groups[group]['report']['summary']['Total: weighted'] = ratio.sum()
-            adj_w_vec = adj_w_vec.append(ratio).dropna()
+            adj_w_vec = adj_w_vec._append(ratio).dropna()
         self._df[self._weight_name()] = adj_w_vec
 
     def _get_group_filter_cols(self, filter_def):
@@ -301,7 +301,7 @@ class Rim:
         filter_cols = self._get_scheme_filter_cols()
         columns = list(set([key] + self.target_cols + filter_cols))
         self._df = self._df[columns]
-        self._df[self._weight_name()] = pd.np.zeros(len(self._df))
+        self._df[self._weight_name()] = np.zeros(len(self._df))
         self._check_targets(verbose)
 
     def dataframe(self, df, key_column=None):
@@ -499,7 +499,7 @@ class Rake:
             raise Exception(
                     "Unknown data type (%s). Should be <pandas.DataFrame>.",
                     type(dataframe))
-        self.pre_weight = pd.np.ones(len(self.dataframe))
+        self.pre_weight = np.ones(len(self.dataframe))
 
         # Parse the targets
         self.rowcount = len(self.dataframe)
@@ -515,7 +515,7 @@ class Rake:
         self.keys_row = self.keys[0:len(self.keys):2]
         self.keys_col = self.keys[1:len(self.keys):2]
 
-        if pd.np.isnan(self.dataframe[self.weight_column_name]).sum() > 0:
+        if np.isnan(self.dataframe[self.weight_column_name]).sum() > 0:
             raise Exception(
                 "Seed weights cannot have missing values, use filter to eliminate missing values or substitute 1 for missing cases.")
         if cap <= 1 and _use_cap:
@@ -622,7 +622,7 @@ class Rake:
                         self.dataframe.loc[self.dataframe[
                                                self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
                         self.dataframe[self.weight_column_name] = \
-                        self.dataframe[self.weight_column_name] / pd.np.mean(
+                        self.dataframe[self.weight_column_name] / np.mean(
                                 self.dataframe[self.weight_column_name])
                 else:
                     while (self.dataframe[
@@ -634,7 +634,7 @@ class Rake:
                         self.dataframe.loc[self.dataframe[
                                                self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
                         self.dataframe[self.weight_column_name] = \
-                        self.dataframe[self.weight_column_name] / pd.np.mean(
+                        self.dataframe[self.weight_column_name] / np.mean(
                                 self.dataframe[self.weight_column_name])
 
             diff_error_old = diff_error

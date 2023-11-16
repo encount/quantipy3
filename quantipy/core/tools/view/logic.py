@@ -1,7 +1,14 @@
 from operator import eq, ge, gt, le, lt, ne
 
 import pandas as pd
-from pandas.core.index import Index
+
+from ....dependency_versions import __pandas_version_parsed__
+from ....significant_dependency_versions import pd_core_index_deprecated
+
+if __pandas_version_parsed__ >= pd_core_index_deprecated:
+    from pandas.core.indexes.api import Index
+else:
+    from pandas.core.index import Index
 
 __op_symbol__ = {lt: '<', le: '<=', eq: '', ne: '!=', ge: '>=', gt: '>'}
 

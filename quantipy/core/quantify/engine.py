@@ -7,8 +7,10 @@ import pandas as pd
 import quantipy as qp
 from ..tools.dp.prep import recode
 from ..tools.view.logic import get_logic_index, intersection, not_count
-from ...dependency_versions import __scipy_version_parsed__
-from ...significant_dependency_versions import scipy_made__ttest_finish_private
+from ...dependency_versions import __pandas_version_parsed__, \
+    __scipy_version_parsed__
+from ...significant_dependency_versions import pd_version_2_0_0, \
+    scipy_made__ttest_finish_private
 
 if __scipy_version_parsed__ > scipy_made__ttest_finish_private:
     from scipy.stats._stats_py import _ttest_finish as get_pval
@@ -139,10 +141,14 @@ class Quantity(object):
 
     def unweight(self):
         """
-        Remove any weighting by dividing the matrix by itself.
+        Divide the matrix by itself, handling zero divisions.
         """
-        self.matrix /= self.matrix
-        return None
+        # The condition checks for non-zero elements.
+        condition = self.matrix != 0
+
+        # Perform division where the condition is True, leave original values where it's False.
+        np.divide(self.matrix, self.matrix, where=condition,
+                                out=self.matrix)
 
     def _get_total(self):
         """
@@ -1098,7 +1104,14 @@ class Quantity(object):
         fact_prod = np.nansum(fact.matrix, axis=0)
         fact_prod_sum = np.nansum(fact_prod[1:, :], axis=0, keepdims=True)
         bases = fact_prod[[0], :]
-        means = fact_prod_sum / bases
+
+        orig_settings = np.seterr(divide='ignore')
+        if __pandas_version_parsed__ >= pd_version_2_0_0:
+            means = np.divide(fact_prod_sum, bases, where=bases != 0)
+        else:
+            means = fact_prod_sum / bases
+        np.seterr(**orig_settings)
+
         if axis == 'y':
             self._switch_axes()
             means = means.T
@@ -1189,7 +1202,7 @@ class Quantity(object):
         for shape_i in range(0, vals.shape[1]):
             iter_weights = w[:, shape_i]
             iter_vals = vals[:, shape_i]
-            mask = ~np.isnan(iter_weights)
+            mask = ~np.isnan(iter_weights.astype(float))
             iter_weights = iter_weights[mask]
             iter_vals = iter_vals[mask]
             sorter = np.argsort(iter_vals)
@@ -1645,7 +1658,9 @@ class Quantity(object):
                     base = np.repeat(base, self.result.shape[0], axis=0)
                 else:
                     base = np.repeat(base, self.result.shape[1], axis=1)
-            self.result = self.result / base * 100
+
+            np.divide(self.result, base * 100, where=(base != 0), out=self.result)
+
             if self.x == '@':
                 self.result = self.result.T
         return self
