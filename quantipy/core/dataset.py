@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import copy as org_copy
 import json
@@ -9,6 +9,7 @@ import time
 import warnings
 from collections import Counter, OrderedDict
 from itertools import product
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -28,6 +29,9 @@ from .tools.qp_decorators import modify, verify
 from .tools.view.logic import get_logic_index, has_all, has_any, has_count, \
     intersection, is_ge, not_count, union
 from ..sandbox.sandbox import ChainManager
+
+if TYPE_CHECKING:
+    from .. import Rim
 
 VALID_TKS = [
     'en-GB', 'en-US', 'da-DK', 'fi-FI', 'nb-NO', 'sv-SE', 'de-DE', 'is-IS',
@@ -62,7 +66,6 @@ class DataSet(object):
         self._cache = Cache()
         self._dimensions_comp = dimensions_comp
         self._dimensions_suffix = '_grid'
-
 
     def __contains__(self, name):
         return self.var_exists(name)
@@ -3143,12 +3146,14 @@ class DataSet(object):
             if not all(x == '' for x in row):
                 new_row = pd.DataFrame([row], index=[var], columns=columns)
                 df = df._append(new_row)
-                #df = pd.concat([df, new_row], ignore_index=True)
+                # df = pd.concat([df, new_row], ignore_index=True)
         if not len(df) == 0: return df.sort_index()
 
-    def weight(self, weight_scheme, weight_name='weight', unique_key='identity',
-               subset=None, report=True, path_report=None, inplace=True,
-               verbose=True):
+    def weight(self, weight_scheme: 'Rim', weight_name: str = 'weight',
+               unique_key: str = 'identity',
+               subset=None, report: bool = True, path_report: str = None,
+               inplace: bool = True,
+               verbose: bool = True):
         """
         Weight the ``DataSet`` according to a well-defined weight scheme.
 

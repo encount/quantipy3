@@ -142,11 +142,13 @@ class WeightEngine:
         ]).T
         return report_df
 
-    def run(self, schemes=[]):
-        if isinstance(schemes, str):
+    def run(self, schemes: list | str = None):
+        if schemes is None:
+            schemes = []
+        elif isinstance(schemes, str):
             schemes = [schemes]
-        if isinstance(schemes, list):
 
+        if isinstance(schemes, list):
             if len(schemes) == 0:  # Weight all schemes
                 schemes = self.schemes
 
@@ -161,7 +163,7 @@ class WeightEngine:
                     raise Exception(("Scheme '%s' not found." % scheme))
         else:
             raise ValueError(('schemes must be of type %s NOT %s ') % (
-                type([]), type(scheme)))
+                type([]), type(schemes)))
 
     def report(self, scheme, group=None):
         report = self.schemes[scheme][self._SCHEME].report(group)

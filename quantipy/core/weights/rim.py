@@ -7,14 +7,14 @@ import pandas as pd
 
 class Rim:
     def __init__(self,
-                 name,
-                 max_iterations=1000,
-                 convcrit=0.01,
-                 cap=0,
-                 dropna=True,
-                 impute_method="mean",
-                 weight_column_name=None,
-                 total=0
+                 name: str,
+                 max_iterations: int = 1000,
+                 convcrit: float = 0.01,
+                 cap: int = 0,
+                 dropna: bool = True,
+                 impute_method: str = "mean",
+                 weight_column_name: str = None,
+                 total: int = 0
                  ):
 
         # Default var init
@@ -22,7 +22,7 @@ class Rim:
         self.type = "Rim"
         self.target_cols = []
         self.max_iterations = max_iterations
-        self.convcrit = 0.01
+        self.convcrit = convcrit
         self.cap = cap
         self.weight_column_name = weight_column_name
         self.total = total
@@ -415,7 +415,7 @@ class Rim:
                 target_codes = list(target.values())[0].keys()
                 target_props = list(target.values())[0].values()
                 sample_codes = check_df[target_col].value_counts(
-                    sort=False).index.tolist()
+                        sort=False).index.tolist()
 
                 miss_in_sample = [code for code in target_codes
                                   if code not in sample_codes
@@ -426,7 +426,7 @@ class Rim:
 
                 if self._df[target_col].dtype == 'object':
                     raise ValueError(
-                        vartype_err.format(self.name, group, target_col))
+                            vartype_err.format(self.name, group, target_col))
 
                 if miss_in_sample:
                     if verbose:
@@ -466,17 +466,23 @@ class Rim:
         return df
 
 
-class Rake:
-    def __init__(self, dataframe, targets,
-                 weight_column_name="weight",
-                 max_iterations=1000,
-                 convcrit=0.01,
-                 _use_cap=False,
-                 cap=10000000,
-                 verbose=False,
-                 anesrake_cap_correction=True):
+FrequencyTarget = dict[int, float]
+VariableFrequencyTarget = dict[str, FrequencyTarget]
 
-        self.targets = targets
+
+class Rake:
+
+    def __init__(self, dataframe: pd.DataFrame,
+                 targets: list[dict[str, FrequencyTarget]],
+                 weight_column_name: str = "weight",
+                 max_iterations: int = 1000,
+                 convcrit: float = 0.01,
+                 _use_cap: bool = False,
+                 cap: int = 10000000,
+                 verbose: bool = False,
+                 anesrake_cap_correction: bool = True):
+
+        # self.targets = targets
         self.dataframe = dataframe
         self.weight_column_name = weight_column_name
 
@@ -492,50 +498,56 @@ class Rake:
         # do we print out extra information
         self.verbose = verbose
 
-        # Parse the dataframe
-        if isinstance(dataframe, pd.DataFrame):
-            self.dataframe = dataframe
-        else:
+        if not isinstance(dataframe, pd.DataFrame):
             raise Exception(
                     "Unknown data type (%s). Should be <pandas.DataFrame>.",
                     type(dataframe))
+
+        self.dataframe = dataframe
         self.pre_weight = np.ones(len(self.dataframe))
 
         # Parse the targets
         self.rowcount = len(self.dataframe)
-        col_names = [list(target.keys())[0] for target in targets]
-        mappings = [{key: float(value) / 100 * self.rowcount for key, value
-                     in list(target.values())[0].items()}
-                    for target in targets]
-        abs_targets = [{col_name: mapping} for col_name, mapping
-                       in zip(col_names, mappings)]
-        self.targets = abs_targets
-        self.keys = col_names
+
+        col_names: list[str] = [list(target.keys())[0] for target in targets]
+
+        tmp_targets: list[FrequencyTarget] = [
+            {key: (float(value) / 100) * self.rowcount
+             for key, value in list(target.values())[0].items()}
+            for target in targets
+        ]
+
+        self.targets: list[VariableFrequencyTarget] = [
+            {col_name: mapping}
+            for col_name, mapping in zip(col_names, tmp_targets)
+        ]
+        self.keys: list[str] = col_names
 
         self.keys_row = self.keys[0:len(self.keys):2]
         self.keys_col = self.keys[1:len(self.keys):2]
 
         if np.isnan(self.dataframe[self.weight_column_name]).sum() > 0:
             raise Exception(
-                "Seed weights cannot have missing values, use filter to eliminate missing values or substitute 1 for missing cases.")
+                    "Seed weights cannot have missing values, use filter to eliminate missing values or substitute 1 for missing cases.")
         if cap <= 1 and _use_cap:
             raise Exception("Cap may not be less than or equal to 1.")
         if cap < 1.5 and _use_cap:
             print("Cap is very low, the model may take a long time to run.")
 
-    def rakeonvar(self, target):
-        target_col = list(target.keys())[0]
-        for target_code, target_prop in list(target.values())[0].items():
-            if target_prop == 0.00:
-                target_prop = 0.00000001
-            try:
-                df = self.dataframe[(self.dataframe[target_col] == target_code)]
-                index_array = (self.dataframe[target_col] == target_code)
-                data = df[self.weight_column_name] * (
-                            target_prop / sum(df[self.weight_column_name]))
-                self.dataframe.loc[index_array, self.weight_column_name] = data
-            except:
-                pass
+    def rakeonvar(self, variable_target: VariableFrequencyTarget) -> None:
+        variable_name, variable_distribution = list(variable_target.items())[0]
+        variable_weight_adjustment_factor = self.dataframe[variable_name] \
+            .map(variable_distribution)
+
+        # Handle the 0.00 case
+        variable_weight_adjustment_factor.replace(0.00, 1e-8, inplace=True)
+
+        variable_weight_adjustment_factor /= self.dataframe \
+            .groupby(variable_name)[self.weight_column_name] \
+            .transform('sum')
+
+        self.dataframe[self.weight_column_name] \
+            *= variable_weight_adjustment_factor
 
     def calc_weight_efficiency(self):
         numerator = 100 * sum(self.dataframe[self.weight_column_name] *
@@ -560,37 +572,41 @@ class Rake:
             ]
 
             self.report['summary'] = pd.Series(
-                pd.concat([pd.Series(s) for s in r_summary]),
-                name=self.weight_column_name)
+                    pd.concat([pd.Series(s) for s in r_summary]),
+                    name=self.weight_column_name)
 
             self.report["targets"] = self.targets
 
             # The data is a representation/manipulation of the dataframe
             self.report["data"] = {}
-            self.report["data"]["factor weights"] = self.dataframe.pivot_table(
-                index=self.keys_row, columns=self.keys_col,
-                values=self.weight_column_name, dropna=False, fill_value=0)
+            self.report["data"]["factor weights"] \
+                = self.dataframe.pivot_table(index=self.keys_row,
+                                             columns=self.keys_col,
+                                             values=self.weight_column_name,
+                                             dropna=False, fill_value=0)
             self.report["data"]["input"] = {}
-            self.report["data"]["input"]["absolute"] = self.dataframe[
-                self.keys].pivot_table(index=self.keys_row,
-                                       columns=self.keys_col, aggfunc=len,
-                                       dropna=False, fill_value=0)
-            self.report["data"]["input"]["relative"] = \
-            self.report["data"]["input"]["absolute"] / self.rowcount
+            self.report["data"]["input"]["absolute"] \
+                = self.dataframe[self.keys].pivot_table(index=self.keys_row,
+                                                        columns=self.keys_col,
+                                                        aggfunc=len,
+                                                        dropna=False,
+                                                        fill_value=0)
+            self.report["data"]["input"]["relative"] \
+                = self.report["data"]["input"]["absolute"] / self.rowcount
             self.report["data"]["output"] = {}
-            self.report["data"]["output"]["absolute"] = \
-            self.report["data"]["input"]["absolute"] * self.report["data"][
-                "factor weights"]
+            self.report["data"]["output"]["absolute"] \
+                = self.report["data"]["input"]["absolute"] \
+                  * self.report["data"]["factor weights"]
             self.report["data"]["output"]["relative"] = \
-            self.report["data"]["output"]["absolute"] / self.rowcount
+                self.report["data"]["output"]["absolute"] / self.rowcount
         except MemoryError as e:
             warn = 'OOM: Could not finish writing report...'
             warnings.warn(warn)
 
     def start(self):
         pct_still = 1 - self.convcrit
-        diff_error = 999999
-        diff_error_old = 99999999999
+        diff_error = 999_999
+        diff_error_old = 99_999_999_999
 
         # cap (this needs more rigorous testings)
         if isinstance(self.cap, (list, tuple)):
@@ -622,8 +638,8 @@ class Rake:
                         self.dataframe.loc[self.dataframe[
                                                self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
                         self.dataframe[self.weight_column_name] = \
-                        self.dataframe[self.weight_column_name] / np.mean(
-                                self.dataframe[self.weight_column_name])
+                            self.dataframe[self.weight_column_name] / np.mean(
+                                    self.dataframe[self.weight_column_name])
                 else:
                     while (self.dataframe[
                                self.weight_column_name].min() < min_cap) or (
@@ -634,12 +650,12 @@ class Rake:
                         self.dataframe.loc[self.dataframe[
                                                self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
                         self.dataframe[self.weight_column_name] = \
-                        self.dataframe[self.weight_column_name] / np.mean(
-                                self.dataframe[self.weight_column_name])
+                            self.dataframe[self.weight_column_name] / np.mean(
+                                    self.dataframe[self.weight_column_name])
 
             diff_error_old = diff_error
             diff_error = sum(
-                abs(self.dataframe[self.weight_column_name] - old_weights))
+                    abs(self.dataframe[self.weight_column_name] - old_weights))
 
         self.iteration_counter = iteration  # for the report
         self.dataframe[self.weight_column_name].replace(0.00, 1.00,
@@ -650,9 +666,9 @@ class Rake:
         else:
             if diff_error > 0.001:
                 print(
-                    "Raking achieved only partial convergence, please check the results to ensure that sufficient convergence was achieved.")
+                        "Raking achieved only partial convergence, please check the results to ensure that sufficient convergence was achieved.")
                 print(
-                    "No improvement was apparent after %s iterations" % iteration)
+                        "No improvement was apparent after %s iterations" % iteration)
             else:
                 if self.verbose:
                     print('Raking converged in %s iterations' % iteration)
