@@ -8,6 +8,7 @@ pytest = "*"
 pytest-cov = "*"
 pytest-xdist = {extras = ["psutil"], version = "*"}
 python-dotenv = "0.21.0"
+line-profiler-pycharm = "*"
 
 [packages]
 scipy = "*"
@@ -24,6 +25,7 @@ watchdog = "*"
 requests = "*"
 python-pptx = "*"
 pyreadstat = "*"
+deprecated = "*"
 
 [requires]
 python_version = "3.10"
