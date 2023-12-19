@@ -1,41 +1,46 @@
+import random
 import re
+import sys
 import warnings
+from typing import Any
 
 import numpy as np
 import pandas as pd
+from deprecated.classic import deprecated
 
 
 class Rim:
+
     def __init__(self,
                  name: str,
                  max_iterations: int = 1000,
                  convcrit: float = 0.01,
                  cap: int = 0,
                  dropna: bool = True,
-                 impute_method: str = "mean",
+                 impute_method: str = 'mean',
                  weight_column_name: str = None,
                  total: int = 0
                  ):
 
         # Default var init
-        self.name = name
-        self.type = "Rim"
-        self.target_cols = []
-        self.max_iterations = max_iterations
-        self.convcrit = convcrit
-        self.cap = cap
-        self.weight_column_name = weight_column_name
-        self.total = total
-        self.anesrake_cap_correction = True
+        self.name: str = name
+        self.type: str = "Rim"
+        self.target_cols: list[str] = []
+        self.max_iterations: int = max_iterations
+        self.convcrit: float = convcrit
+        self.cap: int = cap
+        self.weight_column_name: str = weight_column_name
+        self.total: int = total
+        self.anesrake_cap_correction: bool = True
 
         self._group_targets = {}
 
         # Storage of weight (sub-)dataframe
-        self._df = None
+        self._df: pd.DataFrame | None = None
 
         # Impute methods parameters
-        self.dropna = dropna
-        self._impute_method = impute_method
+        self.dropna: bool = dropna
+        self._impute_method: str = impute_method
         self._specific_impute = {}
 
         # Constants
@@ -52,18 +57,20 @@ class Rim:
         # Default group init
         # A group can have any name except for the _DEFAULT_NAME
         # "_DEFAULT_NAME" is used when no group name is provided
-        self.groups = {}
-        self.groups[self._DEFAULT_NAME] = {}
-        self.groups[self._DEFAULT_NAME][self._REPORT] = None
-        self.groups[self._DEFAULT_NAME][self._FILTER_DEF] = None
-        self.groups[self._DEFAULT_NAME][self._FILTER_DEF_ORG] = None
-        self.groups[self._DEFAULT_NAME][self._FILTER_VARS] = []
-        self.groups[self._DEFAULT_NAME][
-            self._TARGETS] = self._empty_target_list()
-        self.groups[self._DEFAULT_NAME][self._TARGETS_INDEX] = None
-        self.groups[self._DEFAULT_NAME][self._ITERATIONS_] = None
+        self.groups: dict[str, dict[str, Any]] = {
+            self._DEFAULT_NAME: {
+                self._REPORT: None,
+                self._FILTER_DEF: None,
+                self._FILTER_DEF_ORG: None,
+                self._FILTER_VARS: [],
+                self._TARGETS: self._empty_target_list(),
+                self._TARGETS_INDEX: None,
+                self._ITERATIONS_: None
+            }
+        }
 
-    def set_targets(self, targets, group_name=None):
+    def set_targets(self, targets: list[dict] | dict,
+                    group_name: str = None) -> None:
         """
         Quickly set simple weight targets, optionally assigning a group name.
 
@@ -78,10 +85,13 @@ class Rim:
         -------
         None
         """
-        if not isinstance(targets, list): targets = [targets]
-        gn = self._DEFAULT_NAME if group_name is None else group_name
-        if group_name is not None and self._DEFAULT_NAME in list(
-                self.groups.keys()):
+        if not isinstance(targets, list):
+            targets: list[dict] = [targets]
+
+        gn: str = self._DEFAULT_NAME if group_name is None else group_name
+
+        if ((group_name is not None)
+                and (self._DEFAULT_NAME in list(self.groups.keys()))):
             self.groups[gn] = self.groups.pop(self._DEFAULT_NAME)
 
         mul_targets_err = 'Multiple weight targets must be given as list of dicts,\n' \
@@ -93,8 +103,8 @@ class Rim:
             raise TypeError(mul_targets_err)
 
         for target in targets:
-            if not isinstance(target, dict) or not isinstance(
-                    list(target.values())[0], dict):
+            if (not isinstance(target, dict)
+                    or not isinstance(list(target.values())[0], dict)):
                 raise TypeError(target_map_err)
         self.groups[gn][self._TARGETS] = {}
         for target in targets:
@@ -140,7 +150,7 @@ class Rim:
         self.groups[gn][self._FILTER_DEF] = filter_def
         self.groups[gn][self._FILTER_DEF_ORG] = filter_def
 
-    def _compute(self):
+    def _compute(self) -> pd.DataFrame:
         self._get_base_factors()
         self._df[self._weight_name()].replace(0.00, 1.00, inplace=True)
         self._df[self._weight_name()].replace(-1.00, np.NaN, inplace=True)
@@ -168,7 +178,7 @@ class Rim:
                 warnings.warn(warn)
         return self._df[self._weight_name()]
 
-    def _get_base_factors(self):
+    def _get_base_factors(self) -> None:
         wgt = self._weight_name()
         for group in self.groups:
             wdf = self._get_wdf(group)
@@ -225,33 +235,39 @@ class Rim:
             adj_w_vec = adj_w_vec._append(ratio).dropna()
         self._df[self._weight_name()] = adj_w_vec
 
-    def _get_group_filter_cols(self, filter_def):
-        filter_cols = []
+    @deprecated(reason='This method is possibly unused and might be removed '
+                       'in the future.')
+    def _get_group_filter_cols(self, filter_def) -> list[str]:
+        """
+        This method is possibly unused and might be removed in the future.
+        """
+        filter_cols: list[str] = []
         if filter_def is not None:
             for colname in self._df.columns:
                 if re.search(r"\b" + colname + r"\b", filter_def):
                     filter_cols.append(colname)
         return filter_cols
 
-    def _get_group_target_cols(self, targets):
+    @staticmethod
+    def _get_group_target_cols(targets: list[dict[str, list]]) -> list[str]:
         return [list(target.keys())[0] for target in targets]
 
-    def _get_wdf(self, group):
+    def _get_wdf(self, group: str) -> pd.DataFrame:
         filters = self.groups[group][self._FILTER_DEF]
-        targets = self.groups[group][self._TARGETS]
-        target_vars = self._get_group_target_cols(targets)
-        weight_var = self._weight_name()
-        if filters is not None:
-            wdf = self._df.copy().query(filters)
-            filter_vars = self.groups[group][self._FILTER_VARS]
-            selected_cols = target_vars + filter_vars + [weight_var]
-        else:
-            wdf = self._df.copy()
-            selected_cols = target_vars + [weight_var]
-        wdf = wdf[selected_cols].dropna()
-        return wdf
+        targets: list[dict[str, list]] = self.groups[group][self._TARGETS]
+        weight_var: str = self._weight_name()
 
-    def _dropna(self):
+        wdf: pd.DataFrame = self._df.copy()
+        selected_cols: list[str] = self._get_group_target_cols(targets)
+        if filters is not None:
+            wdf = wdf.query(filters)
+            selected_cols += self.groups[group][self._FILTER_VARS]
+
+        selected_cols += [weight_var]
+
+        return wdf[selected_cols].dropna()
+
+    def _dropna(self) -> None:
         if self.dropna:
             self._df.dropna(inplace=True)
         else:
@@ -262,15 +278,15 @@ class Rim:
                             column not in list(self._specific_impute.keys())})
 
             for column, method in columns.items():
-                if method == "mean":
+                if method == 'mean':
                     m = np.round(self._df[column].mean(), 0)
                     print(m)
                     self._df[column].fillna(m, inplace=True)
-                elif method == "mode":
+                elif method == 'mode':
                     self._df[column].fillna(self._df[column].mode()[0],
                                             inplace=True)
 
-    def report(self, group=None):
+    def report(self, group: str = None) -> dict[str, Any]:
         """
         TODO: Docstring
         """
@@ -288,7 +304,7 @@ class Rim:
         else:
             self._specific_impute[target] = method
 
-    def _get_scheme_filter_cols(self):
+    def _get_scheme_filter_cols(self) -> list[str]:
         scheme_filter_cols = [self.groups[group][self._FILTER_VARS]
                               for group in self.groups]
         scheme_filter_cols = list(set([filter_col
@@ -296,7 +312,8 @@ class Rim:
                                        for filter_col in sublist]))
         return scheme_filter_cols
 
-    def _minimize_columns(self, df, key, verbose=True):
+    def _minimize_columns(self, df: pd.DataFrame, key: str,
+                          verbose: bool = True):
         self._df = df.copy()
         filter_cols = self._get_scheme_filter_cols()
         columns = list(set([key] + self.target_cols + filter_cols))
@@ -304,7 +321,8 @@ class Rim:
         self._df[self._weight_name()] = np.zeros(len(self._df))
         self._check_targets(verbose)
 
-    def dataframe(self, df, key_column=None):
+    def dataframe(self, df: pd.DataFrame,
+                  key_column: str = None) -> pd.DataFrame:
         all_filter_cols = self._get_scheme_filter_cols()
         columns = self._columns(add_columns=[key_column])
         columns.extend(all_filter_cols)
@@ -360,13 +378,13 @@ class Rim:
             raise ValueError(('Group_targets must be of type %s NOT %s ') % \
                              (type({}), type(group_targets)))
 
-    def _weight_name(self):
+    def _weight_name(self) -> str:
         if self.weight_column_name is None:
             return self._WEIGHTS_ + self.name
         else:
             return self.weight_column_name
 
-    def _empty_target_list(self):
+    def _empty_target_list(self) -> dict[str, list]:
         return {list_item: [] for list_item in self.target_cols}
 
     def _check_targets(self, verbose):
@@ -470,15 +488,25 @@ FrequencyTarget = dict[int, float]
 VariableFrequencyTarget = dict[str, FrequencyTarget]
 
 
-class Rake:
+def random_permutation(iterable, r=None):
+    "Random selection from itertools.permutations(iterable, r)"
+    pool = tuple(iterable)
+    r = len(pool) if r is None else r
+    return tuple(random.sample(pool, r))
 
+
+def order_by_target_categories_size(iterable: list[VariableFrequencyTarget]):
+    return sorted(iterable, key=lambda x: len(list(x.values())[0]))
+
+
+class Rake:
     def __init__(self, dataframe: pd.DataFrame,
                  targets: list[dict[str, FrequencyTarget]],
                  weight_column_name: str = "weight",
                  max_iterations: int = 1000,
                  convcrit: float = 0.01,
                  _use_cap: bool = False,
-                 cap: int = 10000000,
+                 cap: int | tuple[int, int] | list[int, int] = 10_000_000,
                  verbose: bool = False,
                  anesrake_cap_correction: bool = True):
 
@@ -486,7 +514,7 @@ class Rake:
         self.dataframe = dataframe
         self.weight_column_name = weight_column_name
 
-        self.cap = cap
+        self.cap: int | tuple[int, int] | list[int, int] = cap
         self.anesrake_cap_correction = anesrake_cap_correction
         self._use_cap = _use_cap
         self.max_iterations = max_iterations
@@ -549,7 +577,25 @@ class Rake:
         self.dataframe[self.weight_column_name] \
             *= variable_weight_adjustment_factor
 
-    def calc_weight_efficiency(self):
+    def compute_target_diffs(self, target: VariableFrequencyTarget) -> float:
+        variable_name, variable_distribution = list(target.items())[0]
+
+        total = self.dataframe[self.weight_column_name].count()
+
+        wf = (self.dataframe.groupby(variable_name)[
+                  self.weight_column_name].sum() / total) * 100
+        tf = (self.dataframe.groupby(variable_name)[
+                  self.weight_column_name].count() / total) * 100
+
+        df = pd.DataFrame({
+            'target': tf,
+            'weighted': wf,
+            'diff': tf - wf,
+        })
+
+        return abs(df['diff'].sum())
+
+    def calc_weight_efficiency(self) -> float:
         numerator = 100 * sum(self.dataframe[self.weight_column_name] *
                               self.pre_weight) ** 2
         denominator = (sum(self.pre_weight) *
@@ -603,8 +649,23 @@ class Rake:
             warn = 'OOM: Could not finish writing report...'
             warnings.warn(warn)
 
-    def start(self):
-        pct_still = 1 - self.convcrit
+    def apply_cap_and_normalize(self, min_cap: int | None, max_cap: int):
+        df = self.dataframe
+        weight_col = self.weight_column_name
+        if min_cap is None:
+            while df[weight_col].max() > max_cap:
+                df.loc[df[weight_col] > max_cap, weight_col] = max_cap
+                df[weight_col] = (df[weight_col] / np.mean(df[weight_col]))
+        else:
+            while ((df[weight_col].min() < min_cap)
+                   or (df[weight_col].max() > max_cap)):
+                df.loc[df[weight_col] < min_cap, weight_col] = min_cap
+                df.loc[df[weight_col] > max_cap, weight_col] = max_cap
+                df[weight_col] = df[weight_col] / np.mean(df[weight_col])
+
+    def start(self, compute_target_group_errors: bool = False,
+              use_new_rake_order: bool = False) -> int:
+        pct_still = 1.0 - self.convcrit
         diff_error = 999_999
         diff_error_old = 99_999_999_999
 
@@ -624,38 +685,40 @@ class Rake:
         for iteration in range(1, self.max_iterations + 1):
             old_weights = self.dataframe[self.weight_column_name].copy()
 
-            if not diff_error < pct_still * diff_error_old:
-                break
-
-            for target in self.targets:
-                self.rakeonvar(target)
+            if not use_new_rake_order:
+                for target in self.targets:
+                    self.rakeonvar(target)
+            else:
+                for target in reversed(
+                        order_by_target_categories_size(self.targets)):
+                    self.rakeonvar(target)
 
             if self._use_cap:
-
-                if min_cap is None:
-                    while self.dataframe[
-                        self.weight_column_name].max() > max_cap:
-                        self.dataframe.loc[self.dataframe[
-                                               self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
-                        self.dataframe[self.weight_column_name] = \
-                            self.dataframe[self.weight_column_name] / np.mean(
-                                    self.dataframe[self.weight_column_name])
-                else:
-                    while (self.dataframe[
-                               self.weight_column_name].min() < min_cap) or (
-                            self.dataframe[
-                                self.weight_column_name].max() > max_cap):
-                        self.dataframe.loc[self.dataframe[
-                                               self.weight_column_name] < min_cap, self.weight_column_name] = min_cap
-                        self.dataframe.loc[self.dataframe[
-                                               self.weight_column_name] > max_cap, self.weight_column_name] = max_cap
-                        self.dataframe[self.weight_column_name] = \
-                            self.dataframe[self.weight_column_name] / np.mean(
-                                    self.dataframe[self.weight_column_name])
+                self.apply_cap_and_normalize(min_cap, max_cap)
 
             diff_error_old = diff_error
-            diff_error = sum(
-                    abs(self.dataframe[self.weight_column_name] - old_weights))
+
+            if compute_target_group_errors:
+                targets_error = sum(
+                        self.compute_target_diffs(target) for target in
+                        self.targets)
+
+                tot_error = sum(
+                        abs(self.dataframe[
+                                self.weight_column_name] - old_weights)
+                )
+
+                diff_error = max(targets_error, tot_error)
+                print(f'targets_error, tot_error: '
+                      f'{diff_error} <- {targets_error, tot_error}')
+            else:
+                diff_error = sum(
+                        abs(self.dataframe[
+                                self.weight_column_name] - old_weights)
+                )
+
+            if not diff_error < pct_still * diff_error_old:
+                break
 
         self.iteration_counter = iteration  # for the report
         self.dataframe[self.weight_column_name].replace(0.00, 1.00,
