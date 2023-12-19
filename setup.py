@@ -22,13 +22,13 @@ libs = ['numpy',
         'xmltodict',
         'lxml',
         'xlsxwriter',
-        # 'pillow',
         'prettytable',
         'decorator',
         'watchdog',
         'requests',
         'python-pptx',
-        'pyreadstat']
+        'pyreadstat',
+        'deprecated']
 
 def version_libs(libs, precisions, versions):
     return [lib + precisions[lib] + versions[lib]
