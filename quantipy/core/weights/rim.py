@@ -667,7 +667,6 @@ class Rake:
               use_new_rake_order: bool = False) -> int:
         pct_still = 1.0 - self.convcrit
         diff_error = 999_999
-        diff_error_old = 99_999_999_999
 
         # cap (this needs more rigorous testings)
         if isinstance(self.cap, (list, tuple)):
@@ -712,10 +711,8 @@ class Rake:
                 print(f'targets_error, tot_error: '
                       f'{diff_error} <- {targets_error, tot_error}')
             else:
-                diff_error = sum(
-                        abs(self.dataframe[
-                                self.weight_column_name] - old_weights)
-                )
+                diff_error = (self.dataframe[
+                                  self.weight_column_name] - old_weights).abs().sum()
 
             if not diff_error < pct_still * diff_error_old:
                 break
