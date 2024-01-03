@@ -499,6 +499,10 @@ def order_by_target_categories_size(iterable: list[VariableFrequencyTarget]):
     return sorted(iterable, key=lambda x: len(list(x.values())[0]))
 
 
+def target_to_name_and_dist(target) -> tuple[str, FrequencyTarget]:
+    return list(target.items())[0]
+
+
 class Rake:
     def __init__(self, dataframe: pd.DataFrame,
                  targets: list[dict[str, FrequencyTarget]],
@@ -563,7 +567,8 @@ class Rake:
             print("Cap is very low, the model may take a long time to run.")
 
     def rakeonvar(self, variable_target: VariableFrequencyTarget) -> None:
-        variable_name, variable_distribution = list(variable_target.items())[0]
+        variable_name, variable_distribution = target_to_name_and_dist(
+                variable_target)
         variable_weight_adjustment_factor = self.dataframe[variable_name] \
             .map(variable_distribution)
 
@@ -578,22 +583,25 @@ class Rake:
             *= variable_weight_adjustment_factor
 
     def compute_target_diffs(self, target: VariableFrequencyTarget) -> float:
-        variable_name, variable_distribution = list(target.items())[0]
-
-        total = self.dataframe[self.weight_column_name].count()
-
-        wf = (self.dataframe.groupby(variable_name)[
-                  self.weight_column_name].sum() / total) * 100
-        tf = (self.dataframe.groupby(variable_name)[
-                  self.weight_column_name].count() / total) * 100
+        variable_name, variable_distribution = target_to_name_and_dist(
+                target)
+        # weight_filter = self.dataframe[variable_name] \
+        #     .isin(variable_distribution)
+        # observed_total = self.dataframe[variable_name].count()
+        #
+        # target_total = sum(variable_distribution.values())
 
         df = pd.DataFrame({
-            'target': tf,
-            'weighted': wf,
-            'diff': tf - wf,
+            'target': [v for v in variable_distribution.values()],
+            'n': self.dataframe.groupby(variable_name).size(),
+            'weighted': self.dataframe \
+                .groupby(variable_name)[self.weight_column_name].sum(),
         })
+        df['diff'] = (df['target'] - df['weighted']).abs()
+        diffs = df['diff'].sum()
+        df.loc['total'] = df.iloc[:, :].sum()
 
-        return abs(df['diff'].sum())
+        return df
 
     def calc_weight_efficiency(self) -> float:
         numerator = 100 * sum(self.dataframe[self.weight_column_name] *
@@ -663,7 +671,7 @@ class Rake:
                 df.loc[df[weight_col] > max_cap, weight_col] = max_cap
                 df[weight_col] = df[weight_col] / np.mean(df[weight_col])
 
-    def start(self, compute_target_group_errors: bool = False,
+    def start_old(self, compute_target_group_errors: bool = False,
               use_new_rake_order: bool = False) -> int:
         pct_still = 1.0 - self.convcrit
         diff_error = 999_999
@@ -712,17 +720,19 @@ class Rake:
                 print(f'targets_error, tot_error: '
                       f'{diff_error} <- {targets_error, tot_error}')
             else:
-                diff_error = sum(
-                        abs(self.dataframe[
-                                self.weight_column_name] - old_weights)
-                )
+                diff_error = (self.dataframe[self.weight_column_name] - old_weights).abs().sum()
+                print(f'diff_error: {diff_error}')
 
             if not diff_error < pct_still * diff_error_old:
                 break
 
+
         self.iteration_counter = iteration  # for the report
         self.dataframe[self.weight_column_name].replace(0.00, 1.00,
                                                         inplace=True)
+
+        for target in self.targets:
+            print(self.compute_target_diffs(target))
 
         if iteration == self.max_iterations:
             print('Convergence did not occur in %s iterations' % iteration)
@@ -736,5 +746,110 @@ class Rake:
                 if self.verbose:
                     print('Raking converged in %s iterations' % iteration)
                     print('Generating report')
+
         self.generate_report()
         return self.iteration_counter
+
+    def start_new(self, compute_target_group_errors: bool = False,
+                  use_new_rake_order: bool = False) -> int:
+        pct_still = 1.0 - self.convcrit
+        weight_change = 999_999
+        last_weight_change = 99_999_999_999
+
+        # cap (this needs more rigorous testings)
+        if isinstance(self.cap, (list, tuple)):
+            min_cap = self.cap[0]
+            max_cap = self.cap[1]
+        else:
+            min_cap = None
+            max_cap = self.cap
+
+        if self.anesrake_cap_correction:
+            max_cap += 0.0001
+            if min_cap is not None:
+                min_cap -= 0.0001
+
+        names = [target_to_name_and_dist(target)[0] for target in self.targets]
+        original_order = {
+            name: i for i, name in enumerate(names)
+        }
+        curr_weights = pd.DataFrame({
+            name: self.dataframe[self.weight_column_name].copy()
+            for name in names + ['global']
+        })
+        prev_weights = curr_weights.copy()
+
+        history = {
+            f'diff_{name}': [weight_change]
+            for name in names + ['global']
+        }
+
+        def get_previous_diff(target):
+            name = target_to_name_and_dist(target)[0]
+            time_series = history[f'diff_{name}']
+            return -time_series[-1] if len(time_series) else None, original_order[name]
+
+        def order_targets_by_error(targets):
+            return sorted(targets, key=get_previous_diff)
+
+        prev_global_change = last_weight_change
+        self.max_iterations = 60
+        for iteration in range(1, self.max_iterations + 1):
+            prev_weights['global'] = self.dataframe[self.weight_column_name].copy()
+
+            for target in order_targets_by_error(self.targets):
+                self.rakeonvar(target)
+
+                name, distribution = target_to_name_and_dist(target)
+
+                curr_weights[name] \
+                    = self.dataframe[self.weight_column_name].copy()
+
+                weight_change \
+                    = (prev_weights[name] - curr_weights[name]) \
+                          .abs().sum() #/ (self.dataframe[name].isin(distribution).sum())
+                history[f'diff_{name}'].append(weight_change)
+                prev_weights[name] = self.dataframe[self.weight_column_name].copy()
+
+                print(f'name, weight_change: {name, weight_change}')
+
+            curr_weights['global'] = self.dataframe[self.weight_column_name].copy()
+
+            history[f'diff_global'].append(
+                    (prev_weights['global'] - curr_weights['global'])
+                    .abs().sum()
+            )
+
+            print('===')
+
+            if self._use_cap:
+                self.apply_cap_and_normalize(min_cap, max_cap)
+
+            history_df = pd.DataFrame(history)
+            print(f'history_df:\n{history_df}')
+
+            if (history_df[:].iloc[-1] < 1e-8).all():
+                break
+
+        weight_change = history_df['diff_global'].iloc[-1]
+
+        self.iteration_counter = iteration  # for the report
+        self.dataframe[self.weight_column_name].replace(0.00, 1.00,
+                                                        inplace=True)
+
+        if iteration == self.max_iterations:
+            print('Convergence did not occur in %s iterations' % iteration)
+        else:
+            if weight_change > 0.001:
+                print(
+                        "Raking achieved only partial convergence, please check the results to ensure that sufficient convergence was achieved.")
+                print(
+                        "No improvement was apparent after %s iterations" % iteration)
+            else:
+                if self.verbose:
+                    print('Raking converged in %s iterations' % iteration)
+                    print('Generating report')
+        self.generate_report()
+        return self.iteration_counter
+
+    start = start_old
