@@ -434,6 +434,11 @@ def add_pie_chart(
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 
+# FIXME: Dummy function that does nothing (yet):
+def get_chart_values(chart):
+    pass
+
+
 def add_bar_chart(
         slide,
         dataframe,
@@ -673,7 +678,7 @@ def add_bar_chart(
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
         caxis_tick_labels.font.color.rgb = RGBColor(
-            *caxis_tick_labels_font_color)
+                *caxis_tick_labels_font_color)
 
     # set value axis (horizontal) properties
     value_axis = chart.value_axis
@@ -696,7 +701,7 @@ def add_bar_chart(
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.name = vaxis_tick_labels_font_name
         vaxis_tick_labels.font.color.rgb = RGBColor(
-            *vaxis_tick_labels_font_color)
+                *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -752,7 +757,7 @@ def add_bar_chart(
             # point.format.line.color.rgb = RGBColor(0,0,0)
             frame = point.data_label.text_frame
             frame.text = '' if value == 1.01 else str(
-                int(round(float(value) * 100))) + "%"
+                    int(round(float(value) * 100))) + "%"
             run = frame.paragraphs[0].runs
             for point_label in run:
                 point_label.font.size = Pt(data_labels_font_size)
@@ -949,7 +954,7 @@ def add_column_chart(
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
         caxis_tick_labels.font.color.rgb = RGBColor(
-            *caxis_tick_labels_font_color)
+                *caxis_tick_labels_font_color)
 
     # set value axis (vertical) properties
     value_axis = chart.value_axis
@@ -972,7 +977,7 @@ def add_column_chart(
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.name = vaxis_tick_labels_font_name
         vaxis_tick_labels.font.color.rgb = RGBColor(
-            *vaxis_tick_labels_font_color)
+                *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -1141,7 +1146,7 @@ def add_line_chart(
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
         caxis_tick_labels.font.color.rgb = RGBColor(
-            *caxis_tick_labels_font_color)
+                *caxis_tick_labels_font_color)
 
     # set value axis (vertical) properties
     value_axis = chart.value_axis
@@ -1164,7 +1169,7 @@ def add_line_chart(
         vaxis_tick_labels.font.bold = vaxis_tick_labels_font_bold
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.color.rgb = RGBColor(
-            *vaxis_tick_labels_font_color)
+                *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -1341,7 +1346,7 @@ def add_stacked_bar_chart(
         caxis_tick_labels.font.bold = caxis_tick_labels_font_bold
         caxis_tick_labels.font.italic = caxis_tick_labels_font_italic
         caxis_tick_labels.font.color.rgb = RGBColor(
-            *caxis_tick_labels_font_color)
+                *caxis_tick_labels_font_color)
 
     # set value axis (horizontal) properties
     value_axis = chart.value_axis
@@ -1364,7 +1369,7 @@ def add_stacked_bar_chart(
         vaxis_tick_labels.font.italic = vaxis_tick_labels_font_italic
         vaxis_tick_labels.font.name = vaxis_tick_labels_font_name
         vaxis_tick_labels.font.color.rgb = RGBColor(
-            *vaxis_tick_labels_font_color)
+                *vaxis_tick_labels_font_color)
         if vaxis_tick_labels_num_format is not None:
             vaxis_tick_labels.number_format = vaxis_tick_labels_num_format
         vaxis_tick_labels.number_format_is_linked = vaxis_tick_labels_num_format_is_linked
@@ -1587,7 +1592,7 @@ def add_table(
                     cfill = cell.fill
                     cfill.solid()
                     cfill.fore_color.rgb = RGBColor(
-                        *values_shading_shading_color)
+                            *values_shading_shading_color)
 
             textframe = cell.text_frame
             paragraph = textframe.paragraphs[0]
@@ -1756,7 +1761,7 @@ def add_net(
                     cfill = cell.fill
                     cfill.solid()
                     cfill.fore_color.rgb = RGBColor(
-                        *values_shading_shading_color)
+                            *values_shading_shading_color)
 
             textframe = cell.text_frame
             paragraph = textframe.paragraphs[0]

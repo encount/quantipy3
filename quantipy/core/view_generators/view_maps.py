@@ -202,7 +202,7 @@ class QuantipyViews(ViewMapper):
                     view_df = q.summarize().result
                     view_df.drop((link.x, 'All'), axis=0, inplace=True)
                 elif x_type in string:
-                    view_df = tools.view.agg.make_default_str_view(data,
+                    view_df = tools.view.agg.make_default_str_view(link.get_data(),
                                                                    x=link.x)
             elif link.x == '@':
                 if y_type in categorical:

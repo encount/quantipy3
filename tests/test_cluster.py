@@ -212,7 +212,7 @@ class TestClusterObject(unittest.TestCase):
         self.assertIsInstance(cluster, Cluster)
         self.assertCountEqual([],cluster.keys())
 
-        for i in xrange(3):
+        for i in range(3):
             chain = self.stack0.get_chain(name="ChainName{0}".format(i), data_keys="Jan", x=x, y=y, views=[v])
             cluster.add_chain(chains=chain)
 

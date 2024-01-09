@@ -131,7 +131,7 @@ class Rules(object):
             return {'y': self.y_slicer}
         else:
             err = "If provided, 'axis' must be one of {'x', 'y'}"
-            raise valueError(err)
+            raise ValueError(err)
 
     # ------------------------------------------------------------------------
     # apply rules

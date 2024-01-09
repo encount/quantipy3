@@ -9,6 +9,8 @@ pytest-cov = "*"
 pytest-xdist = {extras = ["psutil"], version = "*"}
 python-dotenv = "0.21.0"
 line-profiler-pycharm = "*"
+flake8 = "*"
+matplotlib = "*"
 
 [packages]
 scipy = "*"

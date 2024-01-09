@@ -252,7 +252,7 @@ class TestChainGet:
             assert chain.dataframe is chain._frame
 
             ### Test Chain attributes
-            assert chain.orientation is 'x'
+            assert chain.orientation == 'x'
 
             ### Test against stored JSON.
 

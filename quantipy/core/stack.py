@@ -102,16 +102,16 @@ class Stack(defaultdict):
 
         # The 'meta' portion of the stack is a standar dict (not Stack)
         try:
-            if isinstance(val, Stack) and val.stack_pos is "stack_root":
+            if isinstance(val, Stack) and val.stack_pos == "stack_root":
                 val.parent = self
                 val.key = key
 
                 # This needs to be compacted and simplified.
-                if self.stack_pos is "stack_root":
+                if self.stack_pos == "stack_root":
                     val.stack_pos = "data_root"
-                elif self.stack_pos is "data_root":
+                elif self.stack_pos == "data_root":
                     val.stack_pos = "filter"
-                elif self.stack_pos is "filter":
+                elif self.stack_pos == "filter":
                     val.stack_pos = "x"
 
         except AttributeError:

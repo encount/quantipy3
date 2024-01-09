@@ -91,8 +91,8 @@ def verify_dtypes_vs_meta(data, meta):
     missing = df.loc[df['dtype'].isin([np.NaN])]['meta']
     if missing.size > 0:
         print(
-            '\nSome meta not paired to data columns was found (these may be special data types):\n',
-            missing, '\n')
+                '\nSome meta not paired to data columns was found (these may be special data types):\n',
+                missing, '\n')
 
     df = df.dropna(how='any')
     df['verified'] = df.apply(lambda x: x['dtype'] in DTYPE_MAP[x['meta']],
@@ -669,7 +669,7 @@ def rule_viable_axes(meta, vk, x, y):
 
     if condensed_x or x == '@': viable_axes.remove('x')
     if condensed_y or (y == '@' and not array_sum_freqs): viable_axes.remove(
-        'y')
+            'y')
 
     return viable_axes
 
@@ -885,7 +885,7 @@ def as_datetime64(data, date_format='dmy', date_sep='/', time_format='hm',
         date = pd.Series(date_time[0])
 
     date = date.str.split(date_sep).apply(
-        lambda x: '-'.join([x[p] for p in date_reorder]))
+            lambda x: '-'.join([x[p] for p in date_reorder]))
 
     if has_time:
         date_time = (date + ' ' + time).astype(np.datetime64)
@@ -900,9 +900,9 @@ def get_time_from_datetime(data):
     """
 
     time = data.apply(
-        lambda x: np.timedelta64(x.hour, 'h') + np.timedelta64(x.minute,
-                                                               'm') + np.timedelta64(
-            x.second, 's'))
+            lambda x: np.timedelta64(x.hour, 'h') + np.timedelta64(x.minute,
+                                                                   'm') + np.timedelta64(
+                    x.second, 's'))
     return time
 
 
@@ -968,7 +968,7 @@ def single_value_counts_groups(data, groupby):
         if list(grouped.groups.keys()):
             df = pd.concat([single_value_counts(
                     group_data[1][[data.columns[0], data.columns[2]]]) for
-                            group_data in grouped], axis=0).T
+                group_data in grouped], axis=0).T
             df.columns = [int(g) for g in groups]
         else:
             df = pd.DataFrame(0, ['nan'], ['nan']).T
@@ -1025,7 +1025,7 @@ def delimited_set_value_counts_groups(data, groupby, value_map=None):
     if list(grouped.groups.keys()):
         df = pd.concat([delimited_set_value_counts(
                 group_data[1][[data.columns[0], data.columns[2]]], value_map)
-                        for group_data in grouped], axis=1)
+            for group_data in grouped], axis=1)
         df.columns = [int(g) for g in groups]
         if len(df.index) == 1:
             df = pd.DataFrame(0, ['nan'], ['nan'])
@@ -1045,7 +1045,8 @@ def dichotomous_set_value_counts(data):
     cdata = data[data.columns[:-1]].replace(2, np.NAN).mul(
             data[data.columns[-1]], axis=0)
     df = pd.DataFrame(
-        pd.concat([cdata.sum(), pd.Series({'All': cdata.T.count().count()})]))
+            pd.concat(
+                    [cdata.sum(), pd.Series({'All': cdata.T.count().count()})]))
     df.columns = ['@1']
     return df
 
@@ -1131,7 +1132,7 @@ def array_items_from_meta(meta, variable):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def get_numeric_indexcodes(source_df, axis='x'):
     codes = source_df.index.get_level_values(
-        -1) if axis == 'x' else source_df.T.index.get_level_values(-1)
+            -1) if axis == 'x' else source_df.T.index.get_level_values(-1)
     if codes.all() == 'total':
         codes = [1]
     elif codes.all() == 'None':
@@ -1209,15 +1210,6 @@ def update_view_meta(view_df, meta, method_name, name, fullname, method_type,
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def create_NA_view(x, y):
-    ''' Creates an empty view without data and meta.
-    '''
-    df = pd.DataFrame(data=['N/A'], index=[x], columns=[y])
-    view = View(df, meta='unavailable')
-    return view
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def describe(data, x, weights=None):
     ''' Replacment of (wrapper around) the df.describe() method that can deal with
     weighted data. Weight vectors are allowed to be non-normalized, i.e.
@@ -1246,12 +1238,12 @@ def describe(data, x, weights=None):
         if not weights == '@1':
             count = data[weights].sum()
             norm_wvector_coef = 1 if len(data.index) == count else len(
-                data.index) / count
+                    data.index) / count
             w_squared_sum = (data[weights] ** 2).sum()
             eff_count = count ** 2 / w_squared_sum
             mean = data[x].mul(data[weights].mul(norm_wvector_coef)).mean()
             var = data[weights].mul((data[x].sub(mean)) ** 2).sum() / (
-                        data[weights].sum() - 1)
+                    data[weights].sum() - 1)
             try:
                 stddev = math.sqrt(var)
                 if abs(stddev) == 0.00:
@@ -1300,14 +1292,15 @@ def create_multiindex_from_length(name, length, names=['Question', 'Values'],
                                   margins=True):
     if margins:
         multiindex = pd.MultiIndex(
-            levels=[[name], [str(s) for s in range(1, length + 1)] + ['All']],
-            labels=[[0] * (length + 1), list(range(length + 1))],
-            names=names)
+                levels=[[name],
+                        [str(s) for s in range(1, length + 1)] + ['All']],
+                labels=[[0] * (length + 1), list(range(length + 1))],
+                names=names)
     else:
         multiindex = pd.MultiIndex(
-            levels=[[name], [str(s) for s in range(1, length + 1)]],
-            labels=[[0] * length, list(range(length))],
-            names=names)
+                levels=[[name], [str(s) for s in range(1, length + 1)]],
+                labels=[[0] * length, list(range(length))],
+                names=names)
     return multiindex
 
 
@@ -1319,59 +1312,6 @@ def cast_index_levels_as_str(df, x_eq_y=False):
     column_levels = index_levels if x_eq_y else [[str(item) for item in level]
                                                  for level in df.columns.levels]
     df.columns.set_levels(column_levels, inplace=True)
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def create_nested_multiindex_from_array(array, data, meta,
-                                        names=['Question', 'Values'],
-                                        margins=True):
-    if len(names) <= len(array):
-        names = names * len(array)
-    product = [list(item) for sublist in [
-        [[x], get_values_from_categorical(meta['columns'][x]['values'], meta)]
-        for x in array] for item in sublist]
-    if margins:
-        product[-1].append('All')
-
-    return pd.MultiIndex.from_product(product, names=names)
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def create_nest_meta(x, y, data, meta=None):
-    """ Creates dictionary with information about unique sizes of variables in the data
-
-        Note : Skip var if `var not in data.columns`
-
-        Example:
-            input:
-                x = "A>B>C"
-                y = "D>E>F"
-                data = <<pandas.DataFrame>>
-
-            output: (random values)
-                dict =
-                {
-                    'A':{'items': [1, 2, 3, 4]}
-                    'B':{'items': ['Jon', 'Atli']}
-                    'C':{'items': [1, 2, 3, 4, 5]}
-                    'D':{'items': ['Jan', 'Feb', 'Mar']}
-                    'E':{'items': [1, 2, 3, 4]}
-                    'F':{'items': [1, 2]}
-                }
-    """
-    #    return {var:{'items':sorted(data[var].unique())
-    #                 'length':len(data[var].unique())} for var in x.split('>') + y.split('>') }
-    if meta is None:
-        return None
-    if x in list(meta['columns'].keys()) and not meta['columns'][x]['type'] in [
-        'int', 'float'] and not meta['columns'][y]['type'] in ['int', 'float']:
-        return {var: {
-            'items': get_values_from_categorical(meta['columns'][var]['values'],
-                                                 meta)
-            } for var in x.split('>') + y.split('>') if var in data}
-    else:
-        return {var: {'items': sorted(data[var].unique())} for var in
-                x.split('>') + y.split('>') if var in data}
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1537,14 +1477,15 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
             margin = df.dropna()[df.columns[-1]].sum()
             if x_is_multi:
                 ct = pd.DataFrame(
-                    df[df.columns[0]].str.get_dummies(';').astype(int).mul(
-                            df[df.columns[-1]], axis=0).sum(axis=0),
-                    columns=['@1'])
+                        df[df.columns[0]].str.get_dummies(';').astype(int).mul(
+                                df[df.columns[-1]], axis=0).sum(axis=0),
+                        columns=['@1'])
             else:
                 ct = pd.DataFrame(
-                    pd.get_dummies(df[df.columns[0]].dropna().astype(int)).mul(
-                            df[df.columns[-1]], axis=0).sum(axis=0),
-                    columns=['@1'])
+                        pd.get_dummies(
+                                df[df.columns[0]].dropna().astype(int)).mul(
+                                df[df.columns[-1]], axis=0).sum(axis=0),
+                        columns=['@1'])
 
 
     # 2D links, bivariate aggregates
@@ -1557,7 +1498,7 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
             if x_is_multi and y_is_multi:
                 df = df.dropna()
                 dummy_x_df = df[df.columns[0]].str.get_dummies(';').astype(
-                    int).mul(df[df.columns[-1]], axis=0)
+                        int).mul(df[df.columns[-1]], axis=0)
                 dummy_y_df = df[df.columns[1]].str.get_dummies(';').astype(int)
                 dummy_y_df_columns = dummy_y_df.columns
                 dummy_y_df.columns = [df.columns[1] + '_' + code for code in
@@ -1566,7 +1507,7 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
                         [dummy_x_df, dummy_y_df, df[df.columns[-1]]], axis=1)
                 margin = [
                     dummy_full_df[dummy_full_df[code] == 1][df.columns[-1]].sum(
-                        axis=0) for code in dummy_y_df.columns]
+                            axis=0) for code in dummy_y_df.columns]
                 ct = pd.concat([dummy_full_df[dummy_full_df[code] == 1][
                                     dummy_x_df.columns].sum(axis=0) for code in
                                 dummy_y_df.columns], axis=1)
@@ -1574,8 +1515,9 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
 
             elif y_is_multi:
                 dummy_x_df = pd.DataFrame(
-                    pd.get_dummies(df[df.columns[0]]).mul(df[df.columns[-1]],
-                                                          axis=0))
+                        pd.get_dummies(df[df.columns[0]]).mul(
+                                df[df.columns[-1]],
+                                axis=0))
                 dummy_y_df = df[df.columns[1]].str.get_dummies(';').astype(int)
                 dummy_y_df_columns = dummy_y_df.columns
                 dummy_y_df.columns = [df.columns[1] + '_' + code for code in
@@ -1591,9 +1533,9 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
             elif x_is_multi:
                 df = df.dropna()
                 dummy_x_df = df[df.columns[0]].str.get_dummies(';').astype(
-                    int).mul(df[df.columns[-1]], axis=0)
+                        int).mul(df[df.columns[-1]], axis=0)
                 dummy_y_df = pd.DataFrame(
-                    pd.get_dummies(df[df.columns[1]].astype(int)))
+                        pd.get_dummies(df[df.columns[1]].astype(int)))
                 dummy_y_df_columns = dummy_y_df.columns
                 dummy_y_df.columns = [df.columns[1] + '_' + str(code) for code
                                       in dummy_y_df.columns]
@@ -1601,7 +1543,7 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
                         [dummy_x_df, dummy_y_df, df[df.columns[-1]]], axis=1)
                 margin = [
                     dummy_full_df[dummy_full_df[code] == 1][df.columns[-1]].sum(
-                        axis=0) for code in dummy_y_df.columns]
+                            axis=0) for code in dummy_y_df.columns]
                 ct = pd.concat([dummy_full_df[dummy_full_df[code] == 1][
                                     dummy_x_df.columns].sum(axis=0) for code in
                                 dummy_y_df.columns], axis=1)
@@ -1619,7 +1561,7 @@ def categorical_value_counts(df, is_single=False, x_is_multi=False,
     ct['All'] = margin
     ct = ct.T
     ct['All'] = ct.sum(
-        axis=1)  # the row margins are currently incorrect for all multicode data
+            axis=1)  # the row margins are currently incorrect for all multicode data
 
     # apply multiindex confirming the Question/Values convention for both index and column axis
     ct.index = pd.MultiIndex.from_product(
@@ -1695,7 +1637,7 @@ def add_combined_codes_view(create_method, source, combine_codes, label):
     -------
     quantipy.ViewMapper
     """
-    view = ViewMapper()
+    view = qp.ViewMapper()
     if isinstance(combine_codes[0], list):
         for i in range(max(len(combine_codes), len(label))):
             name = 'net_%s_%s_%s_%s' % (combine_codes[i][0],
@@ -1884,7 +1826,8 @@ def slice_stack(stack, dks=None, fks=None, xks=None, yks=None,
                                 else:
                                     if all_vks:
                                         vks = list(
-                                            stack[d]['data'][f][x][y].keys())
+                                                stack[d]['data'][f][x][
+                                                    y].keys())
 
                                     for v in list(
                                             stack[d]['data'][f][x][y].keys()):
@@ -1939,7 +1882,7 @@ def map_multiindex(index, levels_map=None, names_map=None):
 
     if not isinstance(index, pd.MultiIndex):
         raise TypeError(
-            "Index passed is not a MultiIndex, it is '%s'" % type(index))
+                "Index passed is not a MultiIndex, it is '%s'" % type(index))
     else:
 
         if not levels_map:
@@ -2005,13 +1948,15 @@ def cat_to_dummies(data, limit_to=None, as_df=False):
         dummy_df = data.str.get_dummies(';')
         dummy_df.columns = [int(col) for col in dummy_df.columns]
         dummy_df.sort_index(axis=1).rename(
-            columns={col: str(col) for col in dummy_df.columns}, inplace=True)
+                columns={col: str(col) for col in dummy_df.columns},
+                inplace=True)
     else:
         data = data.copy().dropna()
         dummy_df = pd.get_dummies(data)
         dummy_df.rename(
-            columns={col: str(int(col)) if float(col).is_integer() else str(col)
-                     for col in dummy_df.columns}, inplace=True)
+                columns={
+                    col: str(int(col)) if float(col).is_integer() else str(col)
+                    for col in dummy_df.columns}, inplace=True)
 
     if limit_to:
         dummy_df = limit_dummy_df(dummy_df, limit_to)
@@ -2146,12 +2091,12 @@ def aggregate_matrix(value_matrix, x_def, y_def, calc_bases=True, as_df=True):
             freq = np.array([np.sum(
                     value_matrix[value_matrix[:, -ycode] == 1][:, 1:xcodes],
                     axis=0)
-                             for ycode in ycodes])
+                for ycode in ycodes])
             if calc_bases:
                 ycodes = reversed(range(1, len(y_def) + 1))
                 cb = np.array([np.sum(
                         value_matrix[value_matrix[:, -ycode] == 1][:, :1])
-                               for ycode in ycodes])
+                    for ycode in ycodes])
                 rb = np.sum(value_matrix[:, 1:xcodes], axis=0)
                 tb = np.sum(value_matrix[:, [0]], axis=0)
         else:
@@ -2296,7 +2241,7 @@ def make_default_num_view(data, x, y=None, weights=None, get_only=None):
                 dummy_y_data = pd.concat([data[[x, weight]], dummy_y], axis=1)
                 df = pd.concat([describe(
                         dummy_y_data[dummy_y_data[y_code] == 1], x, weight) for
-                                y_code in dummy_y.columns], axis=1)
+                    y_code in dummy_y.columns], axis=1)
                 df.columns = dummy_y.columns
             else:
                 y_codes = sorted(data[y].unique())
@@ -2305,7 +2250,7 @@ def make_default_num_view(data, x, y=None, weights=None, get_only=None):
                          in y_codes], axis=1)
                 df.columns = [
                     str(int(y_code)) if float(y_code).is_integer() else str(
-                        y_code) for y_code in y_codes]
+                            y_code) for y_code in y_codes]
 
     if get_only is None:
         df['All'] = describe(data, x, weight).values
@@ -2352,8 +2297,8 @@ def set_names_to_values(df, names, axis='x'):
     else:
         for name in enumerate(names):
             df.rename(
-                columns={df.columns.get_level_values(-1)[name[0]]: name[1]},
-                inplace=True)
+                    columns={df.columns.get_level_values(-1)[name[0]]: name[1]},
+                    inplace=True)
         return df.columns
 
 
@@ -2611,7 +2556,7 @@ def calc_net_values(link, source_view, combine_codes, force_raw_sum=False):
             ycodes = reversed(range(1, len(y_def) + 1))
             net_values = np.array([matrix[
                                        (matrix[:, 1:xcodes].sum(axis=1) > 0) & (
-                                                   matrix[:, -ycode] == 1)][:,
+                                               matrix[:, -ycode] == 1)][:,
                                    0].sum() for ycode in ycodes])
         else:
             matrix, x_def, y_def = df_to_value_matrix(data=link.get_data(),

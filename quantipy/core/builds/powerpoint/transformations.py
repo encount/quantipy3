@@ -70,21 +70,6 @@ def remove_percentage_sign(old_df):
 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 
-# TODO: Remove dead code:
-def drop_null_rows(old_df, axis_type=1):
-    '''
-    drop rows with all columns having value 0
-    '''
-
-    new_df = old_df.loc[(df != 0).any(axis=axis_type)]
-
-    return new_df
-
-
-'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
-
 def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
     '''
     Sorts a flattened (non multiindexed) panda dataframe whilst excluding given rows
@@ -120,10 +105,11 @@ def auto_sort(df, fixed_categories=[], column_position=0, ascend=True):
             df_without_fc = df.loc[~df[df.columns[0]].isin(fixed_categories)]
             if __pandas_version_parsed__ >= pd_df_sort_deprecated:
                 df_without_fc = df_without_fc.sort_values(
-                    by=df.columns[column_position + 1], ascending=ascend)
+                        by=df.columns[column_position + 1], ascending=ascend)
             else:
                 df_without_fc = df_without_fc.sort(
-                    columns=df.columns[column_position + 1], ascending=ascend)
+                        columns=df.columns[column_position + 1],
+                        ascending=ascend)
 
             # put each row as a tuple in a list
             tups = []
@@ -193,10 +179,10 @@ def find_dups(df, orientation='Side'):
 
     if dup_idx:
         statement = (
-        "\n{indent:>10}*Warning: This table/chart contains duplicate "
-        "{orientation} labels".format(
-                indent='',
-                orientation=axis))
+            "\n{indent:>10}*Warning: This table/chart contains duplicate "
+            "{orientation} labels".format(
+                    indent='',
+                    orientation=axis))
     else:
         statement = ''
 
@@ -380,11 +366,11 @@ def place_vals_in_labels(old_df, base_position=0, orientation='side',
         # row_vals returns a list of list which needs flattening
         flatten_col_vals = [item for sublist in row_vals for item in sublist]
         # grab row labels
-        col_labels = df.columns
+        col_labels = old_df.columns
 
         # rename rows one by one.
         new_labels_list = {}
-        for x, y in zip(index_labels, flatten_col_vals):
+        for x, y in zip(col_labels, flatten_col_vals):
             new_labels_list.update({x: x + " (n=" + str(y) + ")"})
 
         new_df = old_df.rename(columns=new_labels_list, inplace=False)

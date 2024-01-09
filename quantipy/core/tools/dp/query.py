@@ -659,6 +659,6 @@ def reorder_test_keys(views):
                     if relation1 == relation2:
                         new_order.append(vk2)
         elif agg1 in ['d.stddev', 'd.sem', 'nps']:
-            new_order.append(pos)
+            new_order.append(pos1)
 
     return new_order

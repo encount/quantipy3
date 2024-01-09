@@ -1522,7 +1522,9 @@ class DataSet(object):
         if text_key is None: text_key = self.text_key
         if var is not None:
             return self._get_meta(var, only_type, text_key, axis_edit)
-        if self._meta['columns'] is None:
+        # FIXME: perhaps data_key should be equal to text_key?
+        data_key = 'columns'
+        if self._meta[data_key] is None:
             return 'No meta attached to data_key: %s' % (data_key)
         else:
             types = {

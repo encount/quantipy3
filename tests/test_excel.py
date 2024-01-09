@@ -2,6 +2,7 @@
 import os
 import platform
 import re
+import sys
 from operator import sub
 from zipfile import BadZipfile, LargeZipFile, ZipFile
 

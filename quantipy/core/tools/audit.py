@@ -9,7 +9,7 @@ import pandas as pd
 
 import quantipy as qp
 from .dp.prep import frange
-from .qp_decorators import
+from .qp_decorators import  modify, verify
 
 VALID_CONVERT = {'float':
                      ['single', 'int', 'float'],
@@ -127,7 +127,6 @@ class Audit(object):
         Define the path attribute.
         """
         self.path = path
-        return Nontye
 
     @modify(to_list='names')
     def save(self, names='all', suffix='_audit'):

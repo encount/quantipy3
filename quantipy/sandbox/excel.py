@@ -410,7 +410,7 @@ class Excel(Workbook):
         return dict(_SHEET_DEFAULTS)
 
     def _get_annotations(self, annotations, sheet_name):
-        error_messaage = ('"annotations" passed to Excel() must either be a '
+        error_message = ('"annotations" passed to Excel() must either be a '
                           'list, for all sheets, or a dict, key=sheet name '
                           ': value=list of annotations')
         if self.annotations:

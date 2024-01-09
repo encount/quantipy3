@@ -1307,7 +1307,7 @@ class PptxChain(object):
                     crossbreaks.remove(cb)
                     if self.verbose:
                         msg = 'Requested crossbreak: \'{}\' is not found for chain \'{}\' and will be ignored'.format(
-                            cb, chain.name)
+                            cb, self._chain.name)
                         warnings.warn(msg)
             if crossbreaks == []: crossbreaks = None
         else:

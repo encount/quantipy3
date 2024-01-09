@@ -8,6 +8,7 @@ import string
 from collections import Counter, OrderedDict, defaultdict
 from itertools import chain, combinations, product
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import chi2 as chi2dist, f as fdist
@@ -1383,6 +1384,7 @@ class ChainManager(object):
 
         def mine_chain_structure(clusters):
             cluster_defs = []
+            chain = None
             for cluster_def_name, cluster in list(clusters.items()):
                 for name in cluster:
                     if isinstance(list(cluster[name].items())[0][1],
@@ -2500,6 +2502,7 @@ class Chain(object):
         """
         """
         full = []
+        last = None
         for v in viewindex_labs:
             if v == '':
                 full.append(last)
@@ -3118,7 +3121,8 @@ class Chain(object):
                         elif link.y == _TOTAL:
                             level_names = [[link.x], ['@']]
                         try:
-                            frame.columns = frame.columns.set_levels(level_names, level=[0, 1])
+                            frame.columns = frame.columns.set_levels(
+                                    level_names, level=[0, 1])
                         except ValueError:
                             pass
                     frames.append(frame)
@@ -3899,50 +3903,6 @@ class Chain(object):
         cls._pad_id += 1
         return cls._pad_id
 
-        # class MTDChain(Chain):
-        #     def __init__(self, mtd_doc, name=None):
-        #         super(MTDChain, self).__init__(stack=None, name=name, structure=None)
-        #         self.mtd_doc = mtd_doc
-        #         self.source = 'Dimensions MTD'
-        self.get = self._get
-
-
-#     def _get(self, ignore=None, labels=True):
-#         per_folder = OrderedDict()
-#         failed = []
-#         unsupported = []
-#         for name, tab_def in self.mtd_doc.items():
-#             try:
-#                 if isinstance(tab_def.values()[0], dict):
-#                     unsupported.append(name)
-#                 else:
-#                     tabs = split_tab(tab_def)
-#                     chain_dfs = []
-#                     for tab in tabs:
-#                         df, meta = tab[0], tab[1]
-#                         # SOME DFs HAVE TOO MANY / UNUSED LEVELS...
-#                         if len(df.columns.levels) > 2:
-#                             df.columns = df.columns.droplevel(0)
-#                         x, y = _get_axis_vars(df)
-#                         df.replace('-', np.NaN, inplace=True)
-#                         relabel_axes(df, meta, labels=labels)
-#                         df = df.drop('Base', axis=1, level=1)
-#                         try:
-#                             df = df.applymap(lambda x: float(x.replace(',', '.')
-#                                              if isinstance(x, (str, unicode)) else x))
-#                         except:
-#                             msg = "Could not convert df values to float for table '{}'!"
-#                             # warnings.warn(msg.format(name))
-#                         chain_dfs.append(to_chain((df, x, y), meta))
-#                     per_folder[name] = chain_dfs
-#             except:
-#                 failed.append(name)
-#         print 'Conversion failed for:\n{}\n'.format(failed)
-#         print 'Subfolder conversion unsupported for:\n{}'.format(unsupported)
-#         return per_folder
-
-
-##############################################################################
 
 class Quantity(object):
     """
@@ -6305,6 +6265,7 @@ class Reductions(Multivariate):
         self.analysis = 'Reduction'
 
     def plot(self, type, point_coords):
+
         plt.set_autoscale_on = False
         plt.figure(figsize=(5, 5))
         plt.xlim([-1, 1])
@@ -6839,7 +6800,7 @@ class Relations(Multivariate):
         else:
             plt.xlim([0, 6])
             plt.ylim([-1, 1])
-            vals = result.values
+            vals = result.values  # noqa: F821
         x = plt.scatter(vals[:, 1], vals[:, 0], edgecolor='w', marker='o',
                         c='red', s=80)
         fig = x.get_figure()

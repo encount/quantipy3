@@ -4,6 +4,7 @@ from itertools import combinations
 
 import numpy as np
 import pandas as pd
+import quantipy as qp
 
 from . import struct
 from ....dependency_versions import __scipy_version_parsed__
@@ -2079,7 +2080,7 @@ def _percentile(mat, xdef, ydef, perc=0.5):
                 else:
                     percs.append(
                             (1.0 - excess / w_k1) * p_k + (
-                                        excess / w_k1) * p_k1)
+                                    excess / w_k1) * p_k1)
 
     return np.array(percs)
 
@@ -2534,9 +2535,8 @@ def _count(series, responses):
 
     else:
         raise TypeError(
-                "The dtype '%s' of series is incompatible with has_%s()" %
-                series.dtype,
-                func_name
+                "The dtype '%s' of series is incompatible with _count()" %
+                series.dtype
         )
 
 

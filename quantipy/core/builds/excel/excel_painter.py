@@ -1627,7 +1627,7 @@ def ExcelPainter(path_excel,
                 is_net_only = cond_1 and cond_2 and cond_3
 
                 if chain.source_name not in list(coordmap[orientation].keys()):
-
+                    pvk = None
                     if orientation == 'y':
                         coordmap['y'][chain.source_name] = [
                             current_position['y'],
@@ -1686,7 +1686,7 @@ def ExcelPainter(path_excel,
                                         for group in grouped_views[sheet_name]:
                                             if vk in group:
                                                 if group.index(vk) > 0:
-                                                    static = True;
+                                                    static = True
                                                     break
                                     if static:
                                         coord_ys[vk] = coord_ys[pvk][:]
@@ -2572,8 +2572,8 @@ def ExcelPainter(path_excel,
                                         elif vmetas[idxdf]['agg'][
                                             'method'] == 'descriptives':
                                             format_key = 'x_right'
-                                            labels = [df.index[idxf][idxf] for _
-                                                      in df.index]
+                                            labels = [df.index[idxdf][idxdf]
+                                                      for _ in df.index]
                                         else:
                                             format_key = 'x_right'
                                             if idxdf == 0 or (
