@@ -2,8 +2,12 @@
 requires = [
     "setuptools>=64",
     "setuptools_scm>=8",
+    "wheel",
+    "setuptools-pipfile"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools-pipfile]
 
 [project]
 dynamic = [
