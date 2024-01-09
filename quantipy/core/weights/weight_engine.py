@@ -44,7 +44,7 @@ class WeightEngine:
             self.dataset = DataSet('__weights__', False)
             self.dataset.from_components(self._df.copy(), self._meta)
 
-    def get_report(self):
+    def get_report(self) -> pd.DataFrame:
         """
         Return a DataFrame summarising results of the calculated weights.
 
@@ -68,7 +68,7 @@ class WeightEngine:
 
         Returns
         -------
-        None
+        pd.DataFrame
         """
 
         # List to store each report series for later concatenation
