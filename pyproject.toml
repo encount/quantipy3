@@ -1,0 +1,57 @@
+[build-system]
+requires = [
+    "setuptools>=64",
+    "setuptools_scm>=8",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = [
+    "version",
+    "description",
+    "dependencies",
+    "optional-dependencies",
+]
+name = "quantipy3"
+
+authors = [
+    { name = "Martin Thorsen Ranang", email = "mtr@ranang.org" },
+    { name = 'Geir Freysson', email = 'geir@datasmoothie.com' },
+]
+#description = "A Numpy and Pandas-based library for processing, analysis and reporting on people data."
+readme = "README.md"
+keywords = [
+    'data processing',
+    'data analysis',
+    'people data',
+    'reporting',
+    'Pandas',
+    'Numpy',
+    'statistical analysis',
+    'observation weights',
+    'dataframe metadata',
+    'data exports',
+    'csv reading',
+    'SPSS',
+]
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.10"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/encount/quantipy3"
+"Bug Tracker" = "https://github.com/encount/quantipy3/issues"
+
+[tool.setuptools_scm]
+version_file = "quantipy/version.py"
