@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f7f5c475fd583f7cabc49f521fab31b4b8fdc24a232624382f62c4159169217f"
+            "sha256": "877168a568b8f1f149dcc16d1a0d906aa6de823859aee5b9a5db25c14e31ef32"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -883,10 +883,6 @@
             "index": "pypi",
             "markers": "python_version >= '3.7'",
             "version": "==0.21.0"
-        },
-        "quantipy3": {
-            "editable": true,
-            "file": "."
         },
         "tomli": {
             "hashes": [
