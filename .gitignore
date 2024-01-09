@@ -42,3 +42,4 @@ docs/API/_templates/
 .pytest_cache/*
 .mypy_cache/*
 build
+/quantipy/version.py
