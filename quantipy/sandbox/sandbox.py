@@ -8,7 +8,6 @@ import string
 from collections import Counter, OrderedDict, defaultdict
 from itertools import chain, combinations, product
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import chi2 as chi2dist, f as fdist
@@ -6265,7 +6264,7 @@ class Reductions(Multivariate):
         self.analysis = 'Reduction'
 
     def plot(self, type, point_coords):
-
+        import matplotlib.pyplot as plt
         plt.set_autoscale_on = False
         plt.figure(figsize=(5, 5))
         plt.xlim([-1, 1])
@@ -6375,6 +6374,7 @@ class Reductions(Multivariate):
         col_sc = (col_eigen_mat.T * sv[:, 0] ** a) / np.sqrt(col_mass)
 
         if plot:
+            import matplotlib.pyplot as plt
             # prep coordinates for plot
             item_sep = len(self.single_quantities[0].xdef)
             dim1_c = [r_s[0] for r_s in row_sc] + [c_s[0] for c_s in col_sc]
@@ -6744,6 +6744,8 @@ class Relations(Multivariate):
         -------
 
         """
+        import matplotlib.pyplot as plt
+
         method = measures['method']
         perf_stat, imp_stat = measures['perf'], measures['imp']
         if method in ['corr', 'reg']:
@@ -6957,6 +6959,7 @@ class Relations(Multivariate):
             final = final[[group2 in select for group1, group2 in final.index]]
 
         if plot:
+            import matplotlib.pyplot as plt
             if plot not in ['sig', 'full']:
                 raise ValueError('"plot" must be one of None, "sig" or "full".')
             if plot == 'sig':
