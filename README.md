@@ -1,5 +1,7 @@
 # Quantipy3
 
+[![Python package](https://github.com/encount/quantipy3/actions/workflows/python-package.yml/badge.svg?event=push)](https://github.com/encount/quantipy3/actions/workflows/python-package.yml)
+
 ### Python for people data
 Quantipy is an open-source data processing, analysis and reporting software project that builds on the excellent pandas and numpy libraries. Aimed at people data, Quantipy offers support for native handling of special data types like multiple choice variables, statistical analysis using case or observation weights, DataFrame metadata and pretty data exports.
 
