@@ -42,7 +42,7 @@ data_label_pos_dct = {'outside_end': XL_LABEL_POSITION.OUTSIDE_END,
                       'inside_base': XL_LABEL_POSITION.INSIDE_BASE,
                       'inside_end': XL_LABEL_POSITION.INSIDE_END,
                       'left': XL_LABEL_POSITION.LEFT,
-                      'mixed': XL_LABEL_POSITION.MIXED,
+                      #'mixed': XL_LABEL_POSITION.MIXED,
                       'outside_end': XL_LABEL_POSITION.OUTSIDE_END,
                       'right': XL_LABEL_POSITION.RIGHT
                       }
@@ -70,7 +70,7 @@ tick_mark_pos_dct = {'cross': XL_TICK_MARK.CROSS,
 vertical_alignment_pos_dct = {'top': MSO_ANCHOR.TOP,
                               'middle': MSO_ANCHOR.MIDDLE,
                               'bottom': MSO_ANCHOR.BOTTOM,
-                              'mixed': MSO_ANCHOR.MIXED
+                              #'mixed': MSO_ANCHOR.MIXED
                               }
 
 paragraph_alignment_pos_dct = {'center': PP_ALIGN.CENTER,
@@ -80,7 +80,7 @@ paragraph_alignment_pos_dct = {'center': PP_ALIGN.CENTER,
                                'left': PP_ALIGN.LEFT,
                                'right': PP_ALIGN.RIGHT,
                                'thai_distribute': PP_ALIGN.THAI_DISTRIBUTE,
-                               'mixed': PP_ALIGN.MIXED
+                               #'mixed': PP_ALIGN.MIXED
                                }
 
 theme_color_index_dct = {'not_theme_color': MSO_THEME_COLOR.NOT_THEME_COLOR,
